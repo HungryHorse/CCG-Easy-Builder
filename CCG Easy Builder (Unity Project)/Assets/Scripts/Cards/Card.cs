@@ -14,9 +14,12 @@ public class Card : ScriptableObject
     private int _health;
     [SerializeField]
     private int _attack;
+    [SerializeField]
+    private CardType _cardType;
 
     public string CardName { get => _cardName; set => _cardName = value; }
     public string Description { get => _description; set => _description = value; }
     public int Health { get => _health; set => _health = value; }
     public int Attack { get => _attack; set => _attack = value; }
+    public CardType CardType { get => _cardType; set => _cardType = value; }
 }
