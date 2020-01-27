@@ -12,3 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 15011857bfaee984daf442b4a331c1d0, type: 3}
   m_Name: TestCard
   m_EditorClassIdentifier: 
+  _cardName: Sir Aves
+  _description: This man is the most cursed in all the land.
+  _health: 1000
+  _attack: 1000
