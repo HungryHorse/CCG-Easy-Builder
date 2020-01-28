@@ -14,5 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _cardName: Sir Aves
   _description: This man is the most cursed in all the land.
+  _cost: 10
   _health: 1000
   _attack: 1000
+  _cardType: 0
+  _cardImage: {fileID: 21300000, guid: 94aba7b25c42c9443a621fbdb700d3f0, type: 3}
