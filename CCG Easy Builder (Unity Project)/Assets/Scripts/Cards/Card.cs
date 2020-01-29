@@ -11,7 +11,7 @@ public class Card : ScriptableObject
     [SerializeField]
     private string _description;
     [SerializeField]
-    private string _cost;
+    private int _cost;
     [SerializeField]
     private int _health;
     [SerializeField]
@@ -28,7 +28,18 @@ public class Card : ScriptableObject
     public int Health { get => _health; set => _health = value; }
     public int Attack { get => _attack; set => _attack = value; }
     public CardType CardType { get => _cardType; set => _cardType = value; }
-    public string Cost { get => _cost; set => _cost = value; }
+    public int Cost { get => _cost; set => _cost = value; }
     public Sprite CardImage { get => _cardImage; set => _cardImage = value; }
     public GameObject CardGameObject { get => _cardGameObject; set => _cardGameObject = value; }
+
+    //public Card(string cardName)
+    //{
+    //    _cardName = cardName;
+    //    _description = "blank";
+    //    _health = 0;
+    //    _attack = 0;
+    //    _cardType = CardType.Creature;
+    //    _cost = 0;
+    //    _cardImage = null;
+    //}
 }
