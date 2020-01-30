@@ -20,7 +20,7 @@ public class Deck : MonoBehaviour
     
     public void ShuffleDeck()
     {
-        for(int i = 0; i < _currentDeck.Count - 1; i++)
+        for(int i = 0; i < _currentDeck.Count - 1; i ++)
         {
             int j = Random.Range(i, _currentDeck.Count);
             Card temp = _currentDeck[i];
