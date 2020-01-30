@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEditor;
 
 [CustomEditor(typeof(Hand))]
-public class MyScriptEditor : Editor
+public class MyHandEditor : Editor
 {
     public override void OnInspectorGUI()
     {
@@ -18,5 +18,21 @@ public class MyScriptEditor : Editor
         {
             myScript.maxHandSize = EditorGUILayout.IntSlider("Maximum hand size:", myScript.maxHandSize, 1, 30);
         }
+    }
+}
+
+[CustomEditor(typeof(Deck))]
+public class MyDeckEditor : Editor
+{
+    public override void OnInspectorGUI()
+    {
+        var myScript = target as Deck;
+
+        if (GUILayout.Button("Shuffle Deck", EditorStyles.miniButton))
+        {
+            myScript.ShuffleDeck();
+        }
+
+        DrawDefaultInspector();
     }
 }

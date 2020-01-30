@@ -9,8 +9,14 @@ public class Hand : MonoBehaviour
     public GameObject cardPrefab;
     public GameObject handObject;
 
-    private GameObject _currCard;
+    private Card _currCard;
 
+    [SerializeField]
+    private bool _canDrawCard = true;
+    private int _bufferedCardDraw = 0;
+    private List<Card> cardDrawQueue = new List<Card>();
+
+    #region Hand Formatting
     private float _targetPositionX = 0;
     [SerializeField]
     private float _maxPositionY = 0.2f;
@@ -20,22 +26,31 @@ public class Hand : MonoBehaviour
     private float _maximumRot = 10;
     [SerializeField]
     private float _cardSize;
+    #endregion
+
+    #region Representation of hand in game
     [SerializeField]
     private float _physicalHandSizeX;
     [SerializeField]
     private float _physicalHandSizeY;
+    #endregion
 
     private int _orderInSortingLayer = 0;
 
     [SerializeField]
     private List<Card> _currentHand;
 
+    #region Max Hand Size
+    // Used for nice inspector UI
     [HideInInspector]
     public bool maxHandSizeOn;
     [HideInInspector]
     public int maxHandSize;
+    #endregion
 
     public List<Card> CurrentHand { get => _currentHand; set => _currentHand = value; }
+
+    private int _counter = 0;
 
     void OnDrawGizmos()
     {
@@ -50,13 +65,64 @@ public class Hand : MonoBehaviour
 
     public void AddCardNumber()
     {
-        _currentHand.Add(Card.CreateInstance<Card>());
+        if (!_canDrawCard)
+        {
+            _bufferedCardDraw++;
+            Card newCard = Card.CreateInstance<Card>();
+            newCard.CardName = _counter.ToString();
+            _counter++;
+            cardDrawQueue.Add(newCard);
+        }
+        else
+        {
+            _currentHand.Add(Card.CreateInstance<Card>());
+        }
         //_currentHand[_currentHand.Count - 1].CardName = _orderInSortingLayer.ToString();
     }
 
     public void DrawLatestCard()
     {
-        Card cardDrawn = _currentHand[_currentHand.Count - 1];
+        if (_canDrawCard)
+        {
+            _canDrawCard = false;
+
+            Card cardDrawn = _currentHand[_currentHand.Count - 1];
+
+            _currCard = cardDrawn;
+
+            Debug.Log(cardDrawn.CardName);
+
+            GameObject cardDrawnPrefab = Instantiate(cardPrefab, handObject.transform);
+
+            Transform cardFront = cardDrawnPrefab.transform.GetChild(0).transform.GetChild(0);
+            Transform cardBack = cardDrawnPrefab.transform.GetChild(0).transform.GetChild(1);
+
+            cardFront.GetComponent<Canvas>().sortingOrder = _orderInSortingLayer;
+            cardBack.GetComponent<Canvas>().sortingOrder = _orderInSortingLayer;
+
+            _orderInSortingLayer++;
+
+            cardFront.GetChild(0).Find("Character").GetComponent<Image>().sprite = cardDrawn.CardImage;
+
+            cardFront.Find("CardName").GetComponent<TextMeshProUGUI>().text = cardDrawn.CardName;
+            cardFront.Find("CardDescription").GetComponent<TextMeshProUGUI>().text = cardDrawn.Description;
+            cardFront.Find("CardAttack").GetComponent<TextMeshProUGUI>().text = cardDrawn.Attack.ToString();
+            cardFront.Find("CardHealth").GetComponent<TextMeshProUGUI>().text = cardDrawn.Health.ToString();
+            cardFront.Find("CardCost").GetComponent<TextMeshProUGUI>().text = cardDrawn.Cost.ToString();
+
+            cardDrawnPrefab.GetComponent<PrefabEvents>().RelativeHand = this;
+
+            cardDrawn.CardGameObject = cardDrawnPrefab;
+        }
+    }
+
+    public void DrawSpecificCard(Card specificCardToDraw)
+    {
+        _canDrawCard = false;
+
+        Card cardDrawn = specificCardToDraw;
+
+        _currCard = cardDrawn;
 
         Debug.Log(cardDrawn.CardName);
 
@@ -85,7 +151,7 @@ public class Hand : MonoBehaviour
 
     public void AddCardToHand()
     {
-        Card cardToAddToHand = _currentHand[_currentHand.Count - 1];
+        Card cardToAddToHand = _currCard;
 
         if (_currentHand.Count > 3)
         {
@@ -106,7 +172,31 @@ public class Hand : MonoBehaviour
 
         GameObject cardgo = cardToAddToHand.CardGameObject;
 
-        _currCard = cardgo;
+        StartCoroutine(CardToHand(cardgo));
+    }
+
+    public void AddCardToHand(Card cardToAdd)
+    {
+        Card cardToAddToHand = cardToAdd;
+
+        if (_currentHand.Count > 3)
+        {
+            _targetRot = _maximumRot;
+            if (_physicalHandSizeX / 2 >= _targetPositionX + (_cardSize * 2))
+            {
+                _targetPositionX += _cardSize;
+            }
+        }
+        else
+        {
+            _targetRot = 0;
+            if (_currentHand.Count > 1)
+            {
+                _targetPositionX += _cardSize;
+            }
+        }
+
+        GameObject cardgo = cardToAddToHand.CardGameObject;
 
         StartCoroutine(CardToHand(cardgo));
     }
@@ -124,6 +214,15 @@ public class Hand : MonoBehaviour
                 break;
             }
             yield return new WaitForSeconds(0.02f);
+        }
+        _canDrawCard = true;
+        if(_bufferedCardDraw > 0)
+        {
+            _bufferedCardDraw--;
+            Card cardToAdd = cardDrawQueue[0];
+            _currentHand.Add(cardToAdd);
+            cardDrawQueue.Remove(cardToAdd);
+            DrawSpecificCard(cardToAdd);
         }
         StopCoroutine("CardToHand");
     }
