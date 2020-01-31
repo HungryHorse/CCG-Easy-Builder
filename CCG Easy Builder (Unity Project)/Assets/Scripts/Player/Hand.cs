@@ -26,6 +26,8 @@ public class Hand : MonoBehaviour
     private float _maximumRot = 10;
     [SerializeField]
     private float _cardSize;
+    [SerializeField]
+    private float _lerpSpeed;
     #endregion
 
     #region Representation of hand in game
@@ -60,7 +62,7 @@ public class Hand : MonoBehaviour
 
     private void Start()
     {
-        DrawLatestCard();
+        //DrawLatestCard();
     }
 
     public void AddCardNumber()
@@ -80,6 +82,22 @@ public class Hand : MonoBehaviour
         //_currentHand[_currentHand.Count - 1].CardName = _orderInSortingLayer.ToString();
     }
 
+    public void AddCardFromDeck(Card cardBeingAdded)
+    {
+        if (!_canDrawCard)
+        {
+            _bufferedCardDraw++;
+            Card newCard = cardBeingAdded;
+            _counter++;
+            cardDrawQueue.Add(newCard);
+        }
+        else
+        {
+            _currentHand.Add(cardBeingAdded);
+            DrawLatestCard();
+        }
+    }
+
     public void DrawLatestCard()
     {
         if (_canDrawCard)
@@ -93,6 +111,8 @@ public class Hand : MonoBehaviour
             Debug.Log(cardDrawn.CardName);
 
             GameObject cardDrawnPrefab = Instantiate(cardPrefab, handObject.transform);
+
+            cardDrawnPrefab.GetComponent<PrefabEvents>().ThisCard = cardDrawn;
 
             Transform cardFront = cardDrawnPrefab.transform.GetChild(0).transform.GetChild(0);
             Transform cardBack = cardDrawnPrefab.transform.GetChild(0).transform.GetChild(1);
@@ -127,6 +147,8 @@ public class Hand : MonoBehaviour
         Debug.Log(cardDrawn.CardName);
 
         GameObject cardDrawnPrefab = Instantiate(cardPrefab, handObject.transform);
+
+        cardDrawnPrefab.GetComponent<PrefabEvents>().ThisCard = cardDrawn;
 
         Transform cardFront = cardDrawnPrefab.transform.GetChild(0).transform.GetChild(0);
         Transform cardBack = cardDrawnPrefab.transform.GetChild(0).transform.GetChild(1);
@@ -206,15 +228,16 @@ public class Hand : MonoBehaviour
         UpdateHandPositions();
         for (; ; )
         {
-            cardgo.transform.position = Vector3.Lerp(cardgo.transform.position, new Vector3(_targetPositionX, transform.position.y, 0), 0.08f);
-            cardgo.transform.localScale = Vector3.Lerp(cardgo.transform.localScale, new Vector3(_targetScale, _targetScale, cardgo.transform.localScale.z), 0.08f);
-            cardgo.transform.rotation = Quaternion.Lerp(cardgo.transform.rotation, new Quaternion(cardgo.transform.rotation.x, cardgo.transform.rotation.y, Quaternion.Euler(0,0,-_targetRot).z, cardgo.transform.rotation.w), 0.08f);
+            cardgo.transform.position = Vector3.Lerp(cardgo.transform.position, new Vector3(_targetPositionX, transform.position.y, 0), _lerpSpeed);
+            cardgo.transform.localScale = Vector3.Lerp(cardgo.transform.localScale, new Vector3(_targetScale, _targetScale, cardgo.transform.localScale.z), _lerpSpeed);
+            cardgo.transform.rotation = Quaternion.Lerp(cardgo.transform.rotation, new Quaternion(cardgo.transform.rotation.x, cardgo.transform.rotation.y, Quaternion.Euler(0,0,-_targetRot).z, cardgo.transform.rotation.w), _lerpSpeed);
             if (Mathf.Abs(transform.position.y - cardgo.transform.position.y) < 0.002f)
             {
                 break;
             }
             yield return new WaitForSeconds(0.02f);
         }
+        cardgo.GetComponent<PrefabEvents>().CanBeHovered = true;
         _canDrawCard = true;
         if(_bufferedCardDraw > 0)
         {

@@ -761,19 +761,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1828400849}
-        m_MethodName: AddCardNumber
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 1828400849}
-        m_MethodName: DrawLatestCard
+      - m_Target: {fileID: 1851528296}
+        m_MethodName: AddCardToHand
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -873,10 +862,10 @@ MonoBehaviour:
   _maxPositionY: 0.25
   _maximumRot: 6
   _cardSize: 0.7
+  _lerpSpeed: 0.1
   _physicalHandSizeX: 10
   _physicalHandSizeY: 2
-  _currentHand:
-  - {fileID: 11400000, guid: 43b4dbf79df41c442b3e5801635a12c7, type: 2}
+  _currentHand: []
   maxHandSizeOn: 0
   maxHandSize: 1
 --- !u!1 &1851528294
@@ -923,14 +912,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _currentDeck:
+  - {fileID: 11400000, guid: eac2363a043877d46bd07a9cdff3829f, type: 2}
   - {fileID: 11400000, guid: bb6aef1db5ee6da4e9b03ebfa04f1780, type: 2}
-  - {fileID: 11400000, guid: 09ef1ce6a950de444af8675aac5b6414, type: 2}
   - {fileID: 11400000, guid: 29f456d4e469a0d40a22c9d1aa04fdea, type: 2}
   - {fileID: 11400000, guid: 08d76d2db50a067408b1a2c237f765c4, type: 2}
-  - {fileID: 11400000, guid: b925116c5fd51764ba1379750720ba56, type: 2}
-  - {fileID: 11400000, guid: f43e9baa996a1dd448d5bc1c08f31710, type: 2}
   - {fileID: 11400000, guid: 8e930adb4faf417479ccbd17adb90be7, type: 2}
-  - {fileID: 11400000, guid: e6a014ca50ba7474582115e98410bd61, type: 2}
-  - {fileID: 11400000, guid: 43b4dbf79df41c442b3e5801635a12c7, type: 2}
-  - {fileID: 11400000, guid: eac2363a043877d46bd07a9cdff3829f, type: 2}
+  - {fileID: 11400000, guid: b925116c5fd51764ba1379750720ba56, type: 2}
   - {fileID: 11400000, guid: 7807369a250745a42aa6699787b2a669, type: 2}
+  - {fileID: 11400000, guid: 43b4dbf79df41c442b3e5801635a12c7, type: 2}
+  - {fileID: 11400000, guid: e6a014ca50ba7474582115e98410bd61, type: 2}
+  - {fileID: 11400000, guid: 09ef1ce6a950de444af8675aac5b6414, type: 2}
+  - {fileID: 11400000, guid: f43e9baa996a1dd448d5bc1c08f31710, type: 2}
+  _playerHand: {fileID: 1828400849}

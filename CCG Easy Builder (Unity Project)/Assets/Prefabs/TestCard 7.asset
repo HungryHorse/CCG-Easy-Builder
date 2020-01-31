@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 15011857bfaee984daf442b4a331c1d0, type: 3}
   m_Name: TestCard 7
   m_EditorClassIdentifier: 
-  _cardName: SirAves
+  _cardName: Card7
   _description: This man is the most cursed in all the land.
   _cost: 10
   _health: 1000

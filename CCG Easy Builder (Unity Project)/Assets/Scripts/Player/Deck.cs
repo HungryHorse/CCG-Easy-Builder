@@ -6,16 +6,17 @@ public class Deck : MonoBehaviour
 {
     [SerializeField]
     private List<Card> _currentDeck;
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+    [SerializeField]
+    private Hand _playerHand;
 
-    // Update is called once per frame
-    void Update()
+    public void AddCardToHand()
     {
-        
+        if (_currentDeck.Count > 0)
+        {
+            Card cardBeingDrawn = _currentDeck[0];
+            _playerHand.AddCardFromDeck(cardBeingDrawn);
+            _currentDeck.Remove(cardBeingDrawn);
+        }
     }
     
     public void ShuffleDeck()
