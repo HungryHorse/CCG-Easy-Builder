@@ -14,6 +14,8 @@ public class PrefabEvents : MonoBehaviour
     private float _timer;
     private bool _canBeHovered = false;
     private bool _beingHeld;
+    private bool _returnToHand;
+    private bool _canBeDestroyed;
 
     [SerializeField]
     private float _yIncreaseOnHover;
@@ -45,26 +47,99 @@ public class PrefabEvents : MonoBehaviour
         RelativeHand.AddCardToHand();
     }
 
+    private void Update()
+    {
+        Vector3 zLockedMousePos = new Vector3(Camera.main.ScreenToWorldPoint(Input.mousePosition).x, Camera.main.ScreenToWorldPoint(Input.mousePosition).y, transform.position.z);
+
+        if (_isBeingHovered && Input.GetMouseButton(0))
+        {
+            _beingHeld = true;
+            _returnToHand = true;
+        }
+        else
+        {
+            _beingHeld = false;
+        }
+
+        if (_beingHeld)
+        {
+            Debug.Log("Held");
+            transform.position = Vector3.Lerp(transform.position, zLockedMousePos, _followSpeed);
+            GetComponent<BoxCollider2D>().size = new Vector2(10 * _hoverScale, 10 * _hoverScale);
+            _canBeDestroyed = false;
+        }
+        else
+        {
+            if (_originalCard != null && _returnToHand)
+            {
+                GetComponent<BoxCollider2D>().size = new Vector2(1.4f, 2f);
+                if (Vector3.Distance(transform.localPosition, _targetPosition - new Vector3(0, _yIncreaseOnHover, 0)) > 0.02f)
+                {
+                    transform.localPosition = Vector3.Lerp(transform.localPosition, _targetPosition - new Vector3(0,_yIncreaseOnHover,0), _zoomSpeed);
+                    transform.localScale = Vector3.Lerp(transform.localScale, Vector3.one, _zoomSpeed);
+                }
+                else
+                {
+                    _canBeDestroyed = true;
+                    _returnToHand = false;
+                    if (_originalCard != null)
+                    {
+                        _originalCard.SetActive(true);
+                        _originalCard.GetComponent<PrefabEvents>()._isBeingHovered = false;
+                        Destroy(gameObject);
+                    }
+                }
+            }
+        }
+    }
+
     private void LateUpdate()
     {
         if (!_isBeingHovered && _originalCard != null && _timer >= 0.02f)
         {
             _originalCard.SetActive(true);
+            _originalCard.GetComponent<PrefabEvents>()._isBeingHovered = false;
             Destroy(gameObject);
         }
         _timer += Time.deltaTime;
-
-        if (_beingHeld)
-        {
-            transform.position = Vector3.Lerp(transform.position, Input.mousePosition, _followSpeed);
-        }
     }
 
     private void OnMouseOver()
     {
+        CreateHoveredCard();
+        _isBeingHovered = true;
+        _timer = 0;
+        if (_originalCard != null)
+        {
+            transform.localScale = Vector3.Lerp(transform.localScale, _targetScale, _zoomSpeed);
+            if (!_beingHeld)
+            {
+                transform.localPosition = Vector3.Lerp(transform.localPosition, _targetPosition, _zoomSpeed);
+            }
+        }
+    }
+
+    private void OnMouseExit()
+    {
+        if (_isBeingHovered && _canBeDestroyed)
+        {
+            if (_originalCard != null)
+            {
+                _originalCard.SetActive(true);
+                _originalCard.GetComponent<PrefabEvents>()._isBeingHovered = false;
+                Destroy(gameObject);
+            }
+            _isBeingHovered = false;
+        }
+
+        _isBeingHovered = false;
+    }
+
+    private void CreateHoveredCard()
+    {
         try
         {
-            if (_canBeHovered)
+            if (_canBeHovered && _originalCard == null)
             {
                 _viewObject = Instantiate(gameObject, _relativeHand.transform);
 
@@ -73,6 +148,8 @@ public class PrefabEvents : MonoBehaviour
                 _viewObject.GetComponent<BoxCollider2D>().size = new Vector2(_viewObject.GetComponent<BoxCollider2D>().size.x / _hoverScale, _viewObject.GetComponent<BoxCollider2D>().size.y);
 
                 _viewObject.GetComponent<PrefabEvents>().OriginalCard = gameObject;
+
+                _viewObject.GetComponent<PrefabEvents>()._targetScale = new Vector3(_hoverScale, _hoverScale, 1);
 
                 gameObject.SetActive(false);
 
@@ -92,32 +169,5 @@ public class PrefabEvents : MonoBehaviour
             }
         }
         catch { }
-        _isBeingHovered = true;
-        _timer = 0;
-        if (_originalCard != null)
-        {
-            transform.localScale = Vector3.Lerp(transform.localScale, _targetScale, _zoomSpeed);
-            if (Input.GetMouseButtonDown(0))
-            {
-                _beingHeld = true;
-                Debug.Log("Held");
-            }
-            else
-            {
-                transform.localPosition = Vector3.Lerp(transform.localPosition, _targetPosition, _zoomSpeed);
-            }
-        }
-    }
-
-    private void OnMouseExit()
-    {
-        if (_isBeingHovered)
-        {
-            if (_originalCard != null)
-            {
-                _originalCard.SetActive(true);
-                Destroy(gameObject);
-            }
-        }
     }
 }
