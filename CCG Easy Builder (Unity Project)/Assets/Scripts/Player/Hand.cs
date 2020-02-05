@@ -24,9 +24,7 @@ public class Hand : MonoBehaviour
     private float _targetRot;
     [SerializeField]
     private float _maximumRot = 10;
-    [SerializeField]
     private float _cardSize;
-    [SerializeField]
     private float _lerpSpeed;
     #endregion
 
@@ -51,6 +49,8 @@ public class Hand : MonoBehaviour
     #endregion
 
     public List<Card> CurrentHand { get => _currentHand; set => _currentHand = value; }
+    public float PhysicalHandSizeX { get => _physicalHandSizeX; set => _physicalHandSizeX = value; }
+    public float PhysicalHandSizeY { get => _physicalHandSizeY; set => _physicalHandSizeY = value; }
 
     private int _counter = 0;
 
@@ -58,6 +58,13 @@ public class Hand : MonoBehaviour
     {
         Gizmos.color = Color.green;
         Gizmos.DrawWireCube(transform.position, new Vector3(_physicalHandSizeX, _physicalHandSizeY));
+    }
+
+    private void Awake()
+    {
+        _currentHand = GameManager.Instance.CurrentHand;
+        _cardSize = GameManager.Instance.CardSize;
+        _lerpSpeed = GameManager.Instance.LerpSpeed;
     }
 
     private void Start()
@@ -250,6 +257,12 @@ public class Hand : MonoBehaviour
         StopCoroutine("CardToHand");
     }
 
+    public void RemoveCardFromHand(Card card)
+    {
+        _currentHand.Remove(card);
+        UpdateHandPositionsForRemoval();
+    }
+
     private void UpdateHandPositions()
     {
         if(CurrentHand.Count <= 3)
@@ -325,6 +338,98 @@ public class Hand : MonoBehaviour
                     position += ((_targetPositionX * 2) / (_currentHand.Count - 1));
                     inMiddle = false;
                 }
+            }
+        }
+    }
+
+    private void UpdateHandPositionsForRemoval()
+    {
+        if (_currentHand.Count > 3)
+        {
+            _targetRot = _maximumRot;
+            _targetPositionX -= _cardSize;
+        }
+        else
+        {
+            _targetRot = 0;
+            if (_currentHand.Count != 0)
+            {
+                _targetPositionX -= _cardSize;
+            }
+            else
+            {
+                _targetPositionX = 0;
+            }
+        }
+
+        if (CurrentHand.Count <= 3)
+        {
+            float position = -_targetPositionX;
+            foreach (Card card in _currentHand)
+            {
+                card.CardGameObject.transform.position = new Vector3(position, transform.position.y, card.CardGameObject.transform.position.z);
+                card.CardGameObject.transform.eulerAngles = Vector3.zero;
+                position += ((_targetPositionX * 2) / (_currentHand.Count - 1));
+            }
+        }
+        else
+        {
+            float rotation = -_maximumRot;
+            float position = -_targetPositionX;
+            float height = _maxPositionY;
+            int maxDistFromMiddle = Mathf.RoundToInt(((float)_currentHand.Count / 2f + 0.1f)) - 1;
+            int distanceFromMiddle;
+            int[] middle;
+            bool inMiddle = false;
+            if (_currentHand.Count % 2 == 0)
+            {
+                middle = new int[2];
+                middle[0] = (_currentHand.Count / 2) - 1;
+                middle[1] = middle[0] + 1;
+            }
+            else
+            {
+                middle = new int[1];
+                middle[0] = (_currentHand.Count / 2);
+            }
+            foreach (Card card in _currentHand)
+            {
+                foreach (int index in middle)
+                {
+                    if (index == _currentHand.IndexOf(card))
+                    {
+                        inMiddle = true;
+                    }
+                }
+                if (inMiddle)
+                {
+                    height = _maxPositionY;
+                }
+                else
+                {
+                    distanceFromMiddle = 0;
+                    if (middle.Length > 1)
+                    {
+                        if (_currentHand.IndexOf(card) < middle[0])
+                        {
+                            distanceFromMiddle = Mathf.Abs(_currentHand.IndexOf(card) - middle[0]);
+                        }
+                        else
+                        {
+                            distanceFromMiddle = Mathf.Abs(_currentHand.IndexOf(card) - middle[1]);
+                        }
+                    }
+                    else
+                    {
+                        distanceFromMiddle = Mathf.Abs(_currentHand.IndexOf(card) - middle[0]);
+                    }
+                    height = (1 - ((float)distanceFromMiddle / (float)maxDistFromMiddle)) * _maxPositionY;
+                }
+                card.CardGameObject.transform.eulerAngles = new Vector3(card.CardGameObject.transform.rotation.x, card.CardGameObject.transform.rotation.y, -rotation);
+                card.CardGameObject.transform.position = new Vector3(position, transform.position.y + height, card.CardGameObject.transform.position.z);
+                rotation += ((_maximumRot * 2) / (_currentHand.Count - 1));
+                position += ((_targetPositionX * 2) / (_currentHand.Count - 1));
+                inMiddle = false;
             }
         }
     }

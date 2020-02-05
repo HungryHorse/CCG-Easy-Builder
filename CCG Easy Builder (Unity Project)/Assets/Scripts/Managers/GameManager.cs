@@ -1,6 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+using TMPro;
 
 public enum CardType
 {
@@ -9,15 +11,136 @@ public enum CardType
 
 public class GameManager : MonoBehaviour
 {
+    private static GameManager _instance;
+
+    public static GameManager Instance { get => _instance; set => _instance = value; }
+    public List<Card> CurrentHand { get => _currentHand; set => _currentHand = value; }
+    public float CardSize { get => _cardSize; set => _cardSize = value; }
+    public float LerpSpeed { get => _lerpSpeed; set => _lerpSpeed = value; }
+    public Vector2 StackPos { get => _stackPos; set => _stackPos = value; }
+
+    public GameObject creaturePrefab;
+
+    [SerializeField]
+    private List<Card> _stack = new List<Card>();
+    [SerializeField]
+    private List<Card> _currentHand;
+    [SerializeField]
+    private List<Card> __opponentHand;
+    [SerializeField]
+    private float _stackPositionX;
+    [SerializeField]
+    private float _stackPositionY;
+    private Vector2 _stackPos;
+    [SerializeField]
+    private float _cardSize;
+    [SerializeField]
+    private float _lerpSpeed;
+
+    private GameObject _cardObjectInStack;
+
+    void OnDrawGizmos()
+    {
+        Gizmos.color = Color.green;
+        Gizmos.DrawWireCube(new Vector3(_stackPositionX, _stackPositionY), new Vector3(_cardSize * 3, _cardSize * 4));
+    }
+
+    private void Awake()
+    {
+        if (_instance != null)
+        {
+            Destroy(_instance.gameObject);
+            _instance = this;
+        }
+        else
+        {
+            _instance = this;
+        }
+    }
+
     // Start is called before the first frame update
     void Start()
     {
-        
+        _stackPos = new Vector2(_stackPositionX, _stackPositionY);
     }
 
     // Update is called once per frame
     void Update()
     {
         
+    }
+
+    public void PlayCard(GameObject cardObject)
+    {
+        StartCoroutine(MoveTowardsStackPosition(cardObject));
+    }
+
+    private IEnumerator MoveTowardsStackPosition(GameObject cardObject)
+    {
+        Card cardInfo = cardObject.GetComponent<PrefabEvents>().ThisCard;
+        cardObject.GetComponent<PrefabEvents>().enabled = false;
+        for (; ; )
+        {
+            cardObject.transform.position = Vector3.Lerp(cardObject.transform.position, new Vector3(_stackPositionX, _stackPositionY, 0), _lerpSpeed);
+            cardObject.transform.localScale = Vector3.Lerp(cardObject.transform.localScale, new Vector3(cardObject.GetComponent<PrefabEvents>().HoverScale, cardObject.GetComponent<PrefabEvents>().HoverScale, 1), _lerpSpeed);
+            if (Vector3.Distance(cardObject.transform.position, new Vector3(_stackPositionX, _stackPositionY)) < 0.002f)
+            {
+                break;
+            }
+            yield return new WaitForSeconds(0.02f);
+        }
+        AddCardToStack(cardInfo);
+    }
+
+    public void AddCardToStack(Card card)
+    {
+        _stack.Add(card);
+
+        bool resolve = canReslove();
+
+        if (resolve)
+        {
+            ResolveTopCard();
+        }
+    }
+
+    public bool canReslove()
+    {
+        bool canResolve = true;
+
+        foreach (Card checkCard in __opponentHand)
+        {
+            if (checkCard.CardType == CardType.QuickSpell)
+            {
+                canResolve = false;
+            }
+        }
+
+        return canResolve;
+    }
+
+    public void ResolveTopCard()
+    {
+        Card card = _stack[_stack.Count - 1];
+        _stack.Remove(card);
+        Destroy(card.CardGameObject.GetComponent<PrefabEvents>().ViewObject);
+        Destroy(card.CardGameObject);
+
+        CardType cardType = card.CardType;
+
+        switch (cardType)
+        {
+            case CardType.Creature:
+                Board.Instance.CreateCreature(card);
+                break;
+            case CardType.SlowSpell:
+                break;
+            case CardType.QuickSpell:
+                break;
+            case CardType.Static:
+                break;
+            default:
+                break;
+        }
     }
 }
