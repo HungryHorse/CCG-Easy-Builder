@@ -43,11 +43,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2bbe01345f66ee84aaf6076ec61e6362, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  creaturePrefab: {fileID: 7447910100802827212, guid: 768b0d986ab7e694dae36e3016483c6e,
+    type: 3}
   _stack: []
   _currentHand: []
-  __opponentHand: []
-  stackPositionX: -5.72
-  stackPositionY: 0.3
+  _opponentHand: []
+  _stackPositionX: 6.11
+  _stackPositionY: 0.26
   _cardSize: 0.7
   _lerpSpeed: 0.1
 --- !u!1 &5883821137894420447
@@ -215,8 +217,6 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-    m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
-      Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_text: Draw Card
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -374,8 +374,6 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-    m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
-      Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_Sprite: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
   m_Type: 1
   m_PreserveAspect: 0
@@ -440,8 +438,6 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-    m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
-      Culture=neutral, PublicKeyToken=null
 --- !u!1 &5883821138829156992
 GameObject:
   m_ObjectHideFlags: 0
@@ -467,7 +463,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5883821138829156992}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 1.2586713, y: -0.7744405, z: -0.6230469}
+  m_LocalPosition: {x: -5.99, y: -2.87, z: -0.6230469}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 5883821137894420444}
@@ -498,6 +494,8 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 09ef1ce6a950de444af8675aac5b6414, type: 2}
   - {fileID: 11400000, guid: f43e9baa996a1dd448d5bc1c08f31710, type: 2}
   _playerHand: {fileID: 5883821138856876087}
+  _physicalDeckSizeX: 1.5
+  _physicalDeckSizeY: 2.1
 --- !u!1 &5883821138856876073
 GameObject:
   m_ObjectHideFlags: 0
@@ -544,6 +542,7 @@ MonoBehaviour:
   cardPrefab: {fileID: 1516072223511642555, guid: 6482738be2898af4d9a08904db2d027f,
     type: 3}
   handObject: {fileID: 5883821138856876073}
+  moveCard: {fileID: 7400000, guid: e8dda3e4bd2067845b019637776c37c5, type: 2}
   _canDrawCard: 1
   _maxPositionY: 0.25
   _maximumRot: 6
@@ -696,4 +695,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _physicalBoardSizeX: 9.4
   _physicalBoardSizeY: 3.66
+  _spacing: 0.05
   _playerBoard: []

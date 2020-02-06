@@ -17,6 +17,7 @@ public class PrefabEvents : MonoBehaviour
     private bool _returnToHand;
     private bool _canBeDestroyed;
     private bool _onStack = false;
+    private bool _isCreatureCard = false;
 
     [SerializeField]
     private float _yIncreaseOnHover;

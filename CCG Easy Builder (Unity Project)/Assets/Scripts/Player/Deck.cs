@@ -9,12 +9,25 @@ public class Deck : MonoBehaviour
     [SerializeField]
     private Hand _playerHand;
 
+    #region Representation of deck in game
+    [SerializeField]
+    private float _physicalDeckSizeX;
+    [SerializeField]
+    private float _physicalDeckSizeY;
+    #endregion
+
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = Color.green;
+        Gizmos.DrawWireCube(transform.position, new Vector3(_physicalDeckSizeX, _physicalDeckSizeY));
+    }
+
     public void AddCardToHand()
     {
         if (_currentDeck.Count > 0)
         {
             Card cardBeingDrawn = _currentDeck[0];
-            _playerHand.AddCardFromDeck(cardBeingDrawn);
+            _playerHand.AddCardFromDeck(cardBeingDrawn, gameObject.transform.position);
             _currentDeck.Remove(cardBeingDrawn);
         }
     }

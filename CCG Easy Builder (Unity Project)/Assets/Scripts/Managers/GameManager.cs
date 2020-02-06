@@ -26,7 +26,7 @@ public class GameManager : MonoBehaviour
     [SerializeField]
     private List<Card> _currentHand;
     [SerializeField]
-    private List<Card> __opponentHand;
+    private List<Card> _opponentHand;
     [SerializeField]
     private float _stackPositionX;
     [SerializeField]
@@ -108,7 +108,7 @@ public class GameManager : MonoBehaviour
     {
         bool canResolve = true;
 
-        foreach (Card checkCard in __opponentHand)
+        foreach (Card checkCard in _opponentHand)
         {
             if (checkCard.CardType == CardType.QuickSpell)
             {

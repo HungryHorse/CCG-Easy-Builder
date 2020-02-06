@@ -9,7 +9,11 @@ public class Hand : MonoBehaviour
     public GameObject cardPrefab;
     public GameObject handObject;
 
+    public AnimationClip moveCard;
+
     private Card _currCard;
+
+    private Vector3 _drawLocation;
 
     [SerializeField]
     private bool _canDrawCard = true;
@@ -62,14 +66,14 @@ public class Hand : MonoBehaviour
 
     private void Awake()
     {
-        _currentHand = GameManager.Instance.CurrentHand;
-        _cardSize = GameManager.Instance.CardSize;
-        _lerpSpeed = GameManager.Instance.LerpSpeed;
+        
     }
 
     private void Start()
     {
-        //DrawLatestCard();
+        _currentHand = GameManager.Instance.CurrentHand;
+        _cardSize = GameManager.Instance.CardSize;
+        _lerpSpeed = GameManager.Instance.LerpSpeed;
     }
 
     public void AddCardNumber()
@@ -89,8 +93,13 @@ public class Hand : MonoBehaviour
         //_currentHand[_currentHand.Count - 1].CardName = _orderInSortingLayer.ToString();
     }
 
-    public void AddCardFromDeck(Card cardBeingAdded)
+    public void AddCardFromDeck(Card cardBeingAdded, Vector3 cardSpawnPosition)
     {
+        if(_drawLocation != cardSpawnPosition)
+        {
+            _drawLocation = cardSpawnPosition;
+        }
+
         if (!_canDrawCard)
         {
             _bufferedCardDraw++;
@@ -117,7 +126,12 @@ public class Hand : MonoBehaviour
 
             Debug.Log(cardDrawn.CardName);
 
-            GameObject cardDrawnPrefab = Instantiate(cardPrefab, handObject.transform);
+            SetUpCustomAnim();
+
+            GameObject cardDrawnPrefab = Instantiate(cardPrefab, _drawLocation, Quaternion.identity, handObject.transform);
+
+            cardDrawnPrefab.GetComponent<Animation>().AddClip(moveCard, moveCard.name);
+            cardDrawnPrefab.GetComponent<Animation>().Play(moveCard.name);
 
             cardDrawnPrefab.GetComponent<PrefabEvents>().ThisCard = cardDrawn;
 
@@ -153,7 +167,12 @@ public class Hand : MonoBehaviour
 
         Debug.Log(cardDrawn.CardName);
 
-        GameObject cardDrawnPrefab = Instantiate(cardPrefab, handObject.transform);
+        SetUpCustomAnim();
+
+        GameObject cardDrawnPrefab = Instantiate(cardPrefab, _drawLocation, Quaternion.identity, handObject.transform);
+
+        cardDrawnPrefab.GetComponent<Animation>().AddClip(moveCard, moveCard.name);
+        cardDrawnPrefab.GetComponent<Animation>().Play(moveCard.name);
 
         cardDrawnPrefab.GetComponent<PrefabEvents>().ThisCard = cardDrawn;
 
@@ -432,5 +451,38 @@ public class Hand : MonoBehaviour
                 inMiddle = false;
             }
         }
+    }
+
+    private void SetUpCustomAnim()
+    {
+        AnimationCurve curve;
+
+        moveCard.legacy = true;
+
+        float startXPos = _drawLocation.x - transform.position.x;
+        float startYPos = _drawLocation.y - transform.position.y;
+        float startZPos = _drawLocation.z - transform.position.z;
+
+        float endYPos = 2.72f;
+        float endZPos = -4f;
+
+        Keyframe[] keys;
+        keys = new Keyframe[2];
+        keys[0] = new Keyframe(0.0f, startXPos);
+        keys[1] = new Keyframe(1.0f, 0.0f);
+        curve = new AnimationCurve(keys);
+        moveCard.SetCurve("", typeof(Transform), "localPosition.x", curve);
+
+        keys = new Keyframe[2];
+        keys[0] = new Keyframe(0.0f, startYPos);
+        keys[1] = new Keyframe(1.0f, endYPos);
+        curve = new AnimationCurve(keys);
+        moveCard.SetCurve("", typeof(Transform), "localPosition.y", curve);
+
+        keys = new Keyframe[2];
+        keys[0] = new Keyframe(0.0f, startZPos);
+        keys[1] = new Keyframe(1.0f, endZPos);
+        curve = new AnimationCurve(keys);
+        moveCard.SetCurve("", typeof(Transform), "localPosition.z", curve);
     }
 }
