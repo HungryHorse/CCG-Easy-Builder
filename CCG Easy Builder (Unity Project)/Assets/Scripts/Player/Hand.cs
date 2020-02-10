@@ -204,7 +204,7 @@ public class Hand : MonoBehaviour
         if (_currentHand.Count > 3)
         {
             _targetRot = _maximumRot;
-            if (_physicalHandSizeX/2 >= _targetPositionX + (_cardSize * 2))
+            if (_physicalHandSizeX/2 >= _targetPositionX + _cardSize)
             {
                 _targetPositionX += _cardSize;
             }
@@ -366,7 +366,10 @@ public class Hand : MonoBehaviour
         if (_currentHand.Count > 3)
         {
             _targetRot = _maximumRot;
-            _targetPositionX -= _cardSize;
+            if (_physicalHandSizeX / 2 >= _cardSize * _currentHand.Count)
+            {
+                _targetPositionX -= _cardSize;
+            }
         }
         else
         {
