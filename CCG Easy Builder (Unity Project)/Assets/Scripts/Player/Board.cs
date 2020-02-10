@@ -1,0 +1,120 @@
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
+using TMPro;
+
+public class Board : MonoBehaviour
+{
+    private static Board _instance;
+
+    #region Representation of board in game
+    [SerializeField]
+    private float _physicalBoardSizeX;
+    [SerializeField]
+    private float _physicalBoardSizeY;
+    [SerializeField]
+    private float _spacing;
+    #endregion
+
+    #region Boards
+    [SerializeField]
+    private List<Card> _playerBoard = new List<Card>();
+    private List<Card> _opponentBoard = new List<Card>();
+    #endregion
+
+    private float _targetPositionX = 0;
+    private float _cardSize;
+    private float _lerpSpeed;
+    private float _playerBoardMiddle;
+
+    public static Board Instance { get => _instance; set => _instance = value; }
+
+    private void Awake()
+    {
+        if (_instance != null)
+        {
+            Destroy(_instance.gameObject);
+            _instance = this;
+        }
+        else
+        {
+            _instance = this;
+        }
+    }
+    
+    // Start is called before the first frame update
+    void Start()
+    {
+        _cardSize = GameManager.Instance.CardSize;
+        _lerpSpeed = GameManager.Instance.LerpSpeed;
+        _playerBoardMiddle = transform.position.y - (_physicalBoardSizeY / 4);
+    }
+
+    void OnDrawGizmos()
+    {
+        Gizmos.color = Color.green;
+        Gizmos.DrawWireCube(transform.position, new Vector3(_physicalBoardSizeX, _physicalBoardSizeY));
+        Gizmos.color = Color.black;
+        Gizmos.DrawLine(new Vector3(transform.position.x -_physicalBoardSizeX/2, transform.position.y, 0), new Vector3(transform.position.x + _physicalBoardSizeX / 2, transform.position.y, 0));
+    }
+
+    public void CreateCreature(Card card)
+    {
+        _playerBoard.Add(card);
+
+        GameObject cardDrawnPrefab = Instantiate(GameManager.Instance.creaturePrefab, GameManager.Instance.StackPos, Quaternion.identity, gameObject.transform);
+        
+        cardDrawnPrefab.GetComponent<PrefabEvents>().ThisCard = card;
+        card.CardGameObject = cardDrawnPrefab;
+
+        Transform cardFront = cardDrawnPrefab.transform.GetChild(0).transform.GetChild(0);
+
+        cardFront.GetChild(0).Find("Character").GetComponent<Image>().sprite = card.CardImage;
+
+        cardFront.Find("CardAttack").GetComponent<TextMeshProUGUI>().text = card.Attack.ToString();
+        cardFront.Find("CardHealth").GetComponent<TextMeshProUGUI>().text = card.Health.ToString();
+
+        if (_playerBoard.Count > 1)
+        {
+            _targetPositionX += (_cardSize + _spacing);
+        }
+
+        GameObject cardgo = card.CardGameObject;
+
+        StartCoroutine(CreatureToBoard(cardgo));
+    }
+
+    public IEnumerator CreatureToBoard(GameObject cardgo)
+    {
+        UpdatePlayerBoardState();
+        for (; ; )
+        {
+            cardgo.transform.position = Vector3.Lerp(cardgo.transform.position, new Vector3(_targetPositionX, _playerBoardMiddle, 0), _lerpSpeed);
+            if (Mathf.Abs(_targetPositionX - cardgo.transform.position.x) < 0.002f)
+            {
+                break;
+            }
+            yield return new WaitForSeconds(0.02f);
+        }
+    }
+
+    private void UpdatePlayerBoardState()
+    {
+        float position = -_targetPositionX;
+        foreach (Card card in _playerBoard)
+        {
+            if (card != _playerBoard[_playerBoard.Count - 1])
+            {
+                card.CardGameObject.transform.position = new Vector3(position, card.CardGameObject.transform.position.y, card.CardGameObject.transform.position.z);
+                position += ((_targetPositionX * 2) / (_playerBoard.Count - 1));
+            }
+        }
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        
+    }
+}
