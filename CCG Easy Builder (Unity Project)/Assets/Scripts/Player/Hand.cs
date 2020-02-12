@@ -264,6 +264,7 @@ public class Hand : MonoBehaviour
             yield return new WaitForSeconds(0.02f);
         }
         cardgo.GetComponent<PrefabEvents>().CanBeHovered = true;
+        cardgo.GetComponent<PrefabEvents>().HasBeenToHand = true;
         _canDrawCard = true;
         if(_bufferedCardDraw > 0)
         {
@@ -289,6 +290,12 @@ public class Hand : MonoBehaviour
             float position = -_targetPositionX;
             foreach (Card card in _currentHand)
             {
+                if (!card.CardGameObject.activeInHierarchy)
+                {
+                    card.CardGameObject.SetActive(true);
+                    card.CardGameObject.GetComponent<PrefabEvents>().IsBeingHovered = false;
+                    Destroy(card.CardGameObject.GetComponent<PrefabEvents>().ViewObject);
+                }
                 if (card != _currentHand[_currentHand.Count - 1])
                 {
                     card.CardGameObject.transform.position = new Vector3(position, card.CardGameObject.transform.position.y, card.CardGameObject.transform.position.z);
@@ -356,6 +363,13 @@ public class Hand : MonoBehaviour
                     rotation += ((_maximumRot * 2) / (_currentHand.Count - 1));
                     position += ((_targetPositionX * 2) / (_currentHand.Count - 1));
                     inMiddle = false;
+                }
+
+                if (!card.CardGameObject.activeInHierarchy)
+                {
+                    card.CardGameObject.SetActive(true);
+                    card.CardGameObject.GetComponent<PrefabEvents>().IsBeingHovered = false;
+                    Destroy(card.CardGameObject.GetComponent<PrefabEvents>().ViewObject);
                 }
             }
         }
@@ -472,19 +486,19 @@ public class Hand : MonoBehaviour
         Keyframe[] keys;
         keys = new Keyframe[2];
         keys[0] = new Keyframe(0.0f, startXPos);
-        keys[1] = new Keyframe(1.0f, 0.0f);
+        keys[1] = new Keyframe(0.75f, 0.0f);
         curve = new AnimationCurve(keys);
         moveCard.SetCurve("", typeof(Transform), "localPosition.x", curve);
 
         keys = new Keyframe[2];
         keys[0] = new Keyframe(0.0f, startYPos);
-        keys[1] = new Keyframe(1.0f, endYPos);
+        keys[1] = new Keyframe(0.75f, endYPos);
         curve = new AnimationCurve(keys);
         moveCard.SetCurve("", typeof(Transform), "localPosition.y", curve);
 
         keys = new Keyframe[2];
         keys[0] = new Keyframe(0.0f, startZPos);
-        keys[1] = new Keyframe(1.0f, endZPos);
+        keys[1] = new Keyframe(0.75f, endZPos);
         curve = new AnimationCurve(keys);
         moveCard.SetCurve("", typeof(Transform), "localPosition.z", curve);
     }

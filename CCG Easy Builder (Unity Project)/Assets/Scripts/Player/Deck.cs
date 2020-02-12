@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class Deck : MonoBehaviour
 {
+    private static Deck _instance;
     [SerializeField]
     private List<Card> _currentDeck;
     [SerializeField]
@@ -16,10 +17,25 @@ public class Deck : MonoBehaviour
     private float _physicalDeckSizeY;
     #endregion
 
+    public static Deck Instance { get => _instance; set => _instance = value; }
+
     private void OnDrawGizmos()
     {
         Gizmos.color = Color.green;
         Gizmos.DrawWireCube(transform.position, new Vector3(_physicalDeckSizeX, _physicalDeckSizeY));
+    }
+
+    private void Awake()
+    {
+        if (_instance != null)
+        {
+            Destroy(_instance.gameObject);
+            _instance = this;
+        }
+        else
+        {
+            _instance = this;
+        }
     }
 
     public void AddCardToHand()

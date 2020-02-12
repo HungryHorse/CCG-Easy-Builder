@@ -18,6 +18,7 @@ public class PrefabEvents : MonoBehaviour
     private bool _canBeDestroyed;
     private bool _onStack = false;
     private bool _isCreatureCard = false;
+    private bool _hasBeenToHand = false;
 
     [SerializeField]
     private float _yIncreaseOnHover;
@@ -37,6 +38,8 @@ public class PrefabEvents : MonoBehaviour
     public bool CanBeHovered { get => _canBeHovered; set => _canBeHovered = value; }
     public float HoverScale { get => _hoverScale; set => _hoverScale = value; }
     public GameObject ViewObject { get => _viewObject; set => _viewObject = value; }
+    public bool IsBeingHovered { get => _isBeingHovered; set => _isBeingHovered = value; }
+    public bool HasBeenToHand { get => _hasBeenToHand; set => _hasBeenToHand = value; }
 
     private void Start()
     {
@@ -56,6 +59,11 @@ public class PrefabEvents : MonoBehaviour
         if (!_onStack)
         {
             Vector3 zLockedMousePos = new Vector3(Camera.main.ScreenToWorldPoint(Input.mousePosition).x, Camera.main.ScreenToWorldPoint(Input.mousePosition).y, transform.position.z);
+
+            if (!_isBeingHovered && gameObject.transform.localScale.x != 1 && _hasBeenToHand)
+            {
+                gameObject.transform.localScale = new Vector3(1,1,1);
+            }
 
             if (_isBeingHovered && Input.GetMouseButton(0) && _originalCard != null)
             {
@@ -159,7 +167,7 @@ public class PrefabEvents : MonoBehaviour
 
     private void OnMouseOver()
     {
-        if (!_onStack)
+        if (!_onStack && GameManager.Instance.Stack.Count < 1)
         {
             CreateHoveredCard();
             _isBeingHovered = true;

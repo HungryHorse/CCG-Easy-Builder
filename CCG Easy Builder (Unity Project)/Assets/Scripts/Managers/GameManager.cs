@@ -9,6 +9,11 @@ public enum CardType
     Creature, QuickSpell, SlowSpell, Static
 }
 
+public enum Phase
+{
+    StartOfTurn, Draw, MainOne, Combat, MainTwo, GenericMain, EndOfTurn
+}
+
 public class GameManager : MonoBehaviour
 {
     private static GameManager _instance;
@@ -18,9 +23,14 @@ public class GameManager : MonoBehaviour
     public float CardSize { get => _cardSize; set => _cardSize = value; }
     public float LerpSpeed { get => _lerpSpeed; set => _lerpSpeed = value; }
     public Vector2 StackPos { get => _stackPos; set => _stackPos = value; }
+    public List<Card> Stack { get => _stack; set => _stack = value; }
+    public bool StackEnabled { get => _stackEnabled; set => _stackEnabled = value; }
+    public Phase CurrPhase { get => _currPhase; set => _currPhase = value; }
 
     public GameObject creaturePrefab;
 
+    [SerializeField]
+    private bool _stackEnabled = true;
     [SerializeField]
     private List<Card> _stack = new List<Card>();
     [SerializeField]
@@ -36,6 +46,12 @@ public class GameManager : MonoBehaviour
     private float _cardSize;
     [SerializeField]
     private float _lerpSpeed;
+    [SerializeField]
+    private bool _seperateCombatPhase;
+
+    private Phase[] _phaseList;
+    private Phase _currPhase;
+    private int _currPhaseIndex = 0;
 
     private GameObject _cardObjectInStack;
 
@@ -62,6 +78,41 @@ public class GameManager : MonoBehaviour
     void Start()
     {
         _stackPos = new Vector2(_stackPositionX, _stackPositionY);
+        if (_seperateCombatPhase)
+        {
+            _phaseList = new Phase[] { Phase.StartOfTurn, Phase.Draw, Phase.MainOne, Phase.Combat, Phase.MainTwo, Phase.EndOfTurn };
+        }
+        else
+        {
+            _phaseList = new Phase[] { Phase.StartOfTurn, Phase.Draw, Phase.GenericMain, Phase.EndOfTurn };
+        }
+
+        _currPhase = _phaseList[_currPhaseIndex];
+        StartPhase();
+    }
+
+    public void ProgressPhases()
+    {
+        if(_currPhaseIndex + 1 == _phaseList.Length)
+        {
+            _currPhaseIndex = 0;
+        }
+        else
+        {
+            _currPhaseIndex++;
+        }
+        _currPhase = _phaseList[_currPhaseIndex];
+        StartPhase();
+    }
+
+    private void StartPhase()
+    {
+        switch (_currPhase)
+        {
+            case Phase.Draw:
+                Deck.Instance.AddCardToHand();
+                break;
+        }
     }
 
     // Update is called once per frame
@@ -72,7 +123,14 @@ public class GameManager : MonoBehaviour
 
     public void PlayCard(GameObject cardObject)
     {
-        StartCoroutine(MoveTowardsStackPosition(cardObject));
+        if (_stackEnabled)
+        {
+            StartCoroutine(MoveTowardsStackPosition(cardObject));
+        }
+        else
+        {
+            Resolve(cardObject.GetComponent<PrefabEvents>().ThisCard);
+        }
     }
 
     private IEnumerator MoveTowardsStackPosition(GameObject cardObject)
@@ -132,6 +190,30 @@ public class GameManager : MonoBehaviour
         {
             case CardType.Creature:
                 Board.Instance.CreateCreature(card);
+                break;
+            case CardType.SlowSpell:
+                break;
+            case CardType.QuickSpell:
+                break;
+            case CardType.Static:
+                break;
+            default:
+                break;
+        }
+    }
+
+    public void Resolve(Card card)
+    {
+        Vector2 cardPosition = card.CardGameObject.transform.position;
+        Destroy(card.CardGameObject.GetComponent<PrefabEvents>().ViewObject);
+        Destroy(card.CardGameObject);
+
+        CardType cardType = card.CardType;
+
+        switch (cardType)
+        {
+            case CardType.Creature:
+                Board.Instance.CreateCreatureFormatted(card);
                 break;
             case CardType.SlowSpell:
                 break;

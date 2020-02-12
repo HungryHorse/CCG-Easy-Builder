@@ -85,6 +85,73 @@ public class Board : MonoBehaviour
         StartCoroutine(CreatureToBoard(cardgo));
     }
 
+    public void CreateCreatureFormatted(Card card)
+    {
+        Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        Vector3 position = new Vector3(mousePos.x, mousePos.y, 0);
+        int index = CalcualteHoverIndex(position);
+        if (index != -1)
+        {
+            _playerBoard.Insert(index, card);
+        }
+        else
+        {
+            if (_playerBoard.Count > 0)
+            {
+                _playerBoard.Insert(0, card);
+            }
+            else
+            {
+                _playerBoard.Add(card);
+            }
+        }
+
+        GameObject cardDrawnPrefab = Instantiate(GameManager.Instance.creaturePrefab, position, Quaternion.identity, gameObject.transform);
+
+        cardDrawnPrefab.GetComponent<PrefabEvents>().ThisCard = card;
+        card.CardGameObject = cardDrawnPrefab;
+        cardDrawnPrefab.transform.position = new Vector3(0,_playerBoardMiddle,0);
+
+        Transform cardFront = cardDrawnPrefab.transform.GetChild(0).transform.GetChild(0);
+
+        cardFront.GetChild(0).Find("Character").GetComponent<Image>().sprite = card.CardImage;
+
+        cardFront.Find("CardAttack").GetComponent<TextMeshProUGUI>().text = card.Attack.ToString();
+        cardFront.Find("CardHealth").GetComponent<TextMeshProUGUI>().text = card.Health.ToString();
+
+        if (_playerBoard.Count > 1)
+        {
+            _targetPositionX += (_cardSize + _spacing);
+        }
+
+        UpdatePlayerBoardState();
+
+        GameObject cardgo = card.CardGameObject;
+    }
+
+    public int CalcualteHoverIndex(Vector3 newCardPos)
+    {
+        int index = -1;
+
+        if(_playerBoard.Count >= 1)
+        {
+            index = 0;
+            foreach(Card card in _playerBoard)
+            {
+                if(newCardPos.x > card.CardGameObject.transform.position.x)
+                {
+                    index++;
+                }
+                else
+                {
+                    return index;
+                }
+            }
+        }
+
+        return index;
+    }
+
     public IEnumerator CreatureToBoard(GameObject cardgo)
     {
         UpdatePlayerBoardState();
@@ -108,6 +175,10 @@ public class Board : MonoBehaviour
             {
                 card.CardGameObject.transform.position = new Vector3(position, card.CardGameObject.transform.position.y, card.CardGameObject.transform.position.z);
                 position += ((_targetPositionX * 2) / (_playerBoard.Count - 1));
+            }
+            else if (!GameManager.Instance.StackEnabled)
+            {
+                card.CardGameObject.transform.position = new Vector3(_targetPositionX, _playerBoardMiddle, 0);
             }
         }
     }
