@@ -20,6 +20,8 @@ public class Card : ScriptableObject
     private CardType _cardType;
     [SerializeField, Header("Card Visuals")]
     private Sprite _cardImage;
+    [SerializeField]
+    private bool _canTarget;
 
     private GameObject _cardGameObject;
 
@@ -31,6 +33,7 @@ public class Card : ScriptableObject
     public int Cost { get => _cost; set => _cost = value; }
     public Sprite CardImage { get => _cardImage; set => _cardImage = value; }
     public GameObject CardGameObject { get => _cardGameObject; set => _cardGameObject = value; }
+    public bool CanTarget { get => _canTarget; set => _canTarget = value; }
 
     //public Card(string cardName)
     //{

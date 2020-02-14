@@ -4,6 +4,15 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
+[System.Serializable]
+public struct CardFrames
+{
+    public Sprite creatureFrame;
+    public Sprite spellFrame;
+    public Sprite staticFrame;
+    //public Sprite <- Add more card frames here 
+}
+
 public class Hand : MonoBehaviour
 {
     public GameObject cardPrefab;
@@ -38,6 +47,9 @@ public class Hand : MonoBehaviour
     [SerializeField]
     private float _physicalHandSizeY;
     #endregion
+
+    [SerializeField]
+    private CardFrames _frames;
 
     private int _orderInSortingLayer = 0;
 
@@ -143,12 +155,31 @@ public class Hand : MonoBehaviour
 
             _orderInSortingLayer++;
 
+            Image frameRenderer = cardFront.Find("Frame").GetComponent<Image>();
+
+            switch (cardDrawn.CardType)
+            {
+                case CardType.Creature:
+                    frameRenderer.sprite = _frames.creatureFrame;
+
+                    cardFront.Find("CardAttack").GetComponent<TextMeshProUGUI>().text = cardDrawn.Attack.ToString();
+                    cardFront.Find("CardHealth").GetComponent<TextMeshProUGUI>().text = cardDrawn.Health.ToString();
+                    break;
+                case CardType.SlowSpell:
+                    frameRenderer.sprite = _frames.spellFrame;
+                    break;
+                case CardType.QuickSpell:
+                    frameRenderer.sprite = _frames.spellFrame;
+                    break;
+                case CardType.Static:
+                    frameRenderer.sprite = _frames.staticFrame;
+                    break;
+            }
+
             cardFront.GetChild(0).Find("Character").GetComponent<Image>().sprite = cardDrawn.CardImage;
 
             cardFront.Find("CardName").GetComponent<TextMeshProUGUI>().text = cardDrawn.CardName;
             cardFront.Find("CardDescription").GetComponent<TextMeshProUGUI>().text = cardDrawn.Description;
-            cardFront.Find("CardAttack").GetComponent<TextMeshProUGUI>().text = cardDrawn.Attack.ToString();
-            cardFront.Find("CardHealth").GetComponent<TextMeshProUGUI>().text = cardDrawn.Health.ToString();
             cardFront.Find("CardCost").GetComponent<TextMeshProUGUI>().text = cardDrawn.Cost.ToString();
 
             cardDrawnPrefab.GetComponent<PrefabEvents>().RelativeHand = this;
@@ -183,6 +214,25 @@ public class Hand : MonoBehaviour
         cardBack.GetComponent<Canvas>().sortingOrder = _orderInSortingLayer;
 
         _orderInSortingLayer++;
+
+        Image frameRenderer = cardFront.Find("Frame").GetComponent<Image>();
+
+        switch (cardDrawn.CardType)
+        {
+            case CardType.Creature:
+                frameRenderer.sprite = _frames.creatureFrame;
+                break;
+            case CardType.SlowSpell:
+                frameRenderer.sprite = _frames.spellFrame;
+                break;
+            case CardType.QuickSpell:
+                frameRenderer.sprite = _frames.spellFrame;
+                break;
+            case CardType.Static:
+                frameRenderer.sprite = _frames.staticFrame;
+                break;
+        }
+
 
         cardFront.GetChild(0).Find("Character").GetComponent<Image>().sprite = cardDrawn.CardImage;
 

@@ -30,7 +30,10 @@ public class PrefabEvents : MonoBehaviour
     private float _followSpeed;
 
     private Vector3 _targetScale; 
-    private Vector3 _targetPosition; 
+    private Vector3 _targetRot; 
+    private Vector3 _targetPosition;
+
+    private Vector3[] linePoints;
 
     public Hand RelativeHand { get => _relativeHand; set => _relativeHand = value; }
     public Card ThisCard { get => _thisCard; set => _thisCard = value; }
@@ -97,10 +100,39 @@ public class PrefabEvents : MonoBehaviour
                 {
                     _outsideHand = true;
                 }
+                else
+                {
+                    _outsideHand = false;
+                }
 
-                if (_outsideHand && _originalCard != null)
+                if (_outsideHand && _originalCard != null && _thisCard.CanTarget && (_thisCard.CardType != CardType.QuickSpell || _thisCard.CardType != CardType.SlowSpell))
+                {
+                    Transform[] childObjects = gameObject.GetComponentsInChildren<Transform>();
+                    foreach (Transform childObject in childObjects)
+                    {
+                        if (childObject.transform.parent == transform)
+                        {
+                            childObject.gameObject.SetActive(false);
+                        }
+                    }
+                    linePoints = new Vector3[2]{ GameManager.Instance.PlayerObject.transform.position,  Camera.main.ScreenToWorldPoint(Input.mousePosition) };
+                    GameManager.Instance.TargetLine.SetPositions(linePoints);
+                }
+                else if(_outsideHand && _originalCard != null)
                 {
                     transform.localScale = _originalCard.transform.localScale;
+                }
+
+                if (!_outsideHand &&  _originalCard != null && _thisCard.CanTarget && !transform.GetChild(0).gameObject.activeInHierarchy)
+                {
+                    int childCount = transform.childCount;
+                    for(int i = 0; i < childCount; i++)
+                    {
+                        GameObject childObject = transform.GetChild(i).gameObject; 
+                        childObject.SetActive(true);
+                    }
+                    linePoints = new Vector3[2] { Vector3.zero, Vector3.zero };
+                    GameManager.Instance.TargetLine.SetPositions(linePoints);
                 }
             }
             else
@@ -178,6 +210,10 @@ public class PrefabEvents : MonoBehaviour
                 if (!_beingHeld)
                 {
                     transform.localPosition = Vector3.Lerp(transform.localPosition, _targetPosition, _zoomSpeed);
+                    if (transform.localScale.magnitude > 0.05f)
+                    {
+                        transform.localEulerAngles = _targetRot;
+                    }
                 }
             }
         }
@@ -210,9 +246,7 @@ public class PrefabEvents : MonoBehaviour
             {
                 _viewObject = Instantiate(gameObject, _relativeHand.transform);
 
-                _viewObject.transform.eulerAngles = new Vector3(0, 0, 0);
-
-                _viewObject.GetComponent<BoxCollider2D>().size = new Vector2(_viewObject.GetComponent<BoxCollider2D>().size.x / _hoverScale, _viewObject.GetComponent<BoxCollider2D>().size.y);
+                _viewObject.GetComponent<BoxCollider2D>().size = new Vector2(_viewObject.GetComponent<BoxCollider2D>().size.x / _hoverScale + 0.05f, _viewObject.GetComponent<BoxCollider2D>().size.y);
 
                 _viewObject.GetComponent<PrefabEvents>().OriginalCard = gameObject;
 
@@ -222,6 +256,8 @@ public class PrefabEvents : MonoBehaviour
 
                 _viewObject.GetComponent<PrefabEvents>()._targetScale = new Vector3(_hoverScale, _hoverScale, 1);
 
+                _viewObject.GetComponent<PrefabEvents>()._targetRot = new Vector3(0, 0, 0);
+
                 gameObject.SetActive(false);
 
                 Transform cardFront = _viewObject.transform.GetChild(0).transform.GetChild(0);
@@ -230,12 +266,25 @@ public class PrefabEvents : MonoBehaviour
                 cardFront.GetComponent<Canvas>().sortingOrder = 0;
                 cardBack.GetComponent<Canvas>().sortingOrder = 0;
 
+                //Type specific hover effects
+                switch (_thisCard.CardType)
+                {
+                    case CardType.Creature:
+                        cardFront.Find("CardAttack").GetComponent<TextMeshProUGUI>().text = _thisCard.Attack.ToString();
+                        cardFront.Find("CardHealth").GetComponent<TextMeshProUGUI>().text = _thisCard.Health.ToString();
+                        break;
+                    case CardType.SlowSpell:
+                        break;
+                    case CardType.QuickSpell:
+                        break;
+                    case CardType.Static:
+                        break;
+                }
+
                 cardFront.GetChild(0).Find("Character").GetComponent<Image>().sprite = _thisCard.CardImage;
 
                 cardFront.Find("CardName").GetComponent<TextMeshProUGUI>().text = _thisCard.CardName;
                 cardFront.Find("CardDescription").GetComponent<TextMeshProUGUI>().text = _thisCard.Description;
-                cardFront.Find("CardAttack").GetComponent<TextMeshProUGUI>().text = _thisCard.Attack.ToString();
-                cardFront.Find("CardHealth").GetComponent<TextMeshProUGUI>().text = _thisCard.Health.ToString();
                 cardFront.Find("CardCost").GetComponent<TextMeshProUGUI>().text = _thisCard.Cost.ToString();
             }
         }

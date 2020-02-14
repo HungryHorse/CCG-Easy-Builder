@@ -26,6 +26,8 @@ public class GameManager : MonoBehaviour
     public List<Card> Stack { get => _stack; set => _stack = value; }
     public bool StackEnabled { get => _stackEnabled; set => _stackEnabled = value; }
     public Phase CurrPhase { get => _currPhase; set => _currPhase = value; }
+    public GameObject PlayerObject { get => _playerObject; set => _playerObject = value; }
+    public LineRenderer TargetLine { get => _targetLine; set => _targetLine = value; }
 
     public GameObject creaturePrefab;
 
@@ -48,6 +50,11 @@ public class GameManager : MonoBehaviour
     private float _lerpSpeed;
     [SerializeField]
     private bool _seperateCombatPhase;
+
+    [SerializeField]
+    private GameObject _playerObject;
+    [SerializeField]
+    private LineRenderer _targetLine;
 
     private Phase[] _phaseList;
     private Phase _currPhase;
