@@ -7,6 +7,7 @@ using TMPro;
 public class PrefabEvents : MonoBehaviour
 {
     private Hand _relativeHand;
+    [SerializeField]
     private Card _thisCard;
     private GameObject _viewObject;
     private bool _isBeingHovered = false;
@@ -105,7 +106,7 @@ public class PrefabEvents : MonoBehaviour
                     _outsideHand = false;
                 }
 
-                if (_outsideHand && _originalCard != null && _thisCard.CanTarget && (_thisCard.CardType != CardType.QuickSpell || _thisCard.CardType != CardType.SlowSpell))
+                if (_outsideHand && _originalCard != null && _thisCard.CanTarget && (_thisCard.CardType != CardType.QuickSpell || _thisCard.CardType != CardType.SlowSpell) && !GameManager.Instance.StackEnabled)
                 {
                     Transform[] childObjects = gameObject.GetComponentsInChildren<Transform>();
                     foreach (Transform childObject in childObjects)
@@ -123,7 +124,7 @@ public class PrefabEvents : MonoBehaviour
                     transform.localScale = _originalCard.transform.localScale;
                 }
 
-                if (!_outsideHand &&  _originalCard != null && _thisCard.CanTarget && !transform.GetChild(0).gameObject.activeInHierarchy)
+                if (!_outsideHand &&  _originalCard != null && _thisCard.CanTarget && !GameManager.Instance.StackEnabled && !transform.GetChild(0).gameObject.activeInHierarchy)
                 {
                     int childCount = transform.childCount;
                     for(int i = 0; i < childCount; i++)
@@ -158,30 +159,70 @@ public class PrefabEvents : MonoBehaviour
 
                     if (_outsideHand)
                     {
-                        RelativeHand.RemoveCardFromHand(_thisCard);
-                        GameManager.Instance.PlayCard(gameObject);
-                    }
-                    else if (_returnToHand)
-                    {
-                        GetComponent<BoxCollider2D>().size = new Vector2(1.4f, 2f);
-                        if (Vector3.Distance(transform.localPosition, _targetPosition - new Vector3(0, _yIncreaseOnHover, 0)) > 0.02f)
+                        if (_thisCard.CanTarget && !GameManager.Instance.StackEnabled)
                         {
-                            transform.localPosition = Vector3.Lerp(transform.localPosition, _targetPosition - new Vector3(0, _yIncreaseOnHover, 0), _zoomSpeed);
-                            transform.localScale = Vector3.Lerp(transform.localScale, Vector3.one, _zoomSpeed);
+                            Card targetCard = GameManager.Instance.ReturnTargetFromBoard(transform.position);
+                            if (targetCard != null)
+                            {
+                                _thisCard.Targets.Add(targetCard);
+                                RelativeHand.RemoveCardFromHand(_thisCard);
+                                GameManager.Instance.PlayCard(gameObject);
+                                linePoints = new Vector3[2] { Vector3.zero, Vector3.zero };
+                                GameManager.Instance.TargetLine.SetPositions(linePoints);
+                            }
+                            else
+                            {
+                                MoveBack();
+                            }
                         }
                         else
                         {
-                            _canBeDestroyed = true;
-                            _returnToHand = false;
-                            if (_originalCard != null)
-                            {
-                                _originalCard.SetActive(true);
-                                _originalCard.GetComponent<PrefabEvents>()._isBeingHovered = false;
-                                Destroy(gameObject);
-                            }
+                            RelativeHand.RemoveCardFromHand(_thisCard);
+                            GameManager.Instance.PlayCard(gameObject);
                         }
                     }
+                    else if (_returnToHand)
+                    {
+                        MoveBack();
+                    }
                 }
+            }
+        }
+    }
+
+    private void MoveBack()
+    {
+        if (GetComponent<BoxCollider2D>().size.x != 1.4f)
+        {
+            GetComponent<BoxCollider2D>().size = new Vector2(1.4f, 2f);
+        }
+
+        if (_thisCard.CanTarget && !transform.GetChild(0).gameObject.activeInHierarchy)
+        {
+            int childCount = transform.childCount;
+            for (int i = 0; i < childCount; i++)
+            {
+                GameObject childObject = transform.GetChild(i).gameObject;
+                childObject.SetActive(true);
+            }
+            linePoints = new Vector3[2] { Vector3.zero, Vector3.zero };
+            GameManager.Instance.TargetLine.SetPositions(linePoints);
+        }
+
+        if (Vector3.Distance(transform.localPosition, _targetPosition - new Vector3(0, _yIncreaseOnHover, 0)) > 0.02f)
+        {
+            transform.localPosition = Vector3.Lerp(transform.localPosition, _targetPosition - new Vector3(0, _yIncreaseOnHover, 0), _zoomSpeed);
+            transform.localScale = Vector3.Lerp(transform.localScale, Vector3.one, _zoomSpeed);
+        }
+        else
+        {
+            _canBeDestroyed = true;
+            _returnToHand = false;
+            if (_originalCard != null)
+            {
+                _originalCard.SetActive(true);
+                _originalCard.GetComponent<PrefabEvents>()._isBeingHovered = false;
+                Destroy(gameObject);
             }
         }
     }

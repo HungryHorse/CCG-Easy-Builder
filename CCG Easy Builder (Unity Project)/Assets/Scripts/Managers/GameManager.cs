@@ -28,6 +28,8 @@ public class GameManager : MonoBehaviour
     public Phase CurrPhase { get => _currPhase; set => _currPhase = value; }
     public GameObject PlayerObject { get => _playerObject; set => _playerObject = value; }
     public LineRenderer TargetLine { get => _targetLine; set => _targetLine = value; }
+    public List<Card> PlayerBoard { get => _playerBoard; set => _playerBoard = value; }
+    public List<Card> OpponentBoard { get => _opponentBoard; set => _opponentBoard = value; }
 
     public GameObject creaturePrefab;
 
@@ -40,6 +42,10 @@ public class GameManager : MonoBehaviour
     [SerializeField]
     private List<Card> _opponentHand;
     [SerializeField]
+    private List<Card> _playerBoard = new List<Card>();
+    [SerializeField]
+    private List<Card> _opponentBoard = new List<Card>();
+    [SerializeField]
     private float _stackPositionX;
     [SerializeField]
     private float _stackPositionY;
@@ -50,11 +56,14 @@ public class GameManager : MonoBehaviour
     private float _lerpSpeed;
     [SerializeField]
     private bool _seperateCombatPhase;
+    private bool _targeting = false;
+    private Card _waitingForTarget;
 
     [SerializeField]
     private GameObject _playerObject;
     [SerializeField]
     private LineRenderer _targetLine;
+    private Vector3[] _linePoints;
 
     private Phase[] _phaseList;
     private Phase _currPhase;
@@ -94,8 +103,28 @@ public class GameManager : MonoBehaviour
             _phaseList = new Phase[] { Phase.StartOfTurn, Phase.Draw, Phase.GenericMain, Phase.EndOfTurn };
         }
 
+        //This is being used for testing
+        ForDebug();
+
         _currPhase = _phaseList[_currPhaseIndex];
         StartPhase();
+    }
+
+    public void ForDebug()
+    {
+        GameObject TestEnemy = Instantiate(creaturePrefab, new Vector3(0, Board.Instance.OpponentBoardMiddle), Quaternion.identity, Board.Instance.transform);
+
+        Card TestEnemyCard = ScriptableObject.CreateInstance<Card>();
+
+        PrefabEvents prefabDetails = TestEnemy.GetComponent<PrefabEvents>();
+
+        TestEnemyCard.CardName = "TestEnemy";
+
+        prefabDetails.ThisCard = TestEnemyCard;
+
+        TestEnemyCard.CardGameObject = TestEnemy;
+
+        _opponentBoard.Add(TestEnemyCard);
     }
 
     public void ProgressPhases()
@@ -125,7 +154,23 @@ public class GameManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        if (_targeting)
+        {
+            _linePoints = new Vector3[2] { _stackPos, Camera.main.ScreenToWorldPoint(Input.mousePosition) };
+            _targetLine.SetPositions(_linePoints);
+        }
+
+        if (_targeting && Input.GetMouseButtonDown(0))
+        {
+            _targeting = false;
+            Card target = ReturnTargetFromBoard(Camera.main.ScreenToWorldPoint(Input.mousePosition));
+            if(target != null)
+            {
+                _waitingForTarget.Targets.Add(target);
+                AddCardToStack(_waitingForTarget);
+                _waitingForTarget = null;
+            }
+        }
     }
 
     public void PlayCard(GameObject cardObject)
@@ -154,7 +199,15 @@ public class GameManager : MonoBehaviour
             }
             yield return new WaitForSeconds(0.02f);
         }
-        AddCardToStack(cardInfo);
+        if (cardInfo.CanTarget)
+        {
+            _targeting = true;
+            _waitingForTarget = cardInfo;
+        }
+        else
+        {
+            AddCardToStack(cardInfo);
+        }
     }
 
     public void AddCardToStack(Card card)
@@ -199,8 +252,14 @@ public class GameManager : MonoBehaviour
                 Board.Instance.CreateCreature(card);
                 break;
             case CardType.SlowSpell:
+                _linePoints = new Vector3[2] { Vector3.zero, Vector3.zero };
+                _targetLine.SetPositions(_linePoints);
+                Debug.Log(card.Targets[0].CardName);
                 break;
             case CardType.QuickSpell:
+                _linePoints = new Vector3[2] { Vector3.zero, Vector3.zero };
+                _targetLine.SetPositions(_linePoints);
+                Debug.Log(card.Targets[0].CardName);
                 break;
             case CardType.Static:
                 break;
@@ -223,13 +282,36 @@ public class GameManager : MonoBehaviour
                 Board.Instance.CreateCreatureFormatted(card);
                 break;
             case CardType.SlowSpell:
+                Debug.Log(card.Targets[0].CardName);
                 break;
             case CardType.QuickSpell:
+                Debug.Log(card.Targets[0].CardName);
                 break;
             case CardType.Static:
                 break;
             default:
                 break;
         }
+    }
+
+    public Card ReturnTargetFromBoard(Vector3 targetPosition)
+    {
+        Vector3 zNormalizedTarget = new Vector3(targetPosition.x, targetPosition.y, 0);
+        foreach (Card checkCard in _playerBoard)
+        {
+            if(Vector3.Distance(zNormalizedTarget, checkCard.CardGameObject.transform.position) < _cardSize)
+            {
+                return checkCard;
+            }
+        }
+        foreach (Card checkCard in _opponentBoard)
+        {
+            if (Vector3.Distance(zNormalizedTarget, checkCard.CardGameObject.transform.position) < _cardSize)
+            {
+                return checkCard;
+            }
+        }
+
+        return null;
     }
 }

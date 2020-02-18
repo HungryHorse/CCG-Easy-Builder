@@ -49,6 +49,8 @@ MonoBehaviour:
   _stack: []
   _currentHand: []
   _opponentHand: []
+  _playerBoard: []
+  _opponentBoard: []
   _stackPositionX: 6.11
   _stackPositionY: 0.26
   _cardSize: 0.7
@@ -129,7 +131,7 @@ LineRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_Positions:
-  - {x: 0, y: -2.5, z: 0}
+  - {x: 0, y: 0, z: 0}
   - {x: 0, y: 0, z: 1}
   m_Parameters:
     serializedVersion: 3
@@ -618,18 +620,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _currentDeck:
-  - {fileID: 11400000, guid: f43e9baa996a1dd448d5bc1c08f31710, type: 2}
   - {fileID: 11400000, guid: 5c4e897dcf6a9274fa04259108f0d7fb, type: 2}
-  - {fileID: 11400000, guid: 09ef1ce6a950de444af8675aac5b6414, type: 2}
   - {fileID: 11400000, guid: 43b4dbf79df41c442b3e5801635a12c7, type: 2}
-  - {fileID: 11400000, guid: b925116c5fd51764ba1379750720ba56, type: 2}
-  - {fileID: 11400000, guid: 08d76d2db50a067408b1a2c237f765c4, type: 2}
   - {fileID: 11400000, guid: 29f456d4e469a0d40a22c9d1aa04fdea, type: 2}
-  - {fileID: 11400000, guid: bb6aef1db5ee6da4e9b03ebfa04f1780, type: 2}
-  - {fileID: 11400000, guid: eac2363a043877d46bd07a9cdff3829f, type: 2}
+  - {fileID: 11400000, guid: dc157156244021642bdb19151eae2312, type: 2}
+  - {fileID: 11400000, guid: 09ef1ce6a950de444af8675aac5b6414, type: 2}
   - {fileID: 11400000, guid: 7807369a250745a42aa6699787b2a669, type: 2}
-  - {fileID: 11400000, guid: 8e930adb4faf417479ccbd17adb90be7, type: 2}
+  - {fileID: 11400000, guid: bb6aef1db5ee6da4e9b03ebfa04f1780, type: 2}
+  - {fileID: 11400000, guid: f43e9baa996a1dd448d5bc1c08f31710, type: 2}
+  - {fileID: 11400000, guid: eac2363a043877d46bd07a9cdff3829f, type: 2}
   - {fileID: 11400000, guid: e6a014ca50ba7474582115e98410bd61, type: 2}
+  - {fileID: 11400000, guid: 08d76d2db50a067408b1a2c237f765c4, type: 2}
+  - {fileID: 11400000, guid: b925116c5fd51764ba1379750720ba56, type: 2}
+  - {fileID: 11400000, guid: 8e930adb4faf417479ccbd17adb90be7, type: 2}
   _playerHand: {fileID: 5883821138856876087}
   _physicalDeckSizeX: 1.5
   _physicalDeckSizeY: 2.1

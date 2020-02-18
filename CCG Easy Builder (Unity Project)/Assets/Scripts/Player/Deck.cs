@@ -43,7 +43,17 @@ public class Deck : MonoBehaviour
         if (_currentDeck.Count > 0)
         {
             Card cardBeingDrawn = _currentDeck[0];
-            _playerHand.AddCardFromDeck(cardBeingDrawn, gameObject.transform.position);
+            Card instanceOfCardDrawn = ScriptableObject.CreateInstance<Card>();
+            instanceOfCardDrawn.CardName = cardBeingDrawn.CardName;
+            instanceOfCardDrawn.Description = cardBeingDrawn.Description;
+            instanceOfCardDrawn.Cost = cardBeingDrawn.Cost;
+            instanceOfCardDrawn.CardImage = cardBeingDrawn.CardImage;
+            instanceOfCardDrawn.CardType = cardBeingDrawn.CardType;
+            instanceOfCardDrawn.CanTarget = cardBeingDrawn.CanTarget;
+            instanceOfCardDrawn.Attack = cardBeingDrawn.Attack;
+            instanceOfCardDrawn.Health = cardBeingDrawn.Health;
+            instanceOfCardDrawn.Targets = new List<Card>();
+            _playerHand.AddCardFromDeck(instanceOfCardDrawn, gameObject.transform.position);
             _currentDeck.Remove(cardBeingDrawn);
         }
     }

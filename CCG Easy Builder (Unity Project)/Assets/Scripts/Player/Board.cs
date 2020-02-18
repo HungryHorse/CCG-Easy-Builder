@@ -27,8 +27,11 @@ public class Board : MonoBehaviour
     private float _cardSize;
     private float _lerpSpeed;
     private float _playerBoardMiddle;
+    private float _opponentBoardMiddle;
 
     public static Board Instance { get => _instance; set => _instance = value; }
+    public float OpponentBoardMiddle { get => _opponentBoardMiddle; set => _opponentBoardMiddle = value; }
+    public float PlayerBoardMiddle { get => _playerBoardMiddle; set => _playerBoardMiddle = value; }
 
     private void Awake()
     {
@@ -46,9 +49,12 @@ public class Board : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        _playerBoard = GameManager.Instance.PlayerBoard;
+        _opponentBoard = GameManager.Instance.OpponentBoard;
         _cardSize = GameManager.Instance.CardSize;
         _lerpSpeed = GameManager.Instance.LerpSpeed;
         _playerBoardMiddle = transform.position.y - (_physicalBoardSizeY / 4);
+        _opponentBoardMiddle = transform.position.y + (_physicalBoardSizeY / 4);
     }
 
     void OnDrawGizmos()

@@ -22,6 +22,8 @@ public class Card : ScriptableObject
     private Sprite _cardImage;
     [SerializeField]
     private bool _canTarget;
+    [SerializeField]
+    private List<Card> _targets;
 
     private GameObject _cardGameObject;
 
@@ -34,15 +36,5 @@ public class Card : ScriptableObject
     public Sprite CardImage { get => _cardImage; set => _cardImage = value; }
     public GameObject CardGameObject { get => _cardGameObject; set => _cardGameObject = value; }
     public bool CanTarget { get => _canTarget; set => _canTarget = value; }
-
-    //public Card(string cardName)
-    //{
-    //    _cardName = cardName;
-    //    _description = "blank";
-    //    _health = 0;
-    //    _attack = 0;
-    //    _cardType = CardType.Creature;
-    //    _cost = 0;
-    //    _cardImage = null;
-    //}
+    public List<Card> Targets { get => _targets; set => _targets = value; }
 }
