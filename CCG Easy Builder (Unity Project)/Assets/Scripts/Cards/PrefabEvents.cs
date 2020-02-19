@@ -143,6 +143,7 @@ public class PrefabEvents : MonoBehaviour
                     bool _outsideX = false;
                     bool _outsideY = false;
                     bool _outsideHand = false;
+                    bool _canCast = CanBeCast();
                     if ((transform.position.x > RelativeHand.transform.position.x + RelativeHand.PhysicalHandSizeX / 2) || (transform.position.x < RelativeHand.transform.position.x - RelativeHand.PhysicalHandSizeX / 2))
                     {
                         _outsideX = true;
@@ -157,7 +158,7 @@ public class PrefabEvents : MonoBehaviour
                         _outsideHand = true;
                     }
 
-                    if (_outsideHand)
+                    if (_outsideHand && _canCast)
                     {
                         if (_thisCard.CanTarget && !GameManager.Instance.StackEnabled)
                         {
@@ -188,6 +189,49 @@ public class PrefabEvents : MonoBehaviour
                 }
             }
         }
+    }
+
+    private bool CanBeCast()
+    {
+        bool canCast = false;
+
+        switch (_thisCard.CardType)
+        {
+            case CardType.QuickSpell:
+                canCast = true;
+                break;
+            case CardType.SlowSpell:
+                if (GameManager.Instance.Stack.Count == 0)
+                {
+                    if (GameManager.Instance.CurrPhase == Phase.MainOne || GameManager.Instance.CurrPhase == Phase.MainTwo || GameManager.Instance.CurrPhase == Phase.GenericMain)
+                    {
+                        canCast = true;
+                    }
+                }
+                break;
+            case CardType.Creature:
+                if (GameManager.Instance.Stack.Count == 0)
+                {
+                    if (GameManager.Instance.CurrPhase == Phase.MainOne || GameManager.Instance.CurrPhase == Phase.MainTwo || GameManager.Instance.CurrPhase == Phase.GenericMain)
+                    {
+                        canCast = true;
+                    }
+                }
+                break;
+            case CardType.Static:
+                if (GameManager.Instance.Stack.Count == 0)
+                {
+                    if (GameManager.Instance.CurrPhase == Phase.MainOne || GameManager.Instance.CurrPhase == Phase.MainTwo || GameManager.Instance.CurrPhase == Phase.GenericMain)
+                    {
+                        canCast = true;
+                    }
+                }
+                break;
+            default:
+                break;
+        }
+
+        return canCast;
     }
 
     private void MoveBack()

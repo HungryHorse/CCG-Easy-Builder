@@ -18,12 +18,12 @@ public class Card : ScriptableObject
     private int _attack;
     [SerializeField]
     private CardType _cardType;
-    [SerializeField, Header("Card Visuals")]
-    private Sprite _cardImage;
     [SerializeField]
     private bool _canTarget;
     [SerializeField]
     private List<Card> _targets;
+    [SerializeField, Header("Card Visuals")]
+    private Sprite _cardImage;
 
     private GameObject _cardGameObject;
 
