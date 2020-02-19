@@ -30,6 +30,8 @@ public class GameManager : MonoBehaviour
     public LineRenderer TargetLine { get => _targetLine; set => _targetLine = value; }
     public List<Card> PlayerBoard { get => _playerBoard; set => _playerBoard = value; }
     public List<Card> OpponentBoard { get => _opponentBoard; set => _opponentBoard = value; }
+    public int PlayerHealth { get => _playerHealth; set => _playerHealth = value; }
+    public int OpponentHealth { get => _opponentHealth; set => _opponentHealth = value; }
 
     public GameObject creaturePrefab;
 
@@ -45,6 +47,10 @@ public class GameManager : MonoBehaviour
     private List<Card> _playerBoard = new List<Card>();
     [SerializeField]
     private List<Card> _opponentBoard = new List<Card>();
+    [SerializeField]
+    private int _playerHealth = 20;
+    [SerializeField]
+    private int _opponentHealth = 20;
     [SerializeField]
     private float _stackPositionX;
     [SerializeField]
