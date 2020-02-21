@@ -69,12 +69,13 @@ public class Board : MonoBehaviour
     {
         _playerBoard.Add(card);
 
-        GameObject cardDrawnPrefab = Instantiate(GameManager.Instance.creaturePrefab, GameManager.Instance.StackPos, Quaternion.identity, gameObject.transform);
-        
-        cardDrawnPrefab.GetComponent<PrefabEvents>().ThisCard = card;
-        card.CardGameObject = cardDrawnPrefab;
+        GameObject creaturePrefab = Instantiate(GameManager.Instance.creaturePrefab, GameManager.Instance.StackPos, Quaternion.identity, gameObject.transform);
 
-        Transform cardFront = cardDrawnPrefab.transform.GetChild(0).transform.GetChild(0);
+        creaturePrefab.GetComponent<PrefabEvents>().ThisCard = card;
+        creaturePrefab.GetComponent<PrefabEvents>().IsCreatureCard = true;
+        card.CardGameObject = creaturePrefab;
+
+        Transform cardFront = creaturePrefab.transform.GetChild(0).transform.GetChild(0);
 
         cardFront.GetChild(0).Find("Character").GetComponent<Image>().sprite = card.CardImage;
 
@@ -112,13 +113,16 @@ public class Board : MonoBehaviour
             }
         }
 
-        GameObject cardDrawnPrefab = Instantiate(GameManager.Instance.creaturePrefab, position, Quaternion.identity, gameObject.transform);
+        GameObject creaturePrefab = Instantiate(GameManager.Instance.creaturePrefab, position, Quaternion.identity, gameObject.transform);
 
-        cardDrawnPrefab.GetComponent<PrefabEvents>().ThisCard = card;
-        card.CardGameObject = cardDrawnPrefab;
-        cardDrawnPrefab.transform.position = new Vector3(0,_playerBoardMiddle,0);
+        creaturePrefab.GetComponent<PrefabEvents>().ThisCard = card;
+        card.CardGameObject = creaturePrefab;
+        creaturePrefab.transform.position = new Vector3(0,_playerBoardMiddle,0);
 
-        Transform cardFront = cardDrawnPrefab.transform.GetChild(0).transform.GetChild(0);
+        creaturePrefab.GetComponent<PrefabEvents>().IsCreatureCard = true;
+        creaturePrefab.GetComponent<PrefabEvents>().CanBeHovered = true;
+
+        Transform cardFront = creaturePrefab.transform.GetChild(0).transform.GetChild(0);
 
         cardFront.GetChild(0).Find("Character").GetComponent<Image>().sprite = card.CardImage;
 

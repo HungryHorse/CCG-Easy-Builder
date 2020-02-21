@@ -20,6 +20,7 @@ public class PrefabEvents : MonoBehaviour
     private bool _onStack = false;
     private bool _isCreatureCard = false;
     private bool _hasBeenToHand = false;
+    private PrefabEvents _viewObjectPrefabEvents;
 
     [SerializeField]
     private float _yIncreaseOnHover;
@@ -44,6 +45,7 @@ public class PrefabEvents : MonoBehaviour
     public GameObject ViewObject { get => _viewObject; set => _viewObject = value; }
     public bool IsBeingHovered { get => _isBeingHovered; set => _isBeingHovered = value; }
     public bool HasBeenToHand { get => _hasBeenToHand; set => _hasBeenToHand = value; }
+    public bool IsCreatureCard { get => _isCreatureCard; set => _isCreatureCard = value; }
 
     private void Start()
     {
@@ -60,13 +62,25 @@ public class PrefabEvents : MonoBehaviour
 
     private void Update()
     {
+        if (_isCreatureCard)
+        {
+            CreatureUpdateLoop();
+        }
+        else
+        {
+            NonCreatureUpdateLoop();
+        }
+    }
+
+    private void NonCreatureUpdateLoop()
+    {
         if (!_onStack)
         {
             Vector3 zLockedMousePos = new Vector3(Camera.main.ScreenToWorldPoint(Input.mousePosition).x, Camera.main.ScreenToWorldPoint(Input.mousePosition).y, transform.position.z);
 
             if (!_isBeingHovered && gameObject.transform.localScale.x != 1 && _hasBeenToHand)
             {
-                gameObject.transform.localScale = new Vector3(1,1,1);
+                gameObject.transform.localScale = new Vector3(1, 1, 1);
             }
 
             if (_isBeingHovered && Input.GetMouseButton(0) && _originalCard != null)
@@ -81,7 +95,6 @@ public class PrefabEvents : MonoBehaviour
 
             if (_beingHeld)
             {
-                Debug.Log("Held");
                 transform.position = Vector3.Lerp(transform.position, zLockedMousePos, _followSpeed);
                 GetComponent<BoxCollider2D>().size = new Vector2(10 * _hoverScale, 10 * _hoverScale);
                 _canBeDestroyed = false;
@@ -116,20 +129,20 @@ public class PrefabEvents : MonoBehaviour
                             childObject.gameObject.SetActive(false);
                         }
                     }
-                    linePoints = new Vector3[2]{ GameManager.Instance.PlayerObject.transform.position,  Camera.main.ScreenToWorldPoint(Input.mousePosition) };
+                    linePoints = new Vector3[2] { GameManager.Instance.PlayerObject.transform.position, Camera.main.ScreenToWorldPoint(Input.mousePosition) };
                     GameManager.Instance.TargetLine.SetPositions(linePoints);
                 }
-                else if(_outsideHand && _originalCard != null)
+                else if (_outsideHand && _originalCard != null)
                 {
                     transform.localScale = _originalCard.transform.localScale;
                 }
 
-                if (!_outsideHand &&  _originalCard != null && _thisCard.CanTarget && !GameManager.Instance.StackEnabled && !transform.GetChild(0).gameObject.activeInHierarchy)
+                if (!_outsideHand && _originalCard != null && _thisCard.CanTarget && !GameManager.Instance.StackEnabled && !transform.GetChild(0).gameObject.activeInHierarchy)
                 {
                     int childCount = transform.childCount;
-                    for(int i = 0; i < childCount; i++)
+                    for (int i = 0; i < childCount; i++)
                     {
-                        GameObject childObject = transform.GetChild(i).gameObject; 
+                        GameObject childObject = transform.GetChild(i).gameObject;
                         childObject.SetActive(true);
                     }
                     linePoints = new Vector3[2] { Vector3.zero, Vector3.zero };
@@ -189,6 +202,11 @@ public class PrefabEvents : MonoBehaviour
                 }
             }
         }
+    }
+
+    private void CreatureUpdateLoop()
+    {
+
     }
 
     private bool CanBeCast()
@@ -273,16 +291,36 @@ public class PrefabEvents : MonoBehaviour
 
     private void LateUpdate()
     {
-        if (!_isBeingHovered && _originalCard != null && _timer >= 0.02f && !_onStack)
+        if (!_isBeingHovered && _originalCard != null && _timer >= 0.02f && !_onStack && !_isCreatureCard)
         {
             _originalCard.SetActive(true);
             _originalCard.GetComponent<PrefabEvents>()._isBeingHovered = false;
             Destroy(gameObject);
         }
+        else if (_originalCard != null && _timer >= 0.02f && !_isCreatureCard)
+        {
+            if (!_originalCard.GetComponent<PrefabEvents>()._isBeingHovered)
+            {
+                _originalCard.GetComponent<PrefabEvents>()._isBeingHovered = false;
+                Destroy(gameObject);
+            }
+        }
         _timer += Time.deltaTime;
     }
 
     private void OnMouseOver()
+    {
+        if (_isCreatureCard)
+        {
+            CreatureMouseOver();
+        }
+        else
+        {
+            NonCreatureMouseOver();
+        }
+    }
+
+    private void NonCreatureMouseOver()
     {
         if (!_onStack && GameManager.Instance.Stack.Count < 1)
         {
@@ -301,6 +339,21 @@ public class PrefabEvents : MonoBehaviour
                     }
                 }
             }
+        }
+    }
+
+    private void CreatureMouseOver()
+    {
+        _isBeingHovered = true;
+        _timer = 0;
+        if (_viewObject == null)
+        {
+            CreateCreatureHoveredCard();
+        }
+        if (_viewObject != null)
+        {
+            _viewObject.transform.localScale = Vector3.Lerp(_viewObject.transform.localScale, _viewObjectPrefabEvents._targetScale, _zoomSpeed);
+            _viewObject.transform.localPosition = Vector3.Lerp(_viewObject.transform.localPosition, _viewObjectPrefabEvents._targetPosition, _zoomSpeed);
         }
     }
 
@@ -331,17 +384,19 @@ public class PrefabEvents : MonoBehaviour
             {
                 _viewObject = Instantiate(gameObject, _relativeHand.transform);
 
+                PrefabEvents prefabEvents = _viewObject.GetComponent<PrefabEvents>();
+
                 _viewObject.GetComponent<BoxCollider2D>().size = new Vector2(_viewObject.GetComponent<BoxCollider2D>().size.x / _hoverScale + 0.05f, _viewObject.GetComponent<BoxCollider2D>().size.y);
 
-                _viewObject.GetComponent<PrefabEvents>().OriginalCard = gameObject;
+                prefabEvents.OriginalCard = gameObject;
 
-                _viewObject.GetComponent<PrefabEvents>().RelativeHand = _relativeHand;
+                prefabEvents.RelativeHand = _relativeHand;
 
-                _viewObject.GetComponent<PrefabEvents>().ThisCard = _thisCard;
+                prefabEvents.ThisCard = _thisCard;
 
-                _viewObject.GetComponent<PrefabEvents>()._targetScale = new Vector3(_hoverScale, _hoverScale, 1);
+                prefabEvents._targetScale = new Vector3(_hoverScale, _hoverScale, 1);
 
-                _viewObject.GetComponent<PrefabEvents>()._targetRot = new Vector3(0, 0, 0);
+                prefabEvents._targetRot = new Vector3(0, 0, 0);
 
                 gameObject.SetActive(false);
 
@@ -366,6 +421,46 @@ public class PrefabEvents : MonoBehaviour
                         break;
                 }
 
+                cardFront.GetChild(0).Find("Character").GetComponent<Image>().sprite = _thisCard.CardImage;
+
+                cardFront.Find("CardName").GetComponent<TextMeshProUGUI>().text = _thisCard.CardName;
+                cardFront.Find("CardDescription").GetComponent<TextMeshProUGUI>().text = _thisCard.Description;
+                cardFront.Find("CardCost").GetComponent<TextMeshProUGUI>().text = _thisCard.Cost.ToString();
+            }
+        }
+        catch { }
+    }
+
+    private void CreateCreatureHoveredCard()
+    {
+        try
+        {
+            if (_canBeHovered && _originalCard == null)
+            {
+                _viewObject = Instantiate(gameObject, transform.position - Vector3.right, Quaternion.identity, transform.parent);
+
+                _viewObjectPrefabEvents = _viewObject.GetComponent<PrefabEvents>();
+
+                _viewObject.GetComponent<BoxCollider2D>().size = new Vector2(_viewObject.GetComponent<BoxCollider2D>().size.x / _hoverScale + 0.05f, _viewObject.GetComponent<BoxCollider2D>().size.y);
+
+                _viewObjectPrefabEvents.OriginalCard = gameObject;
+
+                _viewObjectPrefabEvents.ThisCard = _thisCard;
+
+                _viewObjectPrefabEvents.IsCreatureCard = true;
+
+                _viewObjectPrefabEvents._targetScale = new Vector3(_hoverScale, _hoverScale, 1);
+
+                _viewObjectPrefabEvents._targetRot = new Vector3(0, 0, 0);
+
+                Transform cardFront = _viewObject.transform.GetChild(0).transform.GetChild(0);
+                Transform cardBack = _viewObject.transform.GetChild(0).transform.GetChild(1);
+
+                cardFront.GetComponent<Canvas>().sortingOrder = 0;
+                cardBack.GetComponent<Canvas>().sortingOrder = 0;
+                
+                cardFront.Find("CardAttack").GetComponent<TextMeshProUGUI>().text = _thisCard.Attack.ToString();
+                cardFront.Find("CardHealth").GetComponent<TextMeshProUGUI>().text = _thisCard.Health.ToString();
                 cardFront.GetChild(0).Find("Character").GetComponent<Image>().sprite = _thisCard.CardImage;
 
                 cardFront.Find("CardName").GetComponent<TextMeshProUGUI>().text = _thisCard.CardName;
