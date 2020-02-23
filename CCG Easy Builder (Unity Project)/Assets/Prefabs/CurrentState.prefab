@@ -51,8 +51,12 @@ MonoBehaviour:
   _opponentHand: []
   _playerBoard: []
   _opponentBoard: []
+  _playerHealth: 20
+  _opponentHealth: 20
   _stackPositionX: 6.11
   _stackPositionY: 0.26
+  _hoverPositionX: -6.11
+  _hoverPositionY: 0.26
   _cardSize: 0.7
   _lerpSpeed: 0.15
   _seperateCombatPhase: 1

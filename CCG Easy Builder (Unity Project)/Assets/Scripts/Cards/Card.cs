@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
 [CreateAssetMenu]
 public class Card : ScriptableObject
@@ -37,4 +38,26 @@ public class Card : ScriptableObject
     public GameObject CardGameObject { get => _cardGameObject; set => _cardGameObject = value; }
     public bool CanTarget { get => _canTarget; set => _canTarget = value; }
     public List<Card> Targets { get => _targets; set => _targets = value; }
+
+    public void TakeDamage(int damage)
+    {
+        _health -= damage;
+        if(_health <= 0)
+        {
+            Destroy(_cardGameObject);
+        }
+
+        Transform cardFront = _cardGameObject.transform.GetChild(0).transform.GetChild(0);
+        
+        cardFront.Find("CardHealth").GetComponent<TextMeshProUGUI>().text = _health.ToString();
+    }
+
+    public void AddHealth(int healing)
+    {
+        _health += healing;
+
+        Transform cardFront = _cardGameObject.transform.GetChild(0).transform.GetChild(0);
+
+        cardFront.Find("CardHealth").GetComponent<TextMeshProUGUI>().text = _health.ToString();
+    }
 }

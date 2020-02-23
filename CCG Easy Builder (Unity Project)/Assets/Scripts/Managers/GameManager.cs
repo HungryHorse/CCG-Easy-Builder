@@ -32,6 +32,7 @@ public class GameManager : MonoBehaviour
     public List<Card> OpponentBoard { get => _opponentBoard; set => _opponentBoard = value; }
     public int PlayerHealth { get => _playerHealth; set => _playerHealth = value; }
     public int OpponentHealth { get => _opponentHealth; set => _opponentHealth = value; }
+    public Vector2 HoverPos { get => _hoverPos; set => _hoverPos = value; }
 
     public GameObject creaturePrefab;
 
@@ -55,7 +56,12 @@ public class GameManager : MonoBehaviour
     private float _stackPositionX;
     [SerializeField]
     private float _stackPositionY;
+    [SerializeField]
+    private float _hoverPositionX;
+    [SerializeField]
+    private float _hoverPositionY;
     private Vector2 _stackPos;
+    private Vector2 _hoverPos;
     [SerializeField]
     private float _cardSize;
     [SerializeField]
@@ -81,6 +87,7 @@ public class GameManager : MonoBehaviour
     {
         Gizmos.color = Color.green;
         Gizmos.DrawWireCube(new Vector3(_stackPositionX, _stackPositionY), new Vector3(_cardSize * 3, _cardSize * 4));
+        Gizmos.DrawWireCube(new Vector3(_hoverPositionX, _hoverPositionY), new Vector3(_cardSize * 3, _cardSize * 4));
     }
 
     private void Awake()
@@ -100,6 +107,7 @@ public class GameManager : MonoBehaviour
     void Start()
     {
         _stackPos = new Vector2(_stackPositionX, _stackPositionY);
+        _hoverPos = new Vector2(_hoverPositionX, _hoverPositionY);
         if (_seperateCombatPhase)
         {
             _phaseList = new Phase[] { Phase.StartOfTurn, Phase.Draw, Phase.MainOne, Phase.Combat, Phase.MainTwo, Phase.EndOfTurn };

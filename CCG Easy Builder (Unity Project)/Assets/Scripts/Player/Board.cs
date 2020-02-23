@@ -116,6 +116,7 @@ public class Board : MonoBehaviour
         GameObject creaturePrefab = Instantiate(GameManager.Instance.creaturePrefab, position, Quaternion.identity, gameObject.transform);
 
         creaturePrefab.GetComponent<PrefabEvents>().ThisCard = card;
+        creaturePrefab.GetComponent<PrefabEvents>().FullCard = Instantiate(card.CardGameObject);
         card.CardGameObject = creaturePrefab;
         creaturePrefab.transform.position = new Vector3(0,_playerBoardMiddle,0);
 

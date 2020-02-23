@@ -21,6 +21,8 @@ public class PrefabEvents : MonoBehaviour
     private bool _isCreatureCard = false;
     private bool _hasBeenToHand = false;
     private PrefabEvents _viewObjectPrefabEvents;
+    private GameObject _fullCard;
+    private bool _isAttacking;
 
     [SerializeField]
     private float _yIncreaseOnHover;
@@ -46,11 +48,19 @@ public class PrefabEvents : MonoBehaviour
     public bool IsBeingHovered { get => _isBeingHovered; set => _isBeingHovered = value; }
     public bool HasBeenToHand { get => _hasBeenToHand; set => _hasBeenToHand = value; }
     public bool IsCreatureCard { get => _isCreatureCard; set => _isCreatureCard = value; }
+    public GameObject FullCard { get => _fullCard; set => _fullCard = value; }
 
     private void Start()
     {
         _targetScale = new Vector3(_hoverScale, _hoverScale, 1);
-        _targetPosition = new Vector3(gameObject.transform.localPosition.x, gameObject.transform.localPosition.y + _yIncreaseOnHover, -4);
+        if (_isCreatureCard)
+        {
+            _targetPosition = new Vector3(gameObject.transform.localPosition.x, gameObject.transform.localPosition.y, -4);
+        }
+        else
+        {
+            _targetPosition = new Vector3(gameObject.transform.localPosition.x, gameObject.transform.localPosition.y + _yIncreaseOnHover, -4);
+        }
     }
 
     public void FinishedDrawAnimation()
@@ -206,7 +216,43 @@ public class PrefabEvents : MonoBehaviour
 
     private void CreatureUpdateLoop()
     {
+        if (_isAttacking)
+        {
+            linePoints = new Vector3[2] { transform.position, Camera.main.ScreenToWorldPoint(Input.mousePosition) };
+            GameManager.Instance.TargetLine.SetPositions(linePoints);
 
+            if (Input.GetMouseButtonDown(0))
+            {
+                Card targetCard = GameManager.Instance.ReturnTargetFromBoard(Camera.main.ScreenToWorldPoint(Input.mousePosition));
+
+                if (targetCard != null && !GameManager.Instance.PlayerBoard.Contains(targetCard))
+                {
+                    targetCard.TakeDamage(ThisCard.Attack);
+                    _isAttacking = false;
+                    linePoints = new Vector3[2] { Vector3.zero, Vector3.zero };
+                    GameManager.Instance.TargetLine.SetPositions(linePoints);
+                }
+                else if (targetCard == null || GameManager.Instance.PlayerBoard.Contains(targetCard))
+                {
+                    _isAttacking = false;
+                    linePoints = new Vector3[2] { Vector3.zero, Vector3.zero };
+                    GameManager.Instance.TargetLine.SetPositions(linePoints);
+                }
+            }
+        }
+
+        if (_isBeingHovered && Input.GetMouseButtonDown(0))
+        {
+            _isAttacking = true;
+            CreatureMouseExit();
+        }
+
+        if(_isAttacking && Input.GetMouseButtonDown(1))
+        {
+            _isAttacking = false;
+            linePoints = new Vector3[2] { Vector3.zero, Vector3.zero };
+            GameManager.Instance.TargetLine.SetPositions(linePoints);
+        }
     }
 
     private bool CanBeCast()
@@ -344,20 +390,38 @@ public class PrefabEvents : MonoBehaviour
 
     private void CreatureMouseOver()
     {
-        _isBeingHovered = true;
-        _timer = 0;
-        if (_viewObject == null)
+        if (!_isAttacking)
         {
-            CreateCreatureHoveredCard();
-        }
-        if (_viewObject != null)
-        {
-            _viewObject.transform.localScale = Vector3.Lerp(_viewObject.transform.localScale, _viewObjectPrefabEvents._targetScale, _zoomSpeed);
-            _viewObject.transform.localPosition = Vector3.Lerp(_viewObject.transform.localPosition, _viewObjectPrefabEvents._targetPosition, _zoomSpeed);
+            if (!_isBeingHovered)
+            {
+                _isBeingHovered = true;
+                _timer = 0;
+            }
+            if (_viewObject == null && (Input.GetMouseButtonDown(1) || _timer > 0.5f))
+            {
+                CreateCreatureHoveredCard();
+            }
+            if (_viewObject != null)
+            {
+                _viewObject.transform.localScale = Vector3.Lerp(_viewObject.transform.localScale, _viewObjectPrefabEvents._targetScale, _zoomSpeed);
+                _viewObject.transform.localPosition = Vector3.Lerp(_viewObject.transform.localPosition, _viewObjectPrefabEvents._targetPosition, _zoomSpeed);
+            }
         }
     }
 
     private void OnMouseExit()
+    {
+        if (_isCreatureCard)
+        {
+            CreatureMouseExit();
+        }
+        else
+        {
+            NonCreatureMouseExit();
+        }
+    }
+
+    private void NonCreatureMouseExit()
     {
         if (!_onStack)
         {
@@ -373,6 +437,15 @@ public class PrefabEvents : MonoBehaviour
             }
 
             _isBeingHovered = false;
+        }
+    }
+
+    private void CreatureMouseExit()
+    {
+        if(_viewObject != null)
+        {
+            _isBeingHovered = false;
+            Destroy(_viewObject);
         }
     }
 
@@ -437,7 +510,9 @@ public class PrefabEvents : MonoBehaviour
         {
             if (_canBeHovered && _originalCard == null)
             {
-                _viewObject = Instantiate(gameObject, transform.position - Vector3.right, Quaternion.identity, transform.parent);
+                _viewObject = Instantiate(_fullCard, GameManager.Instance.HoverPos, Quaternion.identity, transform.parent);
+
+                _viewObject.SetActive(true);
 
                 _viewObjectPrefabEvents = _viewObject.GetComponent<PrefabEvents>();
 
@@ -452,6 +527,8 @@ public class PrefabEvents : MonoBehaviour
                 _viewObjectPrefabEvents._targetScale = new Vector3(_hoverScale, _hoverScale, 1);
 
                 _viewObjectPrefabEvents._targetRot = new Vector3(0, 0, 0);
+
+                _viewObjectPrefabEvents._targetPosition = GameManager.Instance.HoverPos;
 
                 Transform cardFront = _viewObject.transform.GetChild(0).transform.GetChild(0);
                 Transform cardBack = _viewObject.transform.GetChild(0).transform.GetChild(1);
@@ -474,6 +551,10 @@ public class PrefabEvents : MonoBehaviour
     private void OnDisable()
     {
         _onStack = true;
+        if (_fullCard != null)
+        {
+            Destroy(_fullCard);
+        }
     }
     private void OnEnable()
     {
