@@ -37,6 +37,8 @@ public class GameManager : MonoBehaviour
     public GameObject creaturePrefab;
 
     [SerializeField]
+    private int _turnCounter;
+    [SerializeField]
     private bool _stackEnabled = true;
     [SerializeField]
     private List<Card> _stack = new List<Card>();
@@ -51,7 +53,15 @@ public class GameManager : MonoBehaviour
     [SerializeField]
     private int _playerHealth = 20;
     [SerializeField]
+    private int _playerResource;
+    [HideInInspector]
+    public bool maxPlayerResourceEnabled;
+    [HideInInspector]
+    public int maxPlayerResource;
+    [SerializeField]
     private int _opponentHealth = 20;
+    [SerializeField]
+    private int _opponentResource;
     [SerializeField]
     private float _stackPositionX;
     [SerializeField]
@@ -121,7 +131,9 @@ public class GameManager : MonoBehaviour
         ForDebug();
 
         _currPhase = _phaseList[_currPhaseIndex];
+        _turnCounter++;
         StartPhase();
+        AddResource(10);
     }
 
     public void ForDebug()
@@ -146,6 +158,9 @@ public class GameManager : MonoBehaviour
         if(_currPhaseIndex + 1 == _phaseList.Length)
         {
             _currPhaseIndex = 0;
+            _turnCounter++;
+            ResetResource();
+            AddResource(_turnCounter);
         }
         else
         {
@@ -189,6 +204,7 @@ public class GameManager : MonoBehaviour
 
     public void PlayCard(GameObject cardObject)
     {
+        RemoveResource(cardObject.GetComponent<PrefabEvents>().ThisCard.Cost);
         if (_stackEnabled)
         {
             StartCoroutine(MoveTowardsStackPosition(cardObject));
@@ -327,5 +343,52 @@ public class GameManager : MonoBehaviour
         }
 
         return null;
+    }
+
+    public bool CheckCastingCost(int castingCost)
+    {
+        if(_playerResource - castingCost < 0)
+        {
+            return false;
+        }
+        else
+        {
+            return true;
+        }
+    }
+
+    public void ResetResource()
+    {
+        _playerResource = 0;
+    }
+
+    public void AddResource()
+    {
+        _playerResource += 1;
+
+        if (maxPlayerResourceEnabled)
+        {
+            _playerResource = Mathf.Clamp(_playerResource, 0, maxPlayerResource);
+        }
+    }
+
+    public void AddResource(int amountToAdd)
+    {
+        _playerResource += amountToAdd;
+
+        if (maxPlayerResourceEnabled)
+        {
+            _playerResource = Mathf.Clamp(_playerResource, 0, maxPlayerResource);
+        }
+    }
+
+    public void RemoveResource()
+    {
+        _playerResource -= 1;
+    }
+
+    public void RemoveResource(int amountToRemove)
+    {
+        _playerResource -= amountToRemove;
     }
 }

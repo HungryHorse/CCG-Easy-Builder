@@ -52,7 +52,11 @@ MonoBehaviour:
   _playerBoard: []
   _opponentBoard: []
   _playerHealth: 20
+  _playerResource: 0
+  maxPlayerResourceEnabled: 1
+  maxPlayerResource: 10
   _opponentHealth: 20
+  _opponentResource: 0
   _stackPositionX: 6.11
   _stackPositionY: 0.26
   _hoverPositionX: -6.11

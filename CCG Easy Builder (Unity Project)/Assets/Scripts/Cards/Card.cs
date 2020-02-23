@@ -25,6 +25,8 @@ public class Card : ScriptableObject
     private List<Card> _targets;
     [SerializeField, Header("Card Visuals")]
     private Sprite _cardImage;
+    [SerializeField]
+    private bool _playerCard;
 
     private GameObject _cardGameObject;
 
@@ -44,6 +46,14 @@ public class Card : ScriptableObject
         _health -= damage;
         if(_health <= 0)
         {
+            if (_playerCard)
+            {
+                GameManager.Instance.PlayerBoard.Remove(this);
+            }
+            else
+            {
+                GameManager.Instance.OpponentBoard.Remove(this);
+            }
             Destroy(_cardGameObject);
         }
 

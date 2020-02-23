@@ -181,7 +181,7 @@ public class PrefabEvents : MonoBehaviour
                         _outsideHand = true;
                     }
 
-                    if (_outsideHand && _canCast)
+                    if (_outsideHand && _canCast && GameManager.Instance.CheckCastingCost(_thisCard.Cost))
                     {
                         if (_thisCard.CanTarget && !GameManager.Instance.StackEnabled)
                         {
@@ -444,9 +444,10 @@ public class PrefabEvents : MonoBehaviour
     {
         if(_viewObject != null)
         {
-            _isBeingHovered = false;
             Destroy(_viewObject);
         }
+
+        _isBeingHovered = false;
     }
 
     private void CreateHoveredCard()

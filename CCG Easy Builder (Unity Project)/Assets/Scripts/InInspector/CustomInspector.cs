@@ -36,3 +36,21 @@ public class MyDeckEditor : Editor
         DrawDefaultInspector();
     }
 }
+
+[CustomEditor(typeof(GameManager))]
+public class MyManagerEditor : Editor
+{
+    public override void OnInspectorGUI()
+    {
+        var myScript = target as GameManager;
+
+        DrawDefaultInspector();
+
+        myScript.maxPlayerResourceEnabled = GUILayout.Toggle(myScript.maxPlayerResourceEnabled, "Maximum resource");
+
+        if (myScript.maxPlayerResourceEnabled)
+        {
+            myScript.maxPlayerResource = EditorGUILayout.IntSlider("Maximum resource:", myScript.maxPlayerResource, 1, 30);
+        }
+    }
+}
