@@ -150,6 +150,12 @@ public class GameManager : MonoBehaviour
 
         TestEnemyCard.CardGameObject = TestEnemy;
 
+        TestEnemyCard.Attack = 1;
+
+        TestEnemyCard.MaxHealth = 1;
+
+        TestEnemyCard.OnCreation();
+
         _opponentBoard.Add(TestEnemyCard);
     }
 

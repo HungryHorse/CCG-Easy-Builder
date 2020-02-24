@@ -227,7 +227,8 @@ public class PrefabEvents : MonoBehaviour
 
                 if (targetCard != null && !GameManager.Instance.PlayerBoard.Contains(targetCard))
                 {
-                    targetCard.TakeDamage(ThisCard.Attack);
+                    targetCard.TakeDamage(_thisCard.Attack);
+                    _thisCard.TakeDamage(targetCard.Attack);
                     _isAttacking = false;
                     linePoints = new Vector3[2] { Vector3.zero, Vector3.zero };
                     GameManager.Instance.TargetLine.SetPositions(linePoints);
@@ -485,7 +486,7 @@ public class PrefabEvents : MonoBehaviour
                 {
                     case CardType.Creature:
                         cardFront.Find("CardAttack").GetComponent<TextMeshProUGUI>().text = _thisCard.Attack.ToString();
-                        cardFront.Find("CardHealth").GetComponent<TextMeshProUGUI>().text = _thisCard.Health.ToString();
+                        cardFront.Find("CardHealth").GetComponent<TextMeshProUGUI>().text = _thisCard.MaxHealth.ToString();
                         break;
                     case CardType.SlowSpell:
                         break;
@@ -538,7 +539,7 @@ public class PrefabEvents : MonoBehaviour
                 cardBack.GetComponent<Canvas>().sortingOrder = 0;
                 
                 cardFront.Find("CardAttack").GetComponent<TextMeshProUGUI>().text = _thisCard.Attack.ToString();
-                cardFront.Find("CardHealth").GetComponent<TextMeshProUGUI>().text = _thisCard.Health.ToString();
+                cardFront.Find("CardHealth").GetComponent<TextMeshProUGUI>().text = _thisCard.MaxHealth.ToString();
                 cardFront.GetChild(0).Find("Character").GetComponent<Image>().sprite = _thisCard.CardImage;
 
                 cardFront.Find("CardName").GetComponent<TextMeshProUGUI>().text = _thisCard.CardName;
