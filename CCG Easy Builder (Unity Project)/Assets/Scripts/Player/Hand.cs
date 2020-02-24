@@ -4,6 +4,15 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
+[System.Serializable]
+public struct CardFrames
+{
+    public Sprite creatureFrame;
+    public Sprite spellFrame;
+    public Sprite staticFrame;
+    //public Sprite <- Add more card frames here 
+}
+
 public class Hand : MonoBehaviour
 {
     public GameObject cardPrefab;
@@ -38,6 +47,9 @@ public class Hand : MonoBehaviour
     [SerializeField]
     private float _physicalHandSizeY;
     #endregion
+
+    [SerializeField]
+    private CardFrames _frames;
 
     private int _orderInSortingLayer = 0;
 
@@ -143,12 +155,31 @@ public class Hand : MonoBehaviour
 
             _orderInSortingLayer++;
 
+            Image frameRenderer = cardFront.Find("Frame").GetComponent<Image>();
+
+            switch (cardDrawn.CardType)
+            {
+                case CardType.Creature:
+                    frameRenderer.sprite = _frames.creatureFrame;
+
+                    cardFront.Find("CardAttack").GetComponent<TextMeshProUGUI>().text = cardDrawn.Attack.ToString();
+                    cardFront.Find("CardHealth").GetComponent<TextMeshProUGUI>().text = cardDrawn.Health.ToString();
+                    break;
+                case CardType.SlowSpell:
+                    frameRenderer.sprite = _frames.spellFrame;
+                    break;
+                case CardType.QuickSpell:
+                    frameRenderer.sprite = _frames.spellFrame;
+                    break;
+                case CardType.Static:
+                    frameRenderer.sprite = _frames.staticFrame;
+                    break;
+            }
+
             cardFront.GetChild(0).Find("Character").GetComponent<Image>().sprite = cardDrawn.CardImage;
 
             cardFront.Find("CardName").GetComponent<TextMeshProUGUI>().text = cardDrawn.CardName;
             cardFront.Find("CardDescription").GetComponent<TextMeshProUGUI>().text = cardDrawn.Description;
-            cardFront.Find("CardAttack").GetComponent<TextMeshProUGUI>().text = cardDrawn.Attack.ToString();
-            cardFront.Find("CardHealth").GetComponent<TextMeshProUGUI>().text = cardDrawn.Health.ToString();
             cardFront.Find("CardCost").GetComponent<TextMeshProUGUI>().text = cardDrawn.Cost.ToString();
 
             cardDrawnPrefab.GetComponent<PrefabEvents>().RelativeHand = this;
@@ -183,6 +214,25 @@ public class Hand : MonoBehaviour
         cardBack.GetComponent<Canvas>().sortingOrder = _orderInSortingLayer;
 
         _orderInSortingLayer++;
+
+        Image frameRenderer = cardFront.Find("Frame").GetComponent<Image>();
+
+        switch (cardDrawn.CardType)
+        {
+            case CardType.Creature:
+                frameRenderer.sprite = _frames.creatureFrame;
+                break;
+            case CardType.SlowSpell:
+                frameRenderer.sprite = _frames.spellFrame;
+                break;
+            case CardType.QuickSpell:
+                frameRenderer.sprite = _frames.spellFrame;
+                break;
+            case CardType.Static:
+                frameRenderer.sprite = _frames.staticFrame;
+                break;
+        }
+
 
         cardFront.GetChild(0).Find("Character").GetComponent<Image>().sprite = cardDrawn.CardImage;
 
@@ -264,6 +314,7 @@ public class Hand : MonoBehaviour
             yield return new WaitForSeconds(0.02f);
         }
         cardgo.GetComponent<PrefabEvents>().CanBeHovered = true;
+        cardgo.GetComponent<PrefabEvents>().HasBeenToHand = true;
         _canDrawCard = true;
         if(_bufferedCardDraw > 0)
         {
@@ -289,6 +340,12 @@ public class Hand : MonoBehaviour
             float position = -_targetPositionX;
             foreach (Card card in _currentHand)
             {
+                if (!card.CardGameObject.activeInHierarchy)
+                {
+                    card.CardGameObject.SetActive(true);
+                    card.CardGameObject.GetComponent<PrefabEvents>().IsBeingHovered = false;
+                    Destroy(card.CardGameObject.GetComponent<PrefabEvents>().ViewObject);
+                }
                 if (card != _currentHand[_currentHand.Count - 1])
                 {
                     card.CardGameObject.transform.position = new Vector3(position, card.CardGameObject.transform.position.y, card.CardGameObject.transform.position.z);
@@ -356,6 +413,13 @@ public class Hand : MonoBehaviour
                     rotation += ((_maximumRot * 2) / (_currentHand.Count - 1));
                     position += ((_targetPositionX * 2) / (_currentHand.Count - 1));
                     inMiddle = false;
+                }
+
+                if (!card.CardGameObject.activeInHierarchy)
+                {
+                    card.CardGameObject.SetActive(true);
+                    card.CardGameObject.GetComponent<PrefabEvents>().IsBeingHovered = false;
+                    Destroy(card.CardGameObject.GetComponent<PrefabEvents>().ViewObject);
                 }
             }
         }
@@ -472,19 +536,19 @@ public class Hand : MonoBehaviour
         Keyframe[] keys;
         keys = new Keyframe[2];
         keys[0] = new Keyframe(0.0f, startXPos);
-        keys[1] = new Keyframe(1.0f, 0.0f);
+        keys[1] = new Keyframe(0.75f, 0.0f);
         curve = new AnimationCurve(keys);
         moveCard.SetCurve("", typeof(Transform), "localPosition.x", curve);
 
         keys = new Keyframe[2];
         keys[0] = new Keyframe(0.0f, startYPos);
-        keys[1] = new Keyframe(1.0f, endYPos);
+        keys[1] = new Keyframe(0.75f, endYPos);
         curve = new AnimationCurve(keys);
         moveCard.SetCurve("", typeof(Transform), "localPosition.y", curve);
 
         keys = new Keyframe[2];
         keys[0] = new Keyframe(0.0f, startZPos);
-        keys[1] = new Keyframe(1.0f, endZPos);
+        keys[1] = new Keyframe(0.75f, endZPos);
         curve = new AnimationCurve(keys);
         moveCard.SetCurve("", typeof(Transform), "localPosition.z", curve);
     }

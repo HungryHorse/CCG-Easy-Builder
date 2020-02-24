@@ -12,10 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 15011857bfaee984daf442b4a331c1d0, type: 3}
   m_Name: TestCard 1
   m_EditorClassIdentifier: 
-  _cardName: Card Name
-  _description: Card Description
+  _cardName: Card1
+  _description: This man is the most cursed in all the land.
   _cost: 10
   _health: 1000
   _attack: 1000
   _cardType: 0
-  _cardImage: {fileID: 21300000, guid: 94aba7b25c42c9443a621fbdb700d3f0, type: 3}
+  _cardImage: {fileID: 21300000, guid: 614ff4c069da32346b486e4bc847c972, type: 3}

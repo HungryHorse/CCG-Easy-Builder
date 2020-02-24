@@ -27,8 +27,11 @@ public class Board : MonoBehaviour
     private float _cardSize;
     private float _lerpSpeed;
     private float _playerBoardMiddle;
+    private float _opponentBoardMiddle;
 
     public static Board Instance { get => _instance; set => _instance = value; }
+    public float OpponentBoardMiddle { get => _opponentBoardMiddle; set => _opponentBoardMiddle = value; }
+    public float PlayerBoardMiddle { get => _playerBoardMiddle; set => _playerBoardMiddle = value; }
 
     private void Awake()
     {
@@ -46,9 +49,12 @@ public class Board : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        _playerBoard = GameManager.Instance.PlayerBoard;
+        _opponentBoard = GameManager.Instance.OpponentBoard;
         _cardSize = GameManager.Instance.CardSize;
         _lerpSpeed = GameManager.Instance.LerpSpeed;
         _playerBoardMiddle = transform.position.y - (_physicalBoardSizeY / 4);
+        _opponentBoardMiddle = transform.position.y + (_physicalBoardSizeY / 4);
     }
 
     void OnDrawGizmos()
@@ -63,12 +69,13 @@ public class Board : MonoBehaviour
     {
         _playerBoard.Add(card);
 
-        GameObject cardDrawnPrefab = Instantiate(GameManager.Instance.creaturePrefab, GameManager.Instance.StackPos, Quaternion.identity, gameObject.transform);
-        
-        cardDrawnPrefab.GetComponent<PrefabEvents>().ThisCard = card;
-        card.CardGameObject = cardDrawnPrefab;
+        GameObject creaturePrefab = Instantiate(GameManager.Instance.creaturePrefab, GameManager.Instance.StackPos, Quaternion.identity, gameObject.transform);
 
-        Transform cardFront = cardDrawnPrefab.transform.GetChild(0).transform.GetChild(0);
+        creaturePrefab.GetComponent<PrefabEvents>().ThisCard = card;
+        creaturePrefab.GetComponent<PrefabEvents>().IsCreatureCard = true;
+        card.CardGameObject = creaturePrefab;
+
+        Transform cardFront = creaturePrefab.transform.GetChild(0).transform.GetChild(0);
 
         cardFront.GetChild(0).Find("Character").GetComponent<Image>().sprite = card.CardImage;
 
@@ -83,6 +90,77 @@ public class Board : MonoBehaviour
         GameObject cardgo = card.CardGameObject;
 
         StartCoroutine(CreatureToBoard(cardgo));
+    }
+
+    public void CreateCreatureFormatted(Card card)
+    {
+        Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        Vector3 position = new Vector3(mousePos.x, mousePos.y, 0);
+        int index = CalcualteHoverIndex(position);
+        if (index != -1)
+        {
+            _playerBoard.Insert(index, card);
+        }
+        else
+        {
+            if (_playerBoard.Count > 0)
+            {
+                _playerBoard.Insert(0, card);
+            }
+            else
+            {
+                _playerBoard.Add(card);
+            }
+        }
+
+        GameObject creaturePrefab = Instantiate(GameManager.Instance.creaturePrefab, position, Quaternion.identity, gameObject.transform);
+
+        creaturePrefab.GetComponent<PrefabEvents>().ThisCard = card;
+        creaturePrefab.GetComponent<PrefabEvents>().FullCard = Instantiate(card.CardGameObject);
+        card.CardGameObject = creaturePrefab;
+        creaturePrefab.transform.position = new Vector3(0,_playerBoardMiddle,0);
+
+        creaturePrefab.GetComponent<PrefabEvents>().IsCreatureCard = true;
+        creaturePrefab.GetComponent<PrefabEvents>().CanBeHovered = true;
+
+        Transform cardFront = creaturePrefab.transform.GetChild(0).transform.GetChild(0);
+
+        cardFront.GetChild(0).Find("Character").GetComponent<Image>().sprite = card.CardImage;
+
+        cardFront.Find("CardAttack").GetComponent<TextMeshProUGUI>().text = card.Attack.ToString();
+        cardFront.Find("CardHealth").GetComponent<TextMeshProUGUI>().text = card.Health.ToString();
+
+        if (_playerBoard.Count > 1)
+        {
+            _targetPositionX += (_cardSize + _spacing);
+        }
+
+        UpdatePlayerBoardState();
+
+        GameObject cardgo = card.CardGameObject;
+    }
+
+    public int CalcualteHoverIndex(Vector3 newCardPos)
+    {
+        int index = -1;
+
+        if(_playerBoard.Count >= 1)
+        {
+            index = 0;
+            foreach(Card card in _playerBoard)
+            {
+                if(newCardPos.x > card.CardGameObject.transform.position.x)
+                {
+                    index++;
+                }
+                else
+                {
+                    return index;
+                }
+            }
+        }
+
+        return index;
     }
 
     public IEnumerator CreatureToBoard(GameObject cardgo)
@@ -108,6 +186,10 @@ public class Board : MonoBehaviour
             {
                 card.CardGameObject.transform.position = new Vector3(position, card.CardGameObject.transform.position.y, card.CardGameObject.transform.position.z);
                 position += ((_targetPositionX * 2) / (_playerBoard.Count - 1));
+            }
+            else if (!GameManager.Instance.StackEnabled)
+            {
+                card.CardGameObject.transform.position = new Vector3(_targetPositionX, _playerBoardMiddle, 0);
             }
         }
     }

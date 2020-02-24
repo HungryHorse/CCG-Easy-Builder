@@ -9,6 +9,11 @@ public enum CardType
     Creature, QuickSpell, SlowSpell, Static
 }
 
+public enum Phase
+{
+    StartOfTurn, Draw, MainOne, Combat, MainTwo, GenericMain, EndOfTurn
+}
+
 public class GameManager : MonoBehaviour
 {
     private static GameManager _instance;
@@ -18,9 +23,23 @@ public class GameManager : MonoBehaviour
     public float CardSize { get => _cardSize; set => _cardSize = value; }
     public float LerpSpeed { get => _lerpSpeed; set => _lerpSpeed = value; }
     public Vector2 StackPos { get => _stackPos; set => _stackPos = value; }
+    public List<Card> Stack { get => _stack; set => _stack = value; }
+    public bool StackEnabled { get => _stackEnabled; set => _stackEnabled = value; }
+    public Phase CurrPhase { get => _currPhase; set => _currPhase = value; }
+    public GameObject PlayerObject { get => _playerObject; set => _playerObject = value; }
+    public LineRenderer TargetLine { get => _targetLine; set => _targetLine = value; }
+    public List<Card> PlayerBoard { get => _playerBoard; set => _playerBoard = value; }
+    public List<Card> OpponentBoard { get => _opponentBoard; set => _opponentBoard = value; }
+    public int PlayerHealth { get => _playerHealth; set => _playerHealth = value; }
+    public int OpponentHealth { get => _opponentHealth; set => _opponentHealth = value; }
+    public Vector2 HoverPos { get => _hoverPos; set => _hoverPos = value; }
 
     public GameObject creaturePrefab;
 
+    [SerializeField]
+    private int _turnCounter;
+    [SerializeField]
+    private bool _stackEnabled = true;
     [SerializeField]
     private List<Card> _stack = new List<Card>();
     [SerializeField]
@@ -28,14 +47,49 @@ public class GameManager : MonoBehaviour
     [SerializeField]
     private List<Card> _opponentHand;
     [SerializeField]
+    private List<Card> _playerBoard = new List<Card>();
+    [SerializeField]
+    private List<Card> _opponentBoard = new List<Card>();
+    [SerializeField]
+    private int _playerHealth = 20;
+    [SerializeField]
+    private int _playerResource;
+    [HideInInspector]
+    public bool maxPlayerResourceEnabled;
+    [HideInInspector]
+    public int maxPlayerResource;
+    [SerializeField]
+    private int _opponentHealth = 20;
+    [SerializeField]
+    private int _opponentResource;
+    [SerializeField]
     private float _stackPositionX;
     [SerializeField]
     private float _stackPositionY;
+    [SerializeField]
+    private float _hoverPositionX;
+    [SerializeField]
+    private float _hoverPositionY;
     private Vector2 _stackPos;
+    private Vector2 _hoverPos;
     [SerializeField]
     private float _cardSize;
     [SerializeField]
     private float _lerpSpeed;
+    [SerializeField]
+    private bool _seperateCombatPhase;
+    private bool _targeting = false;
+    private Card _waitingForTarget;
+
+    [SerializeField]
+    private GameObject _playerObject;
+    [SerializeField]
+    private LineRenderer _targetLine;
+    private Vector3[] _linePoints;
+
+    private Phase[] _phaseList;
+    private Phase _currPhase;
+    private int _currPhaseIndex = 0;
 
     private GameObject _cardObjectInStack;
 
@@ -43,6 +97,7 @@ public class GameManager : MonoBehaviour
     {
         Gizmos.color = Color.green;
         Gizmos.DrawWireCube(new Vector3(_stackPositionX, _stackPositionY), new Vector3(_cardSize * 3, _cardSize * 4));
+        Gizmos.DrawWireCube(new Vector3(_hoverPositionX, _hoverPositionY), new Vector3(_cardSize * 3, _cardSize * 4));
     }
 
     private void Awake()
@@ -62,17 +117,108 @@ public class GameManager : MonoBehaviour
     void Start()
     {
         _stackPos = new Vector2(_stackPositionX, _stackPositionY);
+        _hoverPos = new Vector2(_hoverPositionX, _hoverPositionY);
+        if (_seperateCombatPhase)
+        {
+            _phaseList = new Phase[] { Phase.StartOfTurn, Phase.Draw, Phase.MainOne, Phase.Combat, Phase.MainTwo, Phase.EndOfTurn };
+        }
+        else
+        {
+            _phaseList = new Phase[] { Phase.StartOfTurn, Phase.Draw, Phase.GenericMain, Phase.EndOfTurn };
+        }
+
+        //This is being used for testing
+        ForDebug();
+
+        _currPhase = _phaseList[_currPhaseIndex];
+        _turnCounter++;
+        StartPhase();
+        AddResource(10);
+    }
+
+    public void ForDebug()
+    {
+        GameObject TestEnemy = Instantiate(creaturePrefab, new Vector3(0, Board.Instance.OpponentBoardMiddle), Quaternion.identity, Board.Instance.transform);
+
+        Card TestEnemyCard = ScriptableObject.CreateInstance<Card>();
+
+        PrefabEvents prefabDetails = TestEnemy.GetComponent<PrefabEvents>();
+
+        TestEnemyCard.CardName = "TestEnemy";
+
+        prefabDetails.ThisCard = TestEnemyCard;
+
+        TestEnemyCard.CardGameObject = TestEnemy;
+
+        TestEnemyCard.Attack = 1;
+
+        TestEnemyCard.MaxHealth = 1;
+
+        TestEnemyCard.OnCreation();
+
+        _opponentBoard.Add(TestEnemyCard);
+    }
+
+    public void ProgressPhases()
+    {
+        if(_currPhaseIndex + 1 == _phaseList.Length)
+        {
+            _currPhaseIndex = 0;
+            _turnCounter++;
+            ResetResource();
+            AddResource(_turnCounter);
+        }
+        else
+        {
+            _currPhaseIndex++;
+        }
+        _currPhase = _phaseList[_currPhaseIndex];
+        StartPhase();
+    }
+
+    private void StartPhase()
+    {
+        switch (_currPhase)
+        {
+            case Phase.Draw:
+                Deck.Instance.AddCardToHand();
+                break;
+        }
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+        if (_targeting)
+        {
+            _linePoints = new Vector3[2] { _stackPos, Camera.main.ScreenToWorldPoint(Input.mousePosition) };
+            _targetLine.SetPositions(_linePoints);
+        }
+
+        if (_targeting && Input.GetMouseButtonDown(0))
+        {
+            _targeting = false;
+            Card target = ReturnTargetFromBoard(Camera.main.ScreenToWorldPoint(Input.mousePosition));
+            if(target != null)
+            {
+                _waitingForTarget.Targets.Add(target);
+                AddCardToStack(_waitingForTarget);
+                _waitingForTarget = null;
+            }
+        }
     }
 
     public void PlayCard(GameObject cardObject)
     {
-        StartCoroutine(MoveTowardsStackPosition(cardObject));
+        RemoveResource(cardObject.GetComponent<PrefabEvents>().ThisCard.Cost);
+        if (_stackEnabled)
+        {
+            StartCoroutine(MoveTowardsStackPosition(cardObject));
+        }
+        else
+        {
+            Resolve(cardObject.GetComponent<PrefabEvents>().ThisCard);
+        }
     }
 
     private IEnumerator MoveTowardsStackPosition(GameObject cardObject)
@@ -89,7 +235,15 @@ public class GameManager : MonoBehaviour
             }
             yield return new WaitForSeconds(0.02f);
         }
-        AddCardToStack(cardInfo);
+        if (cardInfo.CanTarget)
+        {
+            _targeting = true;
+            _waitingForTarget = cardInfo;
+        }
+        else
+        {
+            AddCardToStack(cardInfo);
+        }
     }
 
     public void AddCardToStack(Card card)
@@ -134,13 +288,113 @@ public class GameManager : MonoBehaviour
                 Board.Instance.CreateCreature(card);
                 break;
             case CardType.SlowSpell:
+                _linePoints = new Vector3[2] { Vector3.zero, Vector3.zero };
+                _targetLine.SetPositions(_linePoints);
+                Debug.Log(card.Targets[0].CardName);
                 break;
             case CardType.QuickSpell:
+                _linePoints = new Vector3[2] { Vector3.zero, Vector3.zero };
+                _targetLine.SetPositions(_linePoints);
+                Debug.Log(card.Targets[0].CardName);
                 break;
             case CardType.Static:
                 break;
             default:
                 break;
         }
+    }
+
+    public void Resolve(Card card)
+    {
+        Vector2 cardPosition = card.CardGameObject.transform.position;
+        Destroy(card.CardGameObject.GetComponent<PrefabEvents>().ViewObject);
+        Destroy(card.CardGameObject);
+
+        CardType cardType = card.CardType;
+
+        switch (cardType)
+        {
+            case CardType.Creature:
+                Board.Instance.CreateCreatureFormatted(card);
+                break;
+            case CardType.SlowSpell:
+                Debug.Log(card.Targets[0].CardName);
+                break;
+            case CardType.QuickSpell:
+                Debug.Log(card.Targets[0].CardName);
+                break;
+            case CardType.Static:
+                break;
+            default:
+                break;
+        }
+    }
+
+    public Card ReturnTargetFromBoard(Vector3 targetPosition)
+    {
+        Vector3 zNormalizedTarget = new Vector3(targetPosition.x, targetPosition.y, 0);
+        foreach (Card checkCard in _playerBoard)
+        {
+            if(Vector3.Distance(zNormalizedTarget, checkCard.CardGameObject.transform.position) < _cardSize)
+            {
+                return checkCard;
+            }
+        }
+        foreach (Card checkCard in _opponentBoard)
+        {
+            if (Vector3.Distance(zNormalizedTarget, checkCard.CardGameObject.transform.position) < _cardSize)
+            {
+                return checkCard;
+            }
+        }
+
+        return null;
+    }
+
+    public bool CheckCastingCost(int castingCost)
+    {
+        if(_playerResource - castingCost < 0)
+        {
+            return false;
+        }
+        else
+        {
+            return true;
+        }
+    }
+
+    public void ResetResource()
+    {
+        _playerResource = 0;
+    }
+
+    public void AddResource()
+    {
+        _playerResource += 1;
+
+        if (maxPlayerResourceEnabled)
+        {
+            _playerResource = Mathf.Clamp(_playerResource, 0, maxPlayerResource);
+        }
+    }
+
+    public void AddResource(int amountToAdd)
+    {
+        _playerResource += amountToAdd;
+
+        if (maxPlayerResourceEnabled)
+        {
+            _playerResource = Mathf.Clamp(_playerResource, 0, maxPlayerResource);
+        }
+    }
+
+    public void RemoveResource()
+    {
+        _playerResource -= 1;
+    }
+
+    public void RemoveResource(int amountToRemove)
+    {
+        _playerResource -= amountToRemove;
     }
 }

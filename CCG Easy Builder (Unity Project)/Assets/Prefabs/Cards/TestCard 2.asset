@@ -18,4 +18,4 @@ MonoBehaviour:
   _health: 1000
   _attack: 1000
   _cardType: 0
-  _cardImage: {fileID: 21300000, guid: 94aba7b25c42c9443a621fbdb700d3f0, type: 3}
+  _cardImage: {fileID: 21300000, guid: 614ff4c069da32346b486e4bc847c972, type: 3}
