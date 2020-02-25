@@ -42,6 +42,7 @@ public class Card : ScriptableObject
     public List<Card> Targets { get => _targets; set => _targets = value; }
     public int MaxHealth { get => _maxHealth; set => _maxHealth = value; }
     public int Health { get => _health; set => _health = value; }
+    public bool PlayerCard { get => _playerCard; set => _playerCard = value; }
 
     public void OnCreation()
     {
@@ -55,8 +56,8 @@ public class Card : ScriptableObject
         {
             if (_playerCard)
             {
-                GameManager.Instance.PlayerBoard.Remove(this);
-            }
+                Board.Instance.RemoveCardFromBoard(this);
+}
             else
             {
                 GameManager.Instance.OpponentBoard.Remove(this);

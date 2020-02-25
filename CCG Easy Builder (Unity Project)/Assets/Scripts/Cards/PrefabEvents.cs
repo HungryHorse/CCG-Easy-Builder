@@ -242,7 +242,7 @@ public class PrefabEvents : MonoBehaviour
             }
         }
 
-        if (_isBeingHovered && Input.GetMouseButtonDown(0))
+        if (_isBeingHovered && Input.GetMouseButtonDown(0) && (GameManager.Instance.CurrPhase == Phase.Combat || GameManager.Instance.CurrPhase == Phase.GenericMain))
         {
             _isAttacking = true;
             CreatureMouseExit();

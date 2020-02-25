@@ -177,7 +177,7 @@ public class Board : MonoBehaviour
         }
     }
 
-    private void UpdatePlayerBoardState()
+    public void UpdatePlayerBoardState()
     {
         float position = -_targetPositionX;
         foreach (Card card in _playerBoard)
@@ -192,6 +192,13 @@ public class Board : MonoBehaviour
                 card.CardGameObject.transform.position = new Vector3(_targetPositionX, _playerBoardMiddle, 0);
             }
         }
+    }
+
+    public void RemoveCardFromBoard(Card card)
+    {
+        _playerBoard.Remove(card);
+        _targetPositionX -= (_cardSize + _spacing);
+        UpdatePlayerBoardState();
     }
 
     // Update is called once per frame
