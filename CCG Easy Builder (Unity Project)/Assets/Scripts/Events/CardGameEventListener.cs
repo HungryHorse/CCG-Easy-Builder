@@ -3,25 +3,25 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
-public class GameEventListener : MonoBehaviour {
-
+public class CardGameEventListener : MonoBehaviour
+{
     [SerializeField]
-    private GameEvent gameEvent; 
+    private CardGameEvent gameEvent;
     [SerializeField]
-    protected UnityEvent response; 
+    private CardEvent cardResponse;
 
-    private void OnEnable() 
+    private void OnEnable()
     {
         gameEvent.RegisterListener(this);
     }
 
-    private void OnDisable() 
+    private void OnDisable()
     {
         gameEvent.UnregisterListener(this);
     }
 
-    public void OnEventRaised() 
+    public void OnEventRaised(Card card)
     {
-        response.Invoke();
+        cardResponse.Invoke(card);
     }
 }

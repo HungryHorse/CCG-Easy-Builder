@@ -15,9 +15,10 @@ MonoBehaviour:
   _cardName: QuickSpell (Target Test)
   _description: This doesn't do anything but target stuff
   _cost: 2
-  _health: 0
+  _maxHealth: 0
   _attack: 0
   _cardType: 1
-  _cardImage: {fileID: 21300000, guid: 176e7c592a279254ab897d2dc939d74b, type: 3}
   _canTarget: 1
   _targets: []
+  _cardImage: {fileID: 21300000, guid: 176e7c592a279254ab897d2dc939d74b, type: 3}
+  _playerCard: 0

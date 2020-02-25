@@ -397,6 +397,8 @@ GameObject:
   - component: {fileID: 3914883818773787976}
   - component: {fileID: -2482368472632187569}
   - component: {fileID: 535470127597367896}
+  - component: {fileID: -2089061457547926795}
+  - component: {fileID: 5178996720490520340}
   m_Layer: 0
   m_Name: BaseCardPrefab
   m_TagString: Untagged
@@ -451,6 +453,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7ea11eb371f87fe4284c89f147c9c6be, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _thisCard: {fileID: 0}
   _yIncreaseOnHover: 1.3
   _hoverScale: 1.8
   _zoomSpeed: 0.1
@@ -517,6 +520,45 @@ Animation:
   m_PlayAutomatically: 1
   m_AnimatePhysics: 0
   m_CullingType: 0
+--- !u!114 &-2089061457547926795
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1516072223511642555}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cea661508f61c44439e0ba1c1bc465e4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  gameEvent: {fileID: 11400000, guid: a3e516c483124ba4bbbe8766b2d5330e, type: 2}
+  cardResponse:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 5178996720490520340}
+        m_MethodName: RespondToDrawEvent
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+--- !u!114 &5178996720490520340
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1516072223511642555}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 24051f5ddfdef324cbd801289cf69a61, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1516072224364467422
 GameObject:
   m_ObjectHideFlags: 0

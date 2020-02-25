@@ -45,6 +45,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   creaturePrefab: {fileID: 7447910100802827212, guid: 768b0d986ab7e694dae36e3016483c6e,
     type: 3}
+  _turnCounter: 0
   _stackEnabled: 0
   _stack: []
   _currentHand: []
@@ -693,6 +694,7 @@ MonoBehaviour:
   handObject: {fileID: 5883821138856876073}
   moveCard: {fileID: 7400000, guid: e8dda3e4bd2067845b019637776c37c5, type: 2}
   _canDrawCard: 1
+  _drawEvent: {fileID: 11400000, guid: a3e516c483124ba4bbbe8766b2d5330e, type: 2}
   _maxPositionY: 0.25
   _maximumRot: 6
   _physicalHandSizeX: 10

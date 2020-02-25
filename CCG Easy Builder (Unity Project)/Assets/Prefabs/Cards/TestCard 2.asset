@@ -15,7 +15,10 @@ MonoBehaviour:
   _cardName: Card2
   _description: This man is the most cursed in all the land.
   _cost: 10
-  _health: 1000
+  _maxHealth: 0
   _attack: 1000
   _cardType: 0
+  _canTarget: 0
+  _targets: []
   _cardImage: {fileID: 21300000, guid: 614ff4c069da32346b486e4bc847c972, type: 3}
+  _playerCard: 0
