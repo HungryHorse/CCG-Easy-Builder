@@ -15,7 +15,7 @@ MonoBehaviour:
   _cardName: Card3
   _description: This man is the most cursed in all the land.
   _cost: 10
-  _maxHealth: 0
+  _maxHealth: 1
   _attack: 1000
   _cardType: 0
   _canTarget: 0

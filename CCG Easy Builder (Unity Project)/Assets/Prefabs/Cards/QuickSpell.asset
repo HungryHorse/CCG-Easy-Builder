@@ -15,7 +15,7 @@ MonoBehaviour:
   _cardName: QuickSpell (Target Test)
   _description: This doesn't do anything but target stuff
   _cost: 2
-  _maxHealth: 0
+  _maxHealth: 10
   _attack: 0
   _cardType: 1
   _canTarget: 1
