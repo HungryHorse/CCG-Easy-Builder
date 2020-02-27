@@ -392,8 +392,10 @@ GameObject:
   - component: {fileID: 6216458054722342856}
   - component: {fileID: 4900505141711816511}
   - component: {fileID: 3448273419445720888}
-  - component: {fileID: 3052342262000200335}
   - component: {fileID: 7942370364257496004}
+  - component: {fileID: 3052342262000200335}
+  - component: {fileID: -828368177948739495}
+  - component: {fileID: -636555752722579494}
   m_Layer: 0
   m_Name: CreatureCardPrefab
   m_TagString: Untagged
@@ -481,6 +483,18 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
+--- !u!114 &7942370364257496004
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7447910100802827212}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 24051f5ddfdef324cbd801289cf69a61, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &3052342262000200335
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -499,7 +513,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 7942370364257496004}
         m_MethodName: RespondToDrawEvent
-        m_Mode: 1
+        m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -508,7 +522,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
---- !u!114 &7942370364257496004
+--- !u!114 &-828368177948739495
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -517,9 +531,51 @@ MonoBehaviour:
   m_GameObject: {fileID: 7447910100802827212}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 24051f5ddfdef324cbd801289cf69a61, type: 3}
+  m_Script: {fileID: 11500000, guid: cea661508f61c44439e0ba1c1bc465e4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  gameEvent: {fileID: 11400000, guid: 3a1b0e3b0d180bb40aae647b6be6e5c6, type: 2}
+  cardResponse:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 7942370364257496004}
+        m_MethodName: RespondToPlayEvent
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+--- !u!114 &-636555752722579494
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7447910100802827212}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cea661508f61c44439e0ba1c1bc465e4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  gameEvent: {fileID: 11400000, guid: 7d73f9bebe38a6245b6365d353f596b1, type: 2}
+  cardResponse:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 7942370364257496004}
+        m_MethodName: RespondToCreatureEnteringBoardEvent
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &7447910101713065385
 GameObject:
   m_ObjectHideFlags: 0

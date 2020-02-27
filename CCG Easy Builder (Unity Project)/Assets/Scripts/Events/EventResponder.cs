@@ -4,7 +4,17 @@ using UnityEngine;
 
 public class EventResponder : MonoBehaviour
 {
-    public void RespondToDrawEvent()
+    public void RespondToDrawEvent(Card card)
+    {
+
+    }
+
+    public void RespondToCreatureEnteringBoardEvent(Card card)
+    {
+
+    }
+
+    public void RespondToPlayEvent(Card card)
     {
 
     }

@@ -36,6 +36,7 @@ public class PrefabEvents : MonoBehaviour
     private Vector3 _targetScale; 
     private Vector3 _targetRot; 
     private Vector3 _targetPosition;
+    private Vector3 zLockedMousePos;
 
     private Vector3[] linePoints;
 
@@ -86,7 +87,7 @@ public class PrefabEvents : MonoBehaviour
     {
         if (!_onStack)
         {
-            Vector3 zLockedMousePos = new Vector3(Camera.main.ScreenToWorldPoint(Input.mousePosition).x, Camera.main.ScreenToWorldPoint(Input.mousePosition).y, transform.position.z);
+            zLockedMousePos = new Vector3(Camera.main.ScreenToWorldPoint(Input.mousePosition).x, Camera.main.ScreenToWorldPoint(Input.mousePosition).y, transform.position.z);
 
             if (!_isBeingHovered && gameObject.transform.localScale.x != 1 && _hasBeenToHand)
             {
@@ -139,7 +140,8 @@ public class PrefabEvents : MonoBehaviour
                             childObject.gameObject.SetActive(false);
                         }
                     }
-                    linePoints = new Vector3[2] { GameManager.Instance.PlayerObject.transform.position, Camera.main.ScreenToWorldPoint(Input.mousePosition) };
+                    Vector3 newTransform = new Vector3(GameManager.Instance.PlayerObject.transform.position.x, GameManager.Instance.PlayerObject.transform.position.y, zLockedMousePos.z);
+                    linePoints = new Vector3[2] { newTransform, zLockedMousePos };
                     GameManager.Instance.TargetLine.SetPositions(linePoints);
                 }
                 else if (_outsideHand && _originalCard != null)

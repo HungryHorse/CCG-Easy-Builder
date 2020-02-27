@@ -80,6 +80,8 @@ public class GameManager : MonoBehaviour
     private bool _seperateCombatPhase;
     private bool _targeting = false;
     private Card _waitingForTarget;
+    [SerializeField]
+    private CardGameEvent playCardEvent;
 
     [SerializeField]
     private GameObject _playerObject;
@@ -211,6 +213,7 @@ public class GameManager : MonoBehaviour
     public void PlayCard(GameObject cardObject)
     {
         RemoveResource(cardObject.GetComponent<PrefabEvents>().ThisCard.Cost);
+        playCardEvent.RaiseCard(cardObject.GetComponent<PrefabEvents>().ThisCard);
         if (_stackEnabled)
         {
             StartCoroutine(MoveTowardsStackPosition(cardObject));
