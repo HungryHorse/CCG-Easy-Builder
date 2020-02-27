@@ -83,6 +83,9 @@ public class GameManager : MonoBehaviour
     [SerializeField]
     private CardGameEvent playCardEvent;
 
+    public GameObject target;
+    public GameObject targetArrow;
+
     [SerializeField]
     private GameObject _playerObject;
     [SerializeField]
@@ -118,6 +121,7 @@ public class GameManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        target.SetActive(false);
         _stackPos = new Vector2(_stackPositionX, _stackPositionY);
         _hoverPos = new Vector2(_hoverPositionX, _hoverPositionY);
         if (_seperateCombatPhase)
@@ -293,11 +297,13 @@ public class GameManager : MonoBehaviour
             case CardType.SlowSpell:
                 _linePoints = new Vector3[2] { Vector3.zero, Vector3.zero };
                 _targetLine.SetPositions(_linePoints);
+                GameManager.Instance.target.SetActive(false);
                 Debug.Log(card.Targets[0].CardName);
                 break;
             case CardType.QuickSpell:
                 _linePoints = new Vector3[2] { Vector3.zero, Vector3.zero };
                 _targetLine.SetPositions(_linePoints);
+                GameManager.Instance.target.SetActive(false);
                 Debug.Log(card.Targets[0].CardName);
                 break;
             case CardType.Static:

@@ -141,8 +141,22 @@ public class PrefabEvents : MonoBehaviour
                         }
                     }
                     Vector3 newTransform = new Vector3(GameManager.Instance.PlayerObject.transform.position.x, GameManager.Instance.PlayerObject.transform.position.y, zLockedMousePos.z);
-                    linePoints = new Vector3[2] { newTransform, zLockedMousePos };
+                    if (!GameManager.Instance.target.activeInHierarchy)
+                    {
+                        GameManager.Instance.target.SetActive(true);
+                    }
+
+                    GameManager.Instance.target.transform.position = zLockedMousePos;
+                    Vector3 difference = newTransform - GameManager.Instance.targetArrow.transform.position;
+
+                    difference.Normalize();
+
+                    float rotZ = Mathf.Atan2(difference.y, difference.x) * Mathf.Rad2Deg;
+                    Quaternion newRotation = Quaternion.Euler(new Vector3(0.0f, 0.0f, rotZ - 270f));
+                    GameManager.Instance.target.transform.rotation = newRotation;
+                    linePoints = new Vector3[2] { newTransform, zLockedMousePos + (difference * 0.6f) };
                     GameManager.Instance.TargetLine.SetPositions(linePoints);
+
                 }
                 else if (_outsideHand && _originalCard != null)
                 {
@@ -157,6 +171,7 @@ public class PrefabEvents : MonoBehaviour
                         GameObject childObject = transform.GetChild(i).gameObject;
                         childObject.SetActive(true);
                     }
+                    GameManager.Instance.target.SetActive(false);
                     linePoints = new Vector3[2] { Vector3.zero, Vector3.zero };
                     GameManager.Instance.TargetLine.SetPositions(linePoints);
                 }
@@ -193,6 +208,7 @@ public class PrefabEvents : MonoBehaviour
                                 _thisCard.Targets.Add(targetCard);
                                 RelativeHand.RemoveCardFromHand(_thisCard);
                                 GameManager.Instance.PlayCard(gameObject);
+                                GameManager.Instance.target.SetActive(false);
                                 linePoints = new Vector3[2] { Vector3.zero, Vector3.zero };
                                 GameManager.Instance.TargetLine.SetPositions(linePoints);
                             }
@@ -220,10 +236,25 @@ public class PrefabEvents : MonoBehaviour
     {
         if (_isAttacking)
         {
-            linePoints = new Vector3[2] { transform.position, Camera.main.ScreenToWorldPoint(Input.mousePosition) };
+            zLockedMousePos = new Vector3(Camera.main.ScreenToWorldPoint(Input.mousePosition).x, Camera.main.ScreenToWorldPoint(Input.mousePosition).y, transform.position.z - 2);
+            if (!GameManager.Instance.target.activeInHierarchy)
+            {
+                GameManager.Instance.target.SetActive(true);
+            }
+
+            GameManager.Instance.target.transform.position = zLockedMousePos;
+            Vector3 difference = transform.position - GameManager.Instance.targetArrow.transform.position;
+
+            difference.Normalize();
+
+            float rotZ = Mathf.Atan2(difference.y, difference.x) * Mathf.Rad2Deg;
+            Quaternion newRotation = Quaternion.Euler(new Vector3(0.0f, 0.0f, rotZ - 270f));
+            GameManager.Instance.target.transform.rotation = newRotation;
+            linePoints = new Vector3[2] { transform.position, zLockedMousePos + (difference * 0.6f) };
             GameManager.Instance.TargetLine.SetPositions(linePoints);
 
-            if (Input.GetMouseButtonDown(0))
+
+            if (Input.GetMouseButtonUp(0))
             {
                 Card targetCard = GameManager.Instance.ReturnTargetFromBoard(Camera.main.ScreenToWorldPoint(Input.mousePosition));
 
@@ -232,19 +263,21 @@ public class PrefabEvents : MonoBehaviour
                     targetCard.TakeDamage(_thisCard.Attack);
                     _thisCard.TakeDamage(targetCard.Attack);
                     _isAttacking = false;
+                    GameManager.Instance.target.SetActive(false);
                     linePoints = new Vector3[2] { Vector3.zero, Vector3.zero };
                     GameManager.Instance.TargetLine.SetPositions(linePoints);
                 }
                 else if (targetCard == null || GameManager.Instance.PlayerBoard.Contains(targetCard))
                 {
                     _isAttacking = false;
+                    GameManager.Instance.target.SetActive(false);
                     linePoints = new Vector3[2] { Vector3.zero, Vector3.zero };
                     GameManager.Instance.TargetLine.SetPositions(linePoints);
                 }
             }
         }
 
-        if (_isBeingHovered && Input.GetMouseButtonDown(0) && (GameManager.Instance.CurrPhase == Phase.Combat || GameManager.Instance.CurrPhase == Phase.GenericMain))
+        if (_isBeingHovered && Input.GetMouseButton(0) && (GameManager.Instance.CurrPhase == Phase.Combat || GameManager.Instance.CurrPhase == Phase.GenericMain))
         {
             _isAttacking = true;
             CreatureMouseExit();
@@ -253,6 +286,7 @@ public class PrefabEvents : MonoBehaviour
         if(_isAttacking && Input.GetMouseButtonDown(1))
         {
             _isAttacking = false;
+            GameManager.Instance.target.SetActive(false);
             linePoints = new Vector3[2] { Vector3.zero, Vector3.zero };
             GameManager.Instance.TargetLine.SetPositions(linePoints);
         }
@@ -316,6 +350,7 @@ public class PrefabEvents : MonoBehaviour
                 GameObject childObject = transform.GetChild(i).gameObject;
                 childObject.SetActive(true);
             }
+            GameManager.Instance.target.SetActive(false);
             linePoints = new Vector3[2] { Vector3.zero, Vector3.zero };
             GameManager.Instance.TargetLine.SetPositions(linePoints);
         }
