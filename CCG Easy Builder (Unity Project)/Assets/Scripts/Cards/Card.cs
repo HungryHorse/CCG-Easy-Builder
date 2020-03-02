@@ -28,6 +28,8 @@ public class Card : ScriptableObject
     private Sprite _cardImage;
     [SerializeField]
     private bool _playerCard;
+    [SerializeField]
+    private List<Effect> _effects = new List<Effect>();
 
     private GameObject _cardGameObject;
 
@@ -43,6 +45,7 @@ public class Card : ScriptableObject
     public int MaxHealth { get => _maxHealth; set => _maxHealth = value; }
     public int Health { get => _health; set => _health = value; }
     public bool PlayerCard { get => _playerCard; set => _playerCard = value; }
+    public List<Effect> Effects { get => _effects; set => _effects = value; }
 
     public void OnCreation()
     {
