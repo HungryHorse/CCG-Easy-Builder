@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
+using UnityEngine.UI;
+using TMPro;
 
 [CustomEditor(typeof(Hand))]
 public class MyHandEditor : Editor
@@ -52,5 +54,27 @@ public class MyManagerEditor : Editor
         {
             myScript.maxPlayerResource = EditorGUILayout.IntSlider("Maximum resource:", myScript.maxPlayerResource, 1, 30);
         }
+    }
+}
+
+[CustomEditor(typeof(CardCreator))]
+[CanEditMultipleObjects]
+public class MyCardCreationEditor : Editor
+{
+    SerializedProperty cardCreator;
+
+    public override void OnInspectorGUI()
+    {
+        var myScript = target as CardCreator;        
+
+        DrawDefaultInspector();
+
+        if (myScript.cardType == CardType.Creature)
+        {
+            myScript.attack = EditorGUILayout.IntField("Attack", myScript.attack);
+            myScript.maxHealth = EditorGUILayout.IntField("Health", myScript.maxHealth);
+        }
+
+        myScript.EditorUpdate();
     }
 }
