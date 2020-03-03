@@ -2,10 +2,15 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[CreateAssetMenu]
 public class DealDamage : Keyword
 {
-    new protected bool _hasTarget = true;
-    public override void Efect(Card card, Card target)
+    public override void Effect(Card card)
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public override void Effect(Card card, Card target)
     {
         target.TakeDamage(_effectValue);
     }

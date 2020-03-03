@@ -14,6 +14,8 @@ public enum Phase
     StartOfTurn, Draw, MainOne, Combat, MainTwo, GenericMain, EndOfTurn
 }
 
+public enum Triggers { Draw, Enter, Play, Spell }
+
 public class GameManager : MonoBehaviour
 {
     private static GameManager _instance;
@@ -297,14 +299,28 @@ public class GameManager : MonoBehaviour
             case CardType.SlowSpell:
                 _linePoints = new Vector3[2] { Vector3.zero, Vector3.zero };
                 _targetLine.SetPositions(_linePoints);
-                GameManager.Instance.target.SetActive(false);
+                target.SetActive(false);
                 Debug.Log(card.Targets[0].CardName);
+                foreach(Effect effect in card.Effects)
+                {
+                    if(effect.Trigger == Triggers.Spell)
+                    {
+                        effect.PerformEffect(card, card.Targets[0]);
+                    }
+                }
                 break;
             case CardType.QuickSpell:
                 _linePoints = new Vector3[2] { Vector3.zero, Vector3.zero };
                 _targetLine.SetPositions(_linePoints);
-                GameManager.Instance.target.SetActive(false);
+                target.SetActive(false);
                 Debug.Log(card.Targets[0].CardName);
+                foreach (Effect effect in card.Effects)
+                {
+                    if (effect.Trigger == Triggers.Spell)
+                    {
+                        effect.PerformEffect(card, card.Targets[0]);
+                    }
+                }
                 break;
             case CardType.Static:
                 break;
@@ -328,9 +344,23 @@ public class GameManager : MonoBehaviour
                 break;
             case CardType.SlowSpell:
                 Debug.Log(card.Targets[0].CardName);
+                foreach (Effect effect in card.Effects)
+                {
+                    if (effect.Trigger == Triggers.Spell)
+                    {
+                        effect.PerformEffect(card, card.Targets[0]);
+                    }
+                }
                 break;
             case CardType.QuickSpell:
                 Debug.Log(card.Targets[0].CardName);
+                foreach (Effect effect in card.Effects)
+                {
+                    if (effect.Trigger == Triggers.Spell)
+                    {
+                        effect.PerformEffect(card, card.Targets[0]);
+                    }
+                }
                 break;
             case CardType.Static:
                 break;

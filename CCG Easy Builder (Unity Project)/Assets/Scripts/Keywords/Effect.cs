@@ -2,12 +2,16 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum Triggers { Draw, Enter, Play }
-
-public class Effect : MonoBehaviour
+[CreateAssetMenu]
+public class Effect : ScriptableObject
 {
+    [SerializeField]
     private Triggers _trigger;
+    [SerializeField]
     private List<Keyword> _responses = new List<Keyword>();
+
+    [SerializeField]
+    protected bool _hasTarget;
 
     public Triggers Trigger { get => _trigger; set => _trigger = value; }
 
@@ -15,7 +19,7 @@ public class Effect : MonoBehaviour
     {
         foreach(Keyword keyword in _responses)
         {
-            keyword.Efect(card);
+            keyword.Effect(card);
         }
     }
 
@@ -23,7 +27,7 @@ public class Effect : MonoBehaviour
     {
         foreach (Keyword keyword in _responses)
         {
-            keyword.Efect(card, target);
+            keyword.Effect(card, target);
         }
     }
 }

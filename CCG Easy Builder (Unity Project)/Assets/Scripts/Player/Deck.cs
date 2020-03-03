@@ -55,6 +55,7 @@ public class Deck : MonoBehaviour
             instanceOfCardDrawn.Health = cardBeingDrawn.MaxHealth;
             instanceOfCardDrawn.Targets = new List<Card>();
             instanceOfCardDrawn.PlayerCard = true;
+            instanceOfCardDrawn.Effects = cardBeingDrawn.Effects;
             _playerHand.AddCardFromDeck(instanceOfCardDrawn, gameObject.transform.position);
             _currentDeck.Remove(cardBeingDrawn);
         }

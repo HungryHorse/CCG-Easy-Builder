@@ -24,12 +24,12 @@ public class Card : ScriptableObject
     private bool _canTarget;
     [SerializeField]
     private List<Card> _targets;
-    [SerializeField, Header("Card Visuals")]
-    private Sprite _cardImage;
     [SerializeField]
     private bool _playerCard;
     [SerializeField]
     private List<Effect> _effects = new List<Effect>();
+    [SerializeField, Header("Card Visuals")]
+    private Sprite _cardImage;
 
     private GameObject _cardGameObject;
 
