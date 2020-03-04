@@ -7,7 +7,7 @@ public class DealDamage : Keyword
 {
     public override void Effect(Card card)
     {
-        throw new System.NotImplementedException();
+        card.TakeDamage(_effectValue);
     }
 
     public override void Effect(Card card, Card target)

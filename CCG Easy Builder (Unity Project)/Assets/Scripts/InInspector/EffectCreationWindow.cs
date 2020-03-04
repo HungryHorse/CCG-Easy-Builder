@@ -3,9 +3,20 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 
+public enum ResponseTypes { CardName, CardType }
+
+public class CustomStringHolder : ScriptableObject
+{
+    public string[] CardNames;
+}
+
 public class EffectCreationWindow : EditorWindow
 {
     private Triggers _triggerForNewEffect;
+    private bool _hasSpecificCardTriggers;
+    private ResponseTypes _responseType;
+    private string[] _triggerCardNames;
+    private CardType _triggerCardType;
     private static string[] _keyWordNames = null;
     private static Keyword[] _keywords = null;
     private int _index;
@@ -19,9 +30,15 @@ public class EffectCreationWindow : EditorWindow
     private static GUIStyle _buttonStyle = new GUIStyle(GUI.skin.GetStyle("miniButton"));
     private int _value;
     private string _effectName;
+    private static CustomStringHolder _customStringHolder = ScriptableObject.CreateInstance<CustomStringHolder>();
+    private static SerializedObject _serializedStringHolder;
+    private static SerializedProperty _serializedStringHolderList;
 
     public static void ShowWindow(Keyword[] importedKeywords, CardCreator cardCreationReferance)
     {
+        _serializedStringHolder = new UnityEditor.SerializedObject(_customStringHolder);
+        _serializedStringHolderList = _serializedStringHolder.FindProperty("CardNames");
+
         _popUpStyle.margin = new RectOffset(15,15,5,5);
         _editorStyle.margin = new RectOffset(15,15,5,5);
         _mainPopUpStyle.margin = new RectOffset(0, 15, 5, 15);
@@ -50,6 +67,29 @@ public class EffectCreationWindow : EditorWindow
 
         if (_triggerForNewEffect != Triggers.Null)
         {
+            if(_triggerForNewEffect == Triggers.CardDrawn || _triggerForNewEffect == Triggers.CardPlayed || _triggerForNewEffect == Triggers.CreatureEntersBoard)
+            {
+                _hasSpecificCardTriggers = EditorGUILayout.Toggle("Has specific trigger", _hasSpecificCardTriggers);
+
+                if (_hasSpecificCardTriggers)
+                {
+                    _responseType = (ResponseTypes)EditorGUILayout.EnumPopup("Specific trigger type", _responseType, _mainPopUpStyle);
+                    if(_responseType == ResponseTypes.CardName)
+                    {
+                        EditorGUILayout.PropertyField(_serializedStringHolderList, true);
+                        _triggerCardNames = new string[_serializedStringHolderList.arraySize];
+                        for(int i = 0; i < _serializedStringHolderList.arraySize; i++)
+                        {
+                            SerializedProperty property = _serializedStringHolderList.GetArrayElementAtIndex(i);
+                            _triggerCardNames[i] = property.stringValue;
+                        }
+                    }
+                    else if(_responseType == ResponseTypes.CardType)
+                    {
+                        _triggerCardType = (CardType)EditorGUILayout.EnumPopup("Card type to respond to", _triggerCardType, _popUpStyle);
+                    }
+                }
+            }
             _hasTarget = EditorGUILayout.Toggle("Has target other than self", _hasTarget);
             _index = EditorGUILayout.Popup("Keyword", _index, _keyWordNames, _popUpStyle);
             if (_hasTarget)

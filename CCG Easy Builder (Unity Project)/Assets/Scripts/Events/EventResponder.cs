@@ -8,7 +8,7 @@ public class EventResponder : MonoBehaviour
     {
         foreach (Effect effect in card.Effects)
         {
-            if (effect.Trigger == Triggers.Draw)
+            if (effect.Trigger == Triggers.Drawn)
             {
                 if (card.Targets.Count >= 1)
                 {

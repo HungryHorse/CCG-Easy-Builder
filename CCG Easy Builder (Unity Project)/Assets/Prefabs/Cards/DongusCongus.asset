@@ -21,5 +21,6 @@ MonoBehaviour:
   _canTarget: 0
   _targets: []
   _playerCard: 0
-  _effects: []
+  _effects:
+  - {fileID: 11400000, guid: 1f8c0437b70a9344885c7d3b1bda9fa3, type: 2}
   _cardImage: {fileID: 21300000, guid: 94aba7b25c42c9443a621fbdb700d3f0, type: 3}

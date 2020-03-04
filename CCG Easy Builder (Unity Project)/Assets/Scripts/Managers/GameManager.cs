@@ -14,7 +14,7 @@ public enum Phase
     StartOfTurn, Draw, MainOne, Combat, MainTwo, GenericMain, EndOfTurn
 }
 
-public enum Triggers { Null, Draw, Enter, Play, Spell }
+public enum Triggers { Null, Drawn, EntersBoard, Played, CreatureEntersBoard, CardPlayed, CardDrawn }
 
 public enum Targets { All_Creatures, All_Players, Everything, One_Creature, One_Player, One_Target }
 
@@ -305,7 +305,7 @@ public class GameManager : MonoBehaviour
                 Debug.Log(card.Targets[0].CardName);
                 foreach(Effect effect in card.Effects)
                 {
-                    if(effect.Trigger == Triggers.Spell)
+                    if(effect.Trigger == Triggers.Played)
                     {
                         effect.PerformEffect(card, card.Targets[0]);
                     }
@@ -318,7 +318,7 @@ public class GameManager : MonoBehaviour
                 Debug.Log(card.Targets[0].CardName);
                 foreach (Effect effect in card.Effects)
                 {
-                    if (effect.Trigger == Triggers.Spell)
+                    if (effect.Trigger == Triggers.Played)
                     {
                         effect.PerformEffect(card, card.Targets[0]);
                     }
@@ -348,7 +348,7 @@ public class GameManager : MonoBehaviour
                 Debug.Log(card.Targets[0].CardName);
                 foreach (Effect effect in card.Effects)
                 {
-                    if (effect.Trigger == Triggers.Spell)
+                    if (effect.Trigger == Triggers.Played)
                     {
                         effect.PerformEffect(card, card.Targets[0]);
                     }
@@ -358,7 +358,7 @@ public class GameManager : MonoBehaviour
                 Debug.Log(card.Targets[0].CardName);
                 foreach (Effect effect in card.Effects)
                 {
-                    if (effect.Trigger == Triggers.Spell)
+                    if (effect.Trigger == Triggers.Played)
                     {
                         effect.PerformEffect(card, card.Targets[0]);
                     }
