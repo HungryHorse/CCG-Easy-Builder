@@ -65,7 +65,9 @@ public class MyCardCreationEditor : Editor
 
     public override void OnInspectorGUI()
     {
-        var myScript = target as CardCreator;        
+        var myScript = target as CardCreator;
+
+        myScript.EditorUpdate();
 
         DrawDefaultInspector();
 
@@ -75,6 +77,22 @@ public class MyCardCreationEditor : Editor
             myScript.maxHealth = EditorGUILayout.IntField("Health", myScript.maxHealth);
         }
 
-        myScript.EditorUpdate();
+        if (GUILayout.Button("Create new effect", EditorStyles.miniButton))
+        {
+            EffectCreationWindow.ShowWindow(myScript.availableKeywords, myScript);
+        }
+
+        myScript.customFilePath = GUILayout.Toggle(myScript.customFilePath, "Use custom file path");
+
+        if (myScript.customFilePath)
+        {
+            myScript.filePath = EditorGUILayout.TextField("File Path:", myScript.filePath);
+        }
+
+        if (GUILayout.Button("Save Card", EditorStyles.miniButton))
+        {
+            myScript.SaveCard();
+        }
+
     }
 }

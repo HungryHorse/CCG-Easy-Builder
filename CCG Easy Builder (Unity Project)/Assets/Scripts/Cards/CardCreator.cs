@@ -9,7 +9,10 @@ public class CardCreator : MonoBehaviour
 {
     public GameObject CardObject;
 
-
+    [HideInInspector]
+    public string filePath = "";
+    [HideInInspector]
+    public bool customFilePath;
     [SerializeField, Header("Card Info")]
     private string _cardName;
     [SerializeField]
@@ -26,11 +29,14 @@ public class CardCreator : MonoBehaviour
     private List<Card> _targets;
     private bool _playerCard;
     private List<Effect> _effects = new List<Effect>();
+    public Keyword[] availableKeywords;
     [SerializeField, Header("Card Visuals")]
     private Sprite _cardImage;
 
     [SerializeField]
     private CardFrames _frames;
+
+    public string CardName { get => _cardName; set => _cardName = value; }
 
     public void EditorUpdate()
     {
@@ -71,5 +77,29 @@ public class CardCreator : MonoBehaviour
         cardFront.Find("CardName").GetComponent<TextMeshProUGUI>().text = _cardName;
         cardFront.Find("CardDescription").GetComponent<TextMeshProUGUI>().text = _description;
         cardFront.Find("CardCost").GetComponent<TextMeshProUGUI>().text = _cost.ToString();
+    }
+
+    public void SaveCard()
+    {
+        Card instanceOfCard = ScriptableObject.CreateInstance<Card>();
+        instanceOfCard.CardName = _cardName;
+        instanceOfCard.Description = _description;
+        instanceOfCard.Cost = _cost;
+        instanceOfCard.CardImage = _cardImage;
+        instanceOfCard.CardType = cardType;
+        instanceOfCard.CanTarget = _canTarget;
+        instanceOfCard.Attack = attack;
+        instanceOfCard.MaxHealth = maxHealth;
+        instanceOfCard.Health = maxHealth;
+        instanceOfCard.Effects = _effects;
+        if (filePath != "" && customFilePath)
+        {
+            AssetDatabase.CreateAsset(instanceOfCard, filePath + _cardName.Replace(" ", "") + ".asset");
+        }
+        else
+        {
+            AssetDatabase.CreateAsset(instanceOfCard, "Assets/Prefabs/Cards/" + _cardName.Replace(" ", "") + ".asset");
+        }
+        AssetDatabase.SaveAssets();
     }
 }

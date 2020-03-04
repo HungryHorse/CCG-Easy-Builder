@@ -14,7 +14,7 @@ public enum Phase
     StartOfTurn, Draw, MainOne, Combat, MainTwo, GenericMain, EndOfTurn
 }
 
-public enum Triggers { Draw, Enter, Play, Spell }
+public enum Triggers { Null, Draw, Enter, Play, Spell }
 
 public class GameManager : MonoBehaviour
 {
