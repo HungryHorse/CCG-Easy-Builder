@@ -16,6 +16,8 @@ public enum Phase
 
 public enum Triggers { Null, Draw, Enter, Play, Spell }
 
+public enum Targets { All_Creatures, All_Players, Everything, One_Creature, One_Player, One_Target }
+
 public class GameManager : MonoBehaviour
 {
     private static GameManager _instance;

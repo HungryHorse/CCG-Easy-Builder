@@ -288,6 +288,7 @@ MonoBehaviour:
   maxHealth: 100
   attack: 200
   cardType: 0
+  _effects: []
   availableKeywords:
   - {fileID: 11400000, guid: cae414e1fa669814488ab079129e660e, type: 2}
   _cardImage: {fileID: 21300000, guid: 94aba7b25c42c9443a621fbdb700d3f0, type: 3}

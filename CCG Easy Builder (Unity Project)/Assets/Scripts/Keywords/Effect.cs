@@ -11,9 +11,11 @@ public class Effect : ScriptableObject
     private List<Keyword> _responses = new List<Keyword>();
 
     [SerializeField]
-    protected bool _hasTarget;
+    private bool hasTarget;
 
     public Triggers Trigger { get => _trigger; set => _trigger = value; }
+    public List<Keyword> Responses { get => _responses; set => _responses = value; }
+    public bool HasTarget { get => hasTarget; set => hasTarget = value; }
 
     public void PerformEffect(Card card)
     {

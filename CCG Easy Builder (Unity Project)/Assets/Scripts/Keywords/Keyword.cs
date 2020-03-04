@@ -7,7 +7,7 @@ public class Keyword : ScriptableObject
     [SerializeField]
     protected int _effectValue;
 
-    protected int EffectValue { get => _effectValue; set => _effectValue = value; }
+    public int EffectValue { get => _effectValue; set => _effectValue = value; }
 
     public virtual void Effect(Card card) { }
 

@@ -28,6 +28,7 @@ public class CardCreator : MonoBehaviour
     private bool _canTarget;
     private List<Card> _targets;
     private bool _playerCard;
+    [SerializeField]
     private List<Effect> _effects = new List<Effect>();
     public Keyword[] availableKeywords;
     [SerializeField, Header("Card Visuals")]
@@ -37,6 +38,7 @@ public class CardCreator : MonoBehaviour
     private CardFrames _frames;
 
     public string CardName { get => _cardName; set => _cardName = value; }
+    public List<Effect> Effects { get => _effects; set => _effects = value; }
 
     public void EditorUpdate()
     {
