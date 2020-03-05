@@ -67,9 +67,9 @@ public class MyCardCreationEditor : Editor
     {
         var myScript = target as CardCreator;
 
-        myScript.EditorUpdate();
-
         DrawDefaultInspector();
+
+        EditorUtility.SetDirty(target);
 
         if (myScript.cardType == CardType.Creature)
         {
@@ -94,5 +94,7 @@ public class MyCardCreationEditor : Editor
             myScript.SaveCard();
         }
 
+        myScript.EditorUpdate();
     }
 }
+

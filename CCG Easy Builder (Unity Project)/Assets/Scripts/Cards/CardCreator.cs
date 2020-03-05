@@ -28,8 +28,8 @@ public class CardCreator : MonoBehaviour
     private bool _canTarget;
     private List<Card> _targets;
     private bool _playerCard;
-    [SerializeField]
     private List<Effect> _effects = new List<Effect>();
+    [HideInInspector]
     public Keyword[] availableKeywords;
     [SerializeField, Header("Card Visuals")]
     private Sprite _cardImage;
@@ -102,6 +102,9 @@ public class CardCreator : MonoBehaviour
         {
             AssetDatabase.CreateAsset(instanceOfCard, "Assets/Prefabs/Cards/" + _cardName.Replace(" ", "") + ".asset");
         }
+
+        Debug.Log("Card saved at location: " + "Assets/Prefabs/Effects/" + _cardName.Replace(" ", "") + ".asset");
+
         AssetDatabase.SaveAssets();
     }
 }

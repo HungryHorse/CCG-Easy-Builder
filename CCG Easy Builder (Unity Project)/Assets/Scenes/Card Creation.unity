@@ -282,16 +282,15 @@ MonoBehaviour:
   CardObject: {fileID: 1516072224337491310}
   filePath: 
   customFilePath: 0
-  _cardName: Dongus Congus
-  _description: The best monKAY
-  _cost: 100
-  maxHealth: 100
-  attack: 200
-  cardType: 0
-  _effects: []
+  _cardName: 
+  _description: 
+  _cost: 0
+  maxHealth: 0
+  attack: 0
+  cardType: 1
   availableKeywords:
   - {fileID: 11400000, guid: cae414e1fa669814488ab079129e660e, type: 2}
-  _cardImage: {fileID: 21300000, guid: 94aba7b25c42c9443a621fbdb700d3f0, type: 3}
+  _cardImage: {fileID: 21300000, guid: 0a21c50dd6cf7a34aac2a28d53abb105, type: 3}
   _frames:
     creatureFrame: {fileID: 21300000, guid: 229e4ef8fdddb6c49a1ad359d3702410, type: 3}
     spellFrame: {fileID: 21300000, guid: 460207ffe427f5d4991e28dc2c804b51, type: 3}
@@ -440,7 +439,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 100
+  m_text: 0
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -468,7 +467,7 @@ MonoBehaviour:
   m_outlineColor:
     serializedVersion: 2
     rgba: 4278190080
-  m_fontSize: 30.55
+  m_fontSize: 44.15
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -509,7 +508,7 @@ MonoBehaviour:
   m_margin: {x: 77.5736, y: 17.315132, z: 71.25962, w: -16.649195}
   m_textInfo:
     textComponent: {fileID: 1516072223083811715}
-    characterCount: 3
+    characterCount: 1
     spriteCount: 0
     spaceCount: 0
     wordCount: 1
@@ -558,7 +557,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 229e4ef8fdddb6c49a1ad359d3702410, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 460207ffe427f5d4991e28dc2c804b51, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -973,7 +972,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: The best monKAY
+  m_text: 
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -1042,13 +1041,13 @@ MonoBehaviour:
   m_margin: {x: 15.638734, y: 5.327722, z: 13.986527, w: -47.73708}
   m_textInfo:
     textComponent: {fileID: 1516072223639201920}
-    characterCount: 15
+    characterCount: 0
     spriteCount: 0
-    spaceCount: 2
-    wordCount: 3
+    spaceCount: 0
+    wordCount: 0
     linkCount: 0
-    lineCount: 1
-    pageCount: 1
+    lineCount: 0
+    pageCount: 0
     materialCount: 1
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
@@ -1262,7 +1261,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 200
+  m_text: 
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -1290,7 +1289,7 @@ MonoBehaviour:
   m_outlineColor:
     serializedVersion: 2
     rgba: 4278190080
-  m_fontSize: 30.55
+  m_fontSize: 36
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -1331,13 +1330,13 @@ MonoBehaviour:
   m_margin: {x: 77.5736, y: 17.315132, z: 71.25962, w: -16.649195}
   m_textInfo:
     textComponent: {fileID: 1516072223771398933}
-    characterCount: 3
+    characterCount: 0
     spriteCount: 0
     spaceCount: 0
-    wordCount: 1
+    wordCount: 0
     linkCount: 0
-    lineCount: 1
-    pageCount: 1
+    lineCount: 0
+    pageCount: 0
     materialCount: 1
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
@@ -1412,7 +1411,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Dongus Congus
+  m_text: 
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -1440,7 +1439,7 @@ MonoBehaviour:
   m_outlineColor:
     serializedVersion: 2
     rgba: 4278190080
-  m_fontSize: 31.85
+  m_fontSize: 36
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -1481,13 +1480,13 @@ MonoBehaviour:
   m_margin: {x: -12.331841, y: 0, z: -16.647968, w: 0}
   m_textInfo:
     textComponent: {fileID: 1516072224629344225}
-    characterCount: 13
+    characterCount: 0
     spriteCount: 0
-    spaceCount: 1
-    wordCount: 2
+    spaceCount: 0
+    wordCount: 0
     linkCount: 0
-    lineCount: 1
-    pageCount: 1
+    lineCount: 0
+    pageCount: 0
     materialCount: 1
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
@@ -1559,7 +1558,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 100
+  m_text: 
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -1587,7 +1586,7 @@ MonoBehaviour:
   m_outlineColor:
     serializedVersion: 2
     rgba: 4278190080
-  m_fontSize: 30.55
+  m_fontSize: 36
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -1628,13 +1627,13 @@ MonoBehaviour:
   m_margin: {x: 77.5736, y: 17.315132, z: 71.25962, w: -16.649195}
   m_textInfo:
     textComponent: {fileID: 1516072224794442216}
-    characterCount: 3
+    characterCount: 0
     spriteCount: 0
     spaceCount: 0
-    wordCount: 1
+    wordCount: 0
     linkCount: 0
-    lineCount: 1
-    pageCount: 1
+    lineCount: 0
+    pageCount: 0
     materialCount: 1
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
@@ -1732,7 +1731,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 94aba7b25c42c9443a621fbdb700d3f0, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 0a21c50dd6cf7a34aac2a28d53abb105, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1

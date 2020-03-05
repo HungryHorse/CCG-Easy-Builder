@@ -14,9 +14,11 @@ public enum Phase
     StartOfTurn, Draw, MainOne, Combat, MainTwo, GenericMain, EndOfTurn
 }
 
-public enum Triggers { Null, Drawn, EntersBoard, Played, CreatureEntersBoard, CardPlayed, CardDrawn }
+public enum Triggers { Null, Drawn, EntersBoard, Played, GenericCreatureEntersBoard, PlayerCreatureEntersBoard, OpponentCreatureEntersBoard, GenericCardPlayed, PlayerCardPlayed, OpponentCardPlayed, PlayerDrawsCard, OpponentDrawsCard }
 
 public enum Targets { All_Creatures, All_Players, Everything, One_Creature, One_Player, One_Target }
+
+public enum ResponseTypes { CardName, CardType }
 
 public class GameManager : MonoBehaviour
 {

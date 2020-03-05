@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 
-public enum ResponseTypes { CardName, CardType }
-
 public class CustomStringHolder : ScriptableObject
 {
     public string[] CardNames;
@@ -41,7 +39,7 @@ public class EffectCreationWindow : EditorWindow
 
         _popUpStyle.margin = new RectOffset(15,15,5,5);
         _editorStyle.margin = new RectOffset(15,15,5,5);
-        _mainPopUpStyle.margin = new RectOffset(0, 15, 5, 15);
+        _mainPopUpStyle.margin = new RectOffset(0, 15, 5, 5);
         _textEditorStyle.margin = new RectOffset(0, 15, 5, 15);
         _buttonStyle.margin = new RectOffset(15,15,20,0);
 
@@ -67,13 +65,13 @@ public class EffectCreationWindow : EditorWindow
 
         if (_triggerForNewEffect != Triggers.Null)
         {
-            if(_triggerForNewEffect == Triggers.CardDrawn || _triggerForNewEffect == Triggers.CardPlayed || _triggerForNewEffect == Triggers.CreatureEntersBoard)
+            if(_triggerForNewEffect != Triggers.Played && _triggerForNewEffect != Triggers.Drawn && _triggerForNewEffect != Triggers.EntersBoard)
             {
                 _hasSpecificCardTriggers = EditorGUILayout.Toggle("Has specific trigger", _hasSpecificCardTriggers);
 
                 if (_hasSpecificCardTriggers)
                 {
-                    _responseType = (ResponseTypes)EditorGUILayout.EnumPopup("Specific trigger type", _responseType, _mainPopUpStyle);
+                    _responseType = (ResponseTypes)EditorGUILayout.EnumPopup("Specific trigger type", _responseType, _popUpStyle);
                     if(_responseType == ResponseTypes.CardName)
                     {
                         EditorGUILayout.PropertyField(_serializedStringHolderList, true);
@@ -89,6 +87,8 @@ public class EffectCreationWindow : EditorWindow
                         _triggerCardType = (CardType)EditorGUILayout.EnumPopup("Card type to respond to", _triggerCardType, _popUpStyle);
                     }
                 }
+
+                EditorGUILayout.LabelField("");
             }
             _hasTarget = EditorGUILayout.Toggle("Has target other than self", _hasTarget);
             _index = EditorGUILayout.Popup("Keyword", _index, _keyWordNames, _popUpStyle);
@@ -105,6 +105,24 @@ public class EffectCreationWindow : EditorWindow
                 newEffect.HasTarget = _hasTarget;
                 newEffect.Trigger = _triggerForNewEffect;
 
+                if (_hasSpecificCardTriggers)
+                {
+                    newEffect.HasSpecificCardTriggers = true;
+                    newEffect.ResponseType = _responseType;
+                    switch (_responseType)
+                    {
+                        case ResponseTypes.CardName:
+                            newEffect.TriggerCardNames = _triggerCardNames;
+                            break;
+                        case ResponseTypes.CardType:
+                            newEffect.TriggerCardType = _triggerCardType;
+                            break;
+                        default:
+                            newEffect.HasSpecificCardTriggers = false;
+                            break;
+                    }
+                }
+
                 Keyword newKeyword = (Keyword)ScriptableObject.CreateInstance(_keywords[_index].GetType());
                 newKeyword.EffectValue = _value;
 
@@ -115,6 +133,7 @@ public class EffectCreationWindow : EditorWindow
                 AssetDatabase.SaveAssets();
 
                 _cardCreationReferance.Effects.Add((Effect)AssetDatabase.LoadAssetAtPath("Assets/Prefabs/Effects/" + _effectName.Replace(" ", "") + ".asset", newEffect.GetType()));
+                Debug.Log("Effect saved at location: " + "Assets/Prefabs/Effects/" + _effectName.Replace(" ", "") + ".asset");
             }
         }
 
