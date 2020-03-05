@@ -141,22 +141,7 @@ public class PrefabEvents : MonoBehaviour
                         }
                     }
                     Vector3 newTransform = new Vector3(GameManager.Instance.PlayerObject.transform.position.x, GameManager.Instance.PlayerObject.transform.position.y, zLockedMousePos.z);
-                    if (!GameManager.Instance.target.activeInHierarchy)
-                    {
-                        GameManager.Instance.target.SetActive(true);
-                    }
-
-                    GameManager.Instance.target.transform.position = zLockedMousePos;
-                    Vector3 difference = newTransform - GameManager.Instance.targetArrow.transform.position;
-
-                    difference.Normalize();
-
-                    float rotZ = Mathf.Atan2(difference.y, difference.x) * Mathf.Rad2Deg;
-                    Quaternion newRotation = Quaternion.Euler(new Vector3(0.0f, 0.0f, rotZ - 270f));
-                    GameManager.Instance.target.transform.rotation = newRotation;
-                    linePoints = new Vector3[2] { newTransform, zLockedMousePos + (difference * 0.6f) };
-                    GameManager.Instance.TargetLine.SetPositions(linePoints);
-
+                    GameManager.Instance.Target(newTransform, zLockedMousePos);
                 }
                 else if (_outsideHand && _originalCard != null)
                 {

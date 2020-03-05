@@ -394,6 +394,54 @@ public class GameManager : MonoBehaviour
         return null;
     }
 
+    public void Target(Vector3 targeter, Vector3 endOfLine, Card card)
+    {
+        StartCoroutine(Targeting(targeter, endOfLine, card));
+    }
+
+    public void Target(Vector3 targeter, Vector3 endOfLine)
+    {
+        if (!target.activeInHierarchy)
+        {
+            target.SetActive(true);
+        }
+
+        target.transform.position = endOfLine;
+        Vector3 difference = targeter - targetArrow.transform.position;
+
+        difference.Normalize();
+
+        float rotZ = Mathf.Atan2(difference.y, difference.x) * Mathf.Rad2Deg;
+        Quaternion newRotation = Quaternion.Euler(new Vector3(0.0f, 0.0f, rotZ - 270f));
+        target.transform.rotation = newRotation;
+        _linePoints = new Vector3[2] { targeter, endOfLine + (difference * 0.6f) };
+        _targetLine.SetPositions(_linePoints);
+    }
+
+    public IEnumerator Targeting(Vector3 targeter, Vector3 endOfLine, Card card)
+    {
+        for(; ; )
+        {
+            Target(targeter, endOfLine);
+            if (Input.GetMouseButtonDown(0))
+            {
+                Card targetCard = ReturnTargetFromBoard(endOfLine);
+                if (targetCard != null)
+                {
+                    card.Targets.Add(targetCard);
+                    target.SetActive(false);
+                    _linePoints = new Vector3[2] { Vector3.zero, Vector3.zero };
+                    _targetLine.SetPositions(_linePoints);
+                }
+                else
+                {
+
+                }
+            }
+            yield return new WaitForSeconds(0.02f);
+        }
+    }
+
     public bool CheckCastingCost(int castingCost)
     {
         if(_playerResource - castingCost < 0)
