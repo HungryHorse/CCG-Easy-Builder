@@ -24,10 +24,12 @@ public class Card : ScriptableObject
     private bool _canTarget;
     [SerializeField]
     private List<Card> _targets;
-    [SerializeField, Header("Card Visuals")]
-    private Sprite _cardImage;
     [SerializeField]
     private bool _playerCard;
+    [SerializeField]
+    private List<Effect> _effects = new List<Effect>();
+    [SerializeField, Header("Card Visuals")]
+    private Sprite _cardImage;
 
     private GameObject _cardGameObject;
 
@@ -42,6 +44,8 @@ public class Card : ScriptableObject
     public List<Card> Targets { get => _targets; set => _targets = value; }
     public int MaxHealth { get => _maxHealth; set => _maxHealth = value; }
     public int Health { get => _health; set => _health = value; }
+    public bool PlayerCard { get => _playerCard; set => _playerCard = value; }
+    public List<Effect> Effects { get => _effects; set => _effects = value; }
 
     public void OnCreation()
     {
@@ -55,8 +59,8 @@ public class Card : ScriptableObject
         {
             if (_playerCard)
             {
-                GameManager.Instance.PlayerBoard.Remove(this);
-            }
+                Board.Instance.RemoveCardFromBoard(this);
+}
             else
             {
                 GameManager.Instance.OpponentBoard.Remove(this);

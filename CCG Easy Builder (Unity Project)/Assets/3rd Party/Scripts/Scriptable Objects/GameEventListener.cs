@@ -8,7 +8,7 @@ public class GameEventListener : MonoBehaviour {
     [SerializeField]
     private GameEvent gameEvent; 
     [SerializeField]
-    private UnityEvent response; 
+    protected UnityEvent response; 
 
     private void OnEnable() 
     {

@@ -4,15 +4,15 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
-public enum CardType
-{
-    Creature, QuickSpell, SlowSpell, Static
-}
+public enum CardType { Creature, QuickSpell, SlowSpell, Static }
 
-public enum Phase
-{
-    StartOfTurn, Draw, MainOne, Combat, MainTwo, GenericMain, EndOfTurn
-}
+public enum Phase { StartOfTurn, Draw, MainOne, Combat, MainTwo, GenericMain, EndOfTurn }
+
+public enum Triggers { Null, Drawn, EntersBoard, Played, GenericCreatureEntersBoard, PlayerCreatureEntersBoard, OpponentCreatureEntersBoard, GenericCardPlayed, PlayerCardPlayed, OpponentCardPlayed, PlayerDrawsCard, OpponentDrawsCard }
+
+public enum Targets { All_Creatures, All_Players, Everything, One_Creature, One_Player, One_Target }
+
+public enum ResponseTypes { CardName, CardType }
 
 public class GameManager : MonoBehaviour
 {
@@ -80,6 +80,11 @@ public class GameManager : MonoBehaviour
     private bool _seperateCombatPhase;
     private bool _targeting = false;
     private Card _waitingForTarget;
+    [SerializeField]
+    private CardGameEvent playCardEvent;
+
+    public GameObject target;
+    public GameObject targetArrow;
 
     [SerializeField]
     private GameObject _playerObject;
@@ -92,6 +97,9 @@ public class GameManager : MonoBehaviour
     private int _currPhaseIndex = 0;
 
     private GameObject _cardObjectInStack;
+
+    [SerializeField]
+    private CardGameEvent[] _events;
 
     void OnDrawGizmos()
     {
@@ -116,6 +124,7 @@ public class GameManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        target.SetActive(false);
         _stackPos = new Vector2(_stackPositionX, _stackPositionY);
         _hoverPos = new Vector2(_hoverPositionX, _hoverPositionY);
         if (_seperateCombatPhase)
@@ -152,7 +161,7 @@ public class GameManager : MonoBehaviour
 
         TestEnemyCard.Attack = 1;
 
-        TestEnemyCard.MaxHealth = 1;
+        TestEnemyCard.MaxHealth = 10;
 
         TestEnemyCard.OnCreation();
 
@@ -211,6 +220,7 @@ public class GameManager : MonoBehaviour
     public void PlayCard(GameObject cardObject)
     {
         RemoveResource(cardObject.GetComponent<PrefabEvents>().ThisCard.Cost);
+        playCardEvent.RaiseCard(cardObject.GetComponent<PrefabEvents>().ThisCard);
         if (_stackEnabled)
         {
             StartCoroutine(MoveTowardsStackPosition(cardObject));
@@ -290,12 +300,28 @@ public class GameManager : MonoBehaviour
             case CardType.SlowSpell:
                 _linePoints = new Vector3[2] { Vector3.zero, Vector3.zero };
                 _targetLine.SetPositions(_linePoints);
+                target.SetActive(false);
                 Debug.Log(card.Targets[0].CardName);
+                foreach(Effect effect in card.Effects)
+                {
+                    if(effect.Trigger == Triggers.Played)
+                    {
+                        effect.PerformEffect(card, card.Targets[0]);
+                    }
+                }
                 break;
             case CardType.QuickSpell:
                 _linePoints = new Vector3[2] { Vector3.zero, Vector3.zero };
                 _targetLine.SetPositions(_linePoints);
+                target.SetActive(false);
                 Debug.Log(card.Targets[0].CardName);
+                foreach (Effect effect in card.Effects)
+                {
+                    if (effect.Trigger == Triggers.Played)
+                    {
+                        effect.PerformEffect(card, card.Targets[0]);
+                    }
+                }
                 break;
             case CardType.Static:
                 break;
@@ -319,9 +345,23 @@ public class GameManager : MonoBehaviour
                 break;
             case CardType.SlowSpell:
                 Debug.Log(card.Targets[0].CardName);
+                foreach (Effect effect in card.Effects)
+                {
+                    if (effect.Trigger == Triggers.Played)
+                    {
+                        effect.PerformEffect(card, card.Targets[0]);
+                    }
+                }
                 break;
             case CardType.QuickSpell:
                 Debug.Log(card.Targets[0].CardName);
+                foreach (Effect effect in card.Effects)
+                {
+                    if (effect.Trigger == Triggers.Played)
+                    {
+                        effect.PerformEffect(card, card.Targets[0]);
+                    }
+                }
                 break;
             case CardType.Static:
                 break;
@@ -349,6 +389,57 @@ public class GameManager : MonoBehaviour
         }
 
         return null;
+    }
+
+    public void Target(Vector3 targeter, Card card, Triggers triggerEvent)
+    {
+        targeter -= new Vector3(0,0,6);
+        StartCoroutine(Targeting(targeter, card, triggerEvent));
+    }
+
+    public void Target(Vector3 targeter, Vector3 endOfLine)
+    {
+        if (!target.activeInHierarchy)
+        {
+            target.SetActive(true);
+        }
+
+        target.transform.position = endOfLine;
+        Vector3 difference = targeter - targetArrow.transform.position;
+
+        difference.Normalize();
+
+        float rotZ = Mathf.Atan2(difference.y, difference.x) * Mathf.Rad2Deg;
+        Quaternion newRotation = Quaternion.Euler(new Vector3(0.0f, 0.0f, rotZ - 270f));
+        target.transform.rotation = newRotation;
+        _linePoints = new Vector3[2] { targeter, endOfLine + (difference * 0.6f) };
+        _targetLine.SetPositions(_linePoints);
+    }
+
+    public IEnumerator Targeting(Vector3 targeter, Card card, Triggers triggerEvent)
+    {
+        for(; ; )
+        {
+            yield return new WaitForSeconds(0.001f);
+            Vector3 zLockedMousePos = new Vector3(Camera.main.ScreenToWorldPoint(Input.mousePosition).x, Camera.main.ScreenToWorldPoint(Input.mousePosition).y, targeter.z);
+            Target(targeter, zLockedMousePos);
+            if (Input.GetMouseButtonDown(0))
+            {
+                Card targetCard = ReturnTargetFromBoard(zLockedMousePos);
+                if (targetCard != null)
+                {
+                    card.Targets.Add(targetCard);
+                    target.SetActive(false);
+                    _linePoints = new Vector3[2] { Vector3.zero, Vector3.zero };
+                    _targetLine.SetPositions(_linePoints);
+                    RaiseEvent(triggerEvent, card);
+                    break;
+                }
+            }
+        }
+
+        StopAllCoroutines();
+        yield return null;
     }
 
     public bool CheckCastingCost(int castingCost)
@@ -396,5 +487,15 @@ public class GameManager : MonoBehaviour
     public void RemoveResource(int amountToRemove)
     {
         _playerResource -= amountToRemove;
+    }
+
+    public void RaiseEvent(Triggers trigger, Card triggeredCard)
+    {
+        switch (trigger)
+        {
+            case Triggers.EntersBoard:
+                _events[0].RaiseCard(triggeredCard);
+                break;
+        }
     }
 }

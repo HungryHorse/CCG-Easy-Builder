@@ -29,6 +29,9 @@ public class Board : MonoBehaviour
     private float _playerBoardMiddle;
     private float _opponentBoardMiddle;
 
+    [SerializeField]
+    private CardGameEvent _creatureEntersBoard;
+
     public static Board Instance { get => _instance; set => _instance = value; }
     public float OpponentBoardMiddle { get => _opponentBoardMiddle; set => _opponentBoardMiddle = value; }
     public float PlayerBoardMiddle { get => _playerBoardMiddle; set => _playerBoardMiddle = value; }
@@ -87,6 +90,8 @@ public class Board : MonoBehaviour
             _targetPositionX += (_cardSize + _spacing);
         }
 
+        _creatureEntersBoard.RaiseCard(card);
+
         GameObject cardgo = card.CardGameObject;
 
         StartCoroutine(CreatureToBoard(cardgo));
@@ -135,9 +140,9 @@ public class Board : MonoBehaviour
             _targetPositionX += (_cardSize + _spacing);
         }
 
-        UpdatePlayerBoardState();
+        _creatureEntersBoard.RaiseCard(card);
 
-        GameObject cardgo = card.CardGameObject;
+        UpdatePlayerBoardState();
     }
 
     public int CalcualteHoverIndex(Vector3 newCardPos)
@@ -177,7 +182,7 @@ public class Board : MonoBehaviour
         }
     }
 
-    private void UpdatePlayerBoardState()
+    public void UpdatePlayerBoardState()
     {
         float position = -_targetPositionX;
         foreach (Card card in _playerBoard)
@@ -192,6 +197,13 @@ public class Board : MonoBehaviour
                 card.CardGameObject.transform.position = new Vector3(_targetPositionX, _playerBoardMiddle, 0);
             }
         }
+    }
+
+    public void RemoveCardFromBoard(Card card)
+    {
+        _playerBoard.Remove(card);
+        _targetPositionX -= (_cardSize + _spacing);
+        UpdatePlayerBoardState();
     }
 
     // Update is called once per frame

@@ -29,6 +29,9 @@ public class Hand : MonoBehaviour
     private int _bufferedCardDraw = 0;
     private List<Card> cardDrawQueue = new List<Card>();
 
+    [SerializeField]
+    private CardGameEvent _drawEvent;
+
     #region Hand Formatting
     private float _targetPositionX = 0;
     [SerializeField]
@@ -134,6 +137,8 @@ public class Hand : MonoBehaviour
 
             Card cardDrawn = _currentHand[_currentHand.Count - 1];
 
+            _drawEvent.RaiseCard(cardDrawn);
+
             _currCard = cardDrawn;
 
             Debug.Log(cardDrawn.CardName);
@@ -193,6 +198,8 @@ public class Hand : MonoBehaviour
         _canDrawCard = false;
 
         Card cardDrawn = specificCardToDraw;
+
+        _drawEvent.RaiseCard(cardDrawn);
 
         _currCard = cardDrawn;
 
