@@ -6,17 +6,20 @@ public class EventResponder : MonoBehaviour
 {
     public void RespondToDrawEvent(Card card)
     {
-        foreach (Effect effect in card.Effects)
+        if (card == GetComponent<PrefabEvents>().ThisCard)
         {
-            if (effect.Trigger == Triggers.Drawn)
+            foreach (Effect effect in card.Effects)
             {
-                if (card.Targets.Count >= 1)
+                if (effect.Trigger == Triggers.Drawn)
                 {
-                    effect.PerformEffect(card, card.Targets[0]);
-                }
-                else
-                {
-                    effect.PerformEffect(card);
+                    if (card.Targets.Count >= 1)
+                    {
+                        effect.PerformEffect(card, card.Targets[0]);
+                    }
+                    else
+                    {
+                        effect.PerformEffect(card);
+                    }
                 }
             }
         }
@@ -24,7 +27,36 @@ public class EventResponder : MonoBehaviour
 
     public void RespondToCreatureEnteringBoardEvent(Card card)
     {
+        if (card == GetComponent<PrefabEvents>().ThisCard)
+        {
+            foreach (Effect effect in card.Effects)
+            {
+                if (effect.Trigger == Triggers.EntersBoard)
+                {
+                    if (effect.HasTarget && card.Targets.Count < 1)
+                    {
+                        GameManager.Instance.Target(card.CardGameObject.transform.position, card, Triggers.EntersBoard);
+                        return;
+                    }
+                }
+            }
 
+            foreach (Effect effect in card.Effects)
+            {
+                if (effect.Trigger == Triggers.EntersBoard)
+                {
+                    if (effect.HasTarget)
+                    {
+                        effect.PerformEffect(card, card.Targets[0]);
+                        Debug.Log("Damage Call");
+                    }
+                    else
+                    {
+                        effect.PerformEffect(card);
+                    }
+                }
+            }
+        }
     }
 
     public void RespondToPlayEvent(Card card)
