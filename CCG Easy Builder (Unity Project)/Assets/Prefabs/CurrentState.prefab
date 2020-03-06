@@ -346,6 +346,10 @@ MonoBehaviour:
   targetArrow: {fileID: 2678503950451826770}
   _playerObject: {fileID: 9183169805580497506}
   _targetLine: {fileID: 6674183654997321588}
+  _events:
+  - {fileID: 11400000, guid: 7d73f9bebe38a6245b6365d353f596b1, type: 2}
+  - {fileID: 11400000, guid: a3e516c483124ba4bbbe8766b2d5330e, type: 2}
+  - {fileID: 11400000, guid: 3a1b0e3b0d180bb40aae647b6be6e5c6, type: 2}
 --- !u!1 &2390049166932802822
 GameObject:
   m_ObjectHideFlags: 0

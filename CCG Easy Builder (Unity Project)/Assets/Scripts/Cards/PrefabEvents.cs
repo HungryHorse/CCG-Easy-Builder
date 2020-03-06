@@ -130,7 +130,7 @@ public class PrefabEvents : MonoBehaviour
                     _outsideHand = false;
                 }
 
-                if (_outsideHand && _originalCard != null && _thisCard.CanTarget && (_thisCard.CardType != CardType.QuickSpell || _thisCard.CardType != CardType.SlowSpell) && !GameManager.Instance.StackEnabled)
+                if (_outsideHand && _originalCard != null && _thisCard.CanTarget && (_thisCard.CardType == CardType.QuickSpell || _thisCard.CardType == CardType.SlowSpell) && !GameManager.Instance.StackEnabled)
                 {
                     Transform[] childObjects = gameObject.GetComponentsInChildren<Transform>();
                     foreach (Transform childObject in childObjects)
