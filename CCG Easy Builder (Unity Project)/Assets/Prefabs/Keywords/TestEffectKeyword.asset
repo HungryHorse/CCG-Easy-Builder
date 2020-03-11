@@ -13,3 +13,4 @@ MonoBehaviour:
   m_Name: TestEffectKeyword
   m_EditorClassIdentifier: 
   _effectValue: 5
+  effectDescription: damage

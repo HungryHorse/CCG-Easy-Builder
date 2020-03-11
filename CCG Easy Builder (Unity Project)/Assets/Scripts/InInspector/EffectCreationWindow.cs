@@ -96,7 +96,7 @@ public class EffectCreationWindow : EditorWindow
             {
                 _target = (Targets)EditorGUILayout.EnumPopup("Target(s) for effect", _target, _popUpStyle);
             }
-            _value = EditorGUILayout.IntField("Value for keyword", _value, _editorStyle);
+            _value = EditorGUILayout.IntField(_keyWordNames + " value", _value, _editorStyle);
 
             if(GUILayout.Button("Apply new effect", _buttonStyle))
             {
@@ -104,6 +104,7 @@ public class EffectCreationWindow : EditorWindow
 
                 newEffect.HasTarget = _hasTarget;
                 newEffect.Trigger = _triggerForNewEffect;
+                newEffect.Target = _target;
 
                 if (_hasSpecificCardTriggers)
                 {
