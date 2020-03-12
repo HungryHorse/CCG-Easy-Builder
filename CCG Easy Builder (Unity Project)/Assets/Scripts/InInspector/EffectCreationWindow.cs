@@ -96,7 +96,7 @@ public class EffectCreationWindow : EditorWindow
             {
                 _target = (Targets)EditorGUILayout.EnumPopup("Target(s) for effect", _target, _popUpStyle);
             }
-            _value = EditorGUILayout.IntField(_keyWordNames + " value", _value, _editorStyle);
+            _value = EditorGUILayout.IntField(_keyWordNames[_index] + " value", _value, _editorStyle);
 
             if(GUILayout.Button("Apply new effect", _buttonStyle))
             {
@@ -126,6 +126,7 @@ public class EffectCreationWindow : EditorWindow
 
                 Keyword newKeyword = (Keyword)ScriptableObject.CreateInstance(_keywords[_index].GetType());
                 newKeyword.EffectValue = _value;
+                newKeyword.EffectDescription = _keyWordNames[_index].ToLower();
 
                 AssetDatabase.CreateAsset(newKeyword, "Assets/Prefabs/Keywords/" + _effectName.Replace(" ", "") + "Keyword" + ".asset");
                 newEffect.Responses.Add((Keyword)AssetDatabase.LoadAssetAtPath("Assets/Prefabs/Keywords/" + _effectName.Replace(" ", "") + "Keyword" + ".asset", _keywords[_index].GetType()));

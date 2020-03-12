@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Haste : BaseAbility
 {
-    public override void Effect(Card card)
+    public override void OnEnterEffect(Card card)
     {
         card.CanAttack = true;
     }

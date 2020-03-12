@@ -12,4 +12,8 @@ public class BaseAbility : ScriptableObject
     public virtual void Effect() { }
 
     public virtual void Effect(Card card) { }
+
+    public virtual void OnEnterEffect() { }
+
+    public virtual void OnEnterEffect(Card card) { }
 }
