@@ -12,7 +12,7 @@ public enum Triggers { Null, Drawn, EntersBoard, Played, GenericCreatureEntersBo
 
 public enum Targets { All_Creatures, All_Players, Everything, One_Creature, One_Player, One_Target }
 
-public enum ResponseTypes { CardName, CardType }
+public enum ResponseTypes { Cards, CardName, CardType }
 
 public class GameManager : MonoBehaviour
 {

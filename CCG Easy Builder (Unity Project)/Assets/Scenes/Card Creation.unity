@@ -98,7 +98,7 @@ LightmapSettings:
     m_TrainingDataDestination: TrainingData
     m_LightProbeSampleCountMultiplier: 4
   m_LightingDataAsset: {fileID: 0}
-  m_UseShadowmask: 0
+  m_UseShadowmask: 1
 --- !u!196 &4
 NavMeshSettings:
   serializedVersion: 2
@@ -280,9 +280,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   CardObject: {fileID: 1516072224337491310}
-  filePath: 
+  filePath: C:/Users/jjbrewer/Documents/GitKraken/CCG easy builder/CCG-Easy-Builder/CCG
+    Easy Builder (Unity Project)/Assets/Prefabs/Cards/Aden.asset
   customFilePath: 0
-  _cardName: Test Card
+  _cardName: Aden
   _description: 
   _cost: 2
   maxHealth: 3
@@ -290,6 +291,7 @@ MonoBehaviour:
   cardType: 0
   _effects:
   - {fileID: 11400000, guid: 850de7e96f23e0142b9a0f9abb9358a5, type: 2}
+  - {fileID: 11400000, guid: e3669dbcc0a095143887aae9abda8c91, type: 2}
   availableKeywords:
   - {fileID: 11400000, guid: cae414e1fa669814488ab079129e660e, type: 2}
   _cardImage: {fileID: 21300000, guid: 0a21c50dd6cf7a34aac2a28d53abb105, type: 3}
@@ -976,6 +978,9 @@ MonoBehaviour:
       m_Calls: []
   m_text: 'When this card enters the board do 2 damage to one target.
 
+    do 1 damage
+    to everything.
+
 '
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -1004,7 +1009,7 @@ MonoBehaviour:
   m_outlineColor:
     serializedVersion: 2
     rgba: 4278190080
-  m_fontSize: 18
+  m_fontSize: 16.15
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -1045,12 +1050,12 @@ MonoBehaviour:
   m_margin: {x: 15.638734, y: 5.327722, z: 13.986527, w: -47.73708}
   m_textInfo:
     textComponent: {fileID: 1516072223639201920}
-    characterCount: 59
+    characterCount: 86
     spriteCount: 0
-    spaceCount: 12
-    wordCount: 12
+    spaceCount: 17
+    wordCount: 17
     linkCount: 0
-    lineCount: 4
+    lineCount: 5
     pageCount: 1
     materialCount: 1
   m_isUsingLegacyAnimationComponent: 0
@@ -1415,7 +1420,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Test Card
+  m_text: Aden
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -1484,10 +1489,10 @@ MonoBehaviour:
   m_margin: {x: -12.331841, y: 0, z: -16.647968, w: 0}
   m_textInfo:
     textComponent: {fileID: 1516072224629344225}
-    characterCount: 9
+    characterCount: 4
     spriteCount: 0
-    spaceCount: 1
-    wordCount: 2
+    spaceCount: 0
+    wordCount: 1
     linkCount: 0
     lineCount: 1
     pageCount: 1

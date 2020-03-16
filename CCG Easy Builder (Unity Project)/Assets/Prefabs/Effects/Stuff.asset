@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c7c9617194a63a140af6e1ea12e707e9, type: 3}
+  m_Name: Stuff
+  m_EditorClassIdentifier: 
+  _trigger: 4
+  _responseType: 0
+  _triggerCardNames: []
+  _triggerCardType: 0
+  _triggerCards:
+  - {fileID: 11400000, guid: 617f4df50adb7624d84cb4bcd4a948cd, type: 2}
+  _hasSpecificCardTriggers: 1
+  _responses:
+  - {fileID: 11400000, guid: f759538f1d066fd449889b87e729517b, type: 2}
+  _target: 2
+  hasTarget: 1

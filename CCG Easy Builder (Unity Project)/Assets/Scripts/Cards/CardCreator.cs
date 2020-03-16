@@ -117,9 +117,9 @@ public class CardCreator : MonoBehaviour
         instanceOfCard.MaxHealth = maxHealth;
         instanceOfCard.Health = maxHealth;
         instanceOfCard.Effects = _effects;
-        if (filePath != "" && customFilePath)
+        if (filePath.Length != 0 && customFilePath)
         {
-            AssetDatabase.CreateAsset(instanceOfCard, filePath + _cardName.Replace(" ", "") + ".asset");
+            AssetDatabase.CreateAsset(instanceOfCard, filePath);
         }
         else
         {

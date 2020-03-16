@@ -14,6 +14,8 @@ public class Effect : ScriptableObject
     [SerializeField]
     private CardType _triggerCardType;
     [SerializeField]
+    private Card[] _triggerCards;
+    [SerializeField]
     private bool _hasSpecificCardTriggers;
     [SerializeField]
     private List<Keyword> _responses = new List<Keyword>();
@@ -31,6 +33,7 @@ public class Effect : ScriptableObject
     public bool HasSpecificCardTriggers { get => _hasSpecificCardTriggers; set => _hasSpecificCardTriggers = value; }
     public ResponseTypes ResponseType { get => _responseType; set => _responseType = value; }
     public Targets Target { get => _target; set => _target = value; }
+    public Card[] TriggerCards { get => _triggerCards; set => _triggerCards = value; }
 
     public void PerformEffect(Card card)
     {
