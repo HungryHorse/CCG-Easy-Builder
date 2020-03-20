@@ -157,6 +157,19 @@ public class CardCreator : MonoBehaviour
                 {
                     switch (effect.ResponseType)
                     {
+                        case ResponseTypes.Cards:
+                            output = "When ";
+                            for(int i = 0; i < effect.TriggerCards.Length; i++)
+                            {
+                                output += effect.TriggerCards[i].CardName;
+                                if (i != effect.TriggerCards.Length - 1)
+                                {
+                                    output += " or ";
+                                }
+                                output += " is played ";
+                            }
+                            break;
+
                         case ResponseTypes.CardName:
                             output = "When a card named ";
                             for(int i = 0; i < effect.TriggerCardNames.Length; i++)
@@ -185,6 +198,18 @@ public class CardCreator : MonoBehaviour
                 {
                     switch (effect.ResponseType)
                     {
+                        case ResponseTypes.Cards:
+                            output = "When ";
+                            for (int i = 0; i < effect.TriggerCards.Length; i++)
+                            {
+                                output += effect.TriggerCards[i].CardName;
+                                if (i != effect.TriggerCards.Length - 1)
+                                {
+                                    output += " or ";
+                                }
+                                output += " enters the board ";
+                            }
+                            break;
                         case ResponseTypes.CardName:
                             output = "When a card named ";
                             for (int i = 0; i < effect.TriggerCardNames.Length; i++)
@@ -214,6 +239,19 @@ public class CardCreator : MonoBehaviour
                 {
                     switch (effect.ResponseType)
                     {
+                        case ResponseTypes.Cards:
+                            output = "When an opponent plays ";
+                            for (int i = 0; i < effect.TriggerCards.Length; i++)
+                            {
+                                output += effect.TriggerCards[i].CardName;
+                                if (i != effect.TriggerCards.Length - 1)
+                                {
+                                    output += " or ";
+                                }
+                                output += " ";
+                            }
+                            break;
+
                         case ResponseTypes.CardName:
                             output = "When an opponent plays a card named ";
                             for (int i = 0; i < effect.TriggerCardNames.Length; i++)
@@ -242,6 +280,19 @@ public class CardCreator : MonoBehaviour
                 {
                     switch (effect.ResponseType)
                     {
+                        case ResponseTypes.Cards:
+                            output = "When an opponent's creature ";
+                            for (int i = 0; i < effect.TriggerCards.Length; i++)
+                            {
+                                output += effect.TriggerCards[i].CardName;
+                                if (i != effect.TriggerCards.Length - 1)
+                                {
+                                    output += " or ";
+                                }
+                                output += " enters their board ";
+                            }
+                            break;
+
                         case ResponseTypes.CardName:
                             output = "When an opponent's creature named ";
                             for (int i = 0; i < effect.TriggerCardNames.Length; i++)
@@ -270,6 +321,19 @@ public class CardCreator : MonoBehaviour
                 {
                     switch (effect.ResponseType)
                     {
+                        case ResponseTypes.Cards:
+                            output = "When an opponent draws ";
+                            for (int i = 0; i < effect.TriggerCards.Length; i++)
+                            {
+                                output += effect.TriggerCards[i].CardName;
+                                if (i != effect.TriggerCards.Length - 1)
+                                {
+                                    output += " or ";
+                                }
+                                output += " ";
+                            }
+                            break;
+
                         case ResponseTypes.CardName:
                             output = "When an opponent draws a card named ";
                             for (int i = 0; i < effect.TriggerCardNames.Length; i++)
@@ -299,6 +363,18 @@ public class CardCreator : MonoBehaviour
                 {
                     switch (effect.ResponseType)
                     {
+                        case ResponseTypes.Cards:
+                            output = "When you play ";
+                            for (int i = 0; i < effect.TriggerCards.Length; i++)
+                            {
+                                output += effect.TriggerCards[i].CardName;
+                                if (i != effect.TriggerCards.Length - 1)
+                                {
+                                    output += " or ";
+                                }
+                                output += " ";
+                            }
+                            break;
                         case ResponseTypes.CardName:
                             output = "When you play a card named ";
                             for (int i = 0; i < effect.TriggerCardNames.Length; i++)
@@ -327,6 +403,18 @@ public class CardCreator : MonoBehaviour
                 {
                     switch (effect.ResponseType)
                     {
+                        case ResponseTypes.Cards:
+                            output = "When ";
+                            for (int i = 0; i < effect.TriggerCards.Length; i++)
+                            {
+                                output += effect.TriggerCards[i].CardName;
+                                if (i != effect.TriggerCards.Length - 1)
+                                {
+                                    output += " or ";
+                                }
+                                output += " enters your board ";
+                            }
+                            break;
                         case ResponseTypes.CardName:
                             output = "When a creature named ";
                             for (int i = 0; i < effect.TriggerCardNames.Length; i++)
@@ -355,6 +443,18 @@ public class CardCreator : MonoBehaviour
                 {
                     switch (effect.ResponseType)
                     {
+                        case ResponseTypes.Cards:
+                            output = "When you draw ";
+                            for (int i = 0; i < effect.TriggerCards.Length; i++)
+                            {
+                                output += effect.TriggerCards[i].CardName;
+                                if (i != effect.TriggerCards.Length - 1)
+                                {
+                                    output += " or ";
+                                }
+                                output += " ";
+                            }
+                            break;
                         case ResponseTypes.CardName:
                             output = "When you draw a card named ";
                             for (int i = 0; i < effect.TriggerCardNames.Length; i++)

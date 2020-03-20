@@ -978,8 +978,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: 'When this card enters the board do 2 damage to one target.
 
-    do 1 damage
-    to everything.
+    When Dongus
+    Congus enters the board do 1 damage to everything.
 
 '
   m_isRightToLeft: 0
@@ -1009,7 +1009,7 @@ MonoBehaviour:
   m_outlineColor:
     serializedVersion: 2
     rgba: 4278190080
-  m_fontSize: 16.15
+  m_fontSize: 13.45
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -1050,12 +1050,12 @@ MonoBehaviour:
   m_margin: {x: 15.638734, y: 5.327722, z: 13.986527, w: -47.73708}
   m_textInfo:
     textComponent: {fileID: 1516072223639201920}
-    characterCount: 86
+    characterCount: 122
     spriteCount: 0
-    spaceCount: 17
-    wordCount: 17
+    spaceCount: 23
+    wordCount: 23
     linkCount: 0
-    lineCount: 5
+    lineCount: 6
     pageCount: 1
     materialCount: 1
   m_isUsingLegacyAnimationComponent: 0
