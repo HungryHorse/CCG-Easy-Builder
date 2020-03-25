@@ -80,8 +80,6 @@ public class GameManager : MonoBehaviour
     private bool _seperateCombatPhase;
     private bool _targeting = false;
     private Card _waitingForTarget;
-    [SerializeField]
-    private CardGameEvent playCardEvent;
 
     public GameObject target;
     public GameObject targetArrow;
@@ -219,8 +217,9 @@ public class GameManager : MonoBehaviour
 
     public void PlayCard(GameObject cardObject)
     {
-        RemoveResource(cardObject.GetComponent<PrefabEvents>().ThisCard.Cost);
-        playCardEvent.RaiseCard(cardObject.GetComponent<PrefabEvents>().ThisCard);
+        Card cardPlayed = cardObject.GetComponent<PrefabEvents>().ThisCard;
+        RemoveResource(cardPlayed.Cost);
+        RaiseEvent(Triggers.Played, cardPlayed);
         if (_stackEnabled)
         {
             StartCoroutine(MoveTowardsStackPosition(cardObject));
@@ -495,6 +494,12 @@ public class GameManager : MonoBehaviour
         {
             case Triggers.EntersBoard:
                 _events[0].RaiseCard(triggeredCard);
+                break;
+            case Triggers.Drawn:
+                _events[1].RaiseCard(triggeredCard);
+                break;
+            case Triggers.Played:
+                _events[2].RaiseCard(triggeredCard);
                 break;
         }
     }

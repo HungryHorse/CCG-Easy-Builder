@@ -144,7 +144,7 @@ public class Board : MonoBehaviour
 
         foreach (BaseAbility ability in card.Abilites)
         {
-            ability.OnEnterEffect();
+            ability.OnEnterEffect(card);
         }
 
         UpdatePlayerBoardState();

@@ -133,7 +133,15 @@ public class EventResponder : MonoBehaviour
         {
             if (effect.HasTarget && card.Targets.Count < 1)
             {
-                GameManager.Instance.Target(card.CardGameObject.transform.position, card, Triggers.EntersBoard);
+                GameManager.Instance.Target(card.CardGameObject.transform.position, card, effect.Trigger);
+                return true;
+            }
+        }
+        else
+        {
+            if (effect.HasTarget && card.Targets.Count < 1)
+            {
+                GameManager.Instance.Target(GameManager.Instance.PlayerObject.transform.position, card, effect.Trigger);
                 return true;
             }
         }
