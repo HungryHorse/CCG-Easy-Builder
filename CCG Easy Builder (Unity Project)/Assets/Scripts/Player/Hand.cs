@@ -320,8 +320,10 @@ public class Hand : MonoBehaviour
             }
             yield return new WaitForSeconds(0.02f);
         }
-        cardgo.GetComponent<PrefabEvents>().CanBeHovered = true;
-        cardgo.GetComponent<PrefabEvents>().HasBeenToHand = true;
+        PrefabEvents cardEvents = cardgo.GetComponent<PrefabEvents>();
+        GameManager.Instance.RaiseEvent(Triggers.Drawn, cardEvents.ThisCard);
+        cardEvents.CanBeHovered = true;
+        cardEvents.HasBeenToHand = true;
         _canDrawCard = true;
         if(_bufferedCardDraw > 0)
         {

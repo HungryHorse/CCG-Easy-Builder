@@ -10,21 +10,21 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 15011857bfaee984daf442b4a331c1d0, type: 3}
-  m_Name: DongusCongus
+  m_Name: Aden
   m_EditorClassIdentifier: 
-  _cardName: Dongus Congus
-  _description: The best monKAY
-  _cost: 1
-  _maxHealth: 100
-  _attack: 200
+  _cardName: Aden
+  _description: 
+  _cost: 2
+  _maxHealth: 3
+  _attack: 2
   _cardType: 0
   _canTarget: 0
   _targets: []
   _playerCard: 0
   _canAttack: 0
   _effects:
-  - {fileID: 11400000, guid: 1f8c0437b70a9344885c7d3b1bda9fa3, type: 2}
-  _abilites:
-  - {fileID: 11400000, guid: 822144b010c96c14f83edd62e0535ef7, type: 2}
+  - {fileID: 11400000, guid: 850de7e96f23e0142b9a0f9abb9358a5, type: 2}
+  - {fileID: 11400000, guid: e3669dbcc0a095143887aae9abda8c91, type: 2}
+  _abilites: []
   _turnsSpentOnBoard: 0
-  _cardImage: {fileID: 21300000, guid: 94aba7b25c42c9443a621fbdb700d3f0, type: 3}
+  _cardImage: {fileID: 21300000, guid: 0a21c50dd6cf7a34aac2a28d53abb105, type: 3}

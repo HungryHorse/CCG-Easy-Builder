@@ -6,8 +6,11 @@ public class Keyword : ScriptableObject
 {
     [SerializeField]
     protected int _effectValue;
+    [SerializeField]
+    private string effectDescription;
 
     public int EffectValue { get => _effectValue; set => _effectValue = value; }
+    public string EffectDescription { get => effectDescription; set => effectDescription = value; }
 
     public virtual void Effect(Card card) { }
 

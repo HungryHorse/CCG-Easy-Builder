@@ -27,7 +27,13 @@ public class Card : ScriptableObject
     [SerializeField]
     private bool _playerCard;
     [SerializeField]
+    private bool _canAttack;
+    [SerializeField]
     private List<Effect> _effects = new List<Effect>();
+    [SerializeField]
+    private List<BaseAbility> _abilites = new List<BaseAbility>();
+    [SerializeField]
+    private int _turnsSpentOnBoard = 0;
     [SerializeField, Header("Card Visuals")]
     private Sprite _cardImage;
 
@@ -46,6 +52,9 @@ public class Card : ScriptableObject
     public int Health { get => _health; set => _health = value; }
     public bool PlayerCard { get => _playerCard; set => _playerCard = value; }
     public List<Effect> Effects { get => _effects; set => _effects = value; }
+    public List<BaseAbility> Abilites { get => _abilites; set => _abilites = value; }
+    public bool CanAttack { get => _canAttack; set => _canAttack = value; }
+    public int TurnsSpentOnBoard { get => _turnsSpentOnBoard; set => _turnsSpentOnBoard = value; }
 
     public void OnCreation()
     {

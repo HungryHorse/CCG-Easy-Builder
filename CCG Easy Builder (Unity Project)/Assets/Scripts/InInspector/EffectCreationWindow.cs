@@ -1,12 +1,19 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEditor;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 
 public class CustomStringHolder : ScriptableObject
 {
-    public string[] CardNames;
+    public string[] cardNames;
 }
+
+public class CardReferenceHolder : ScriptableObject
+{
+    public Card[] cards;
+}
+
 
 public class EffectCreationWindow : EditorWindow
 {
@@ -14,6 +21,7 @@ public class EffectCreationWindow : EditorWindow
     private bool _hasSpecificCardTriggers;
     private ResponseTypes _responseType;
     private string[] _triggerCardNames;
+    private Card[] _triggerCards;
     private CardType _triggerCardType;
     private static string[] _keyWordNames = null;
     private static Keyword[] _keywords = null;
@@ -31,11 +39,17 @@ public class EffectCreationWindow : EditorWindow
     private static CustomStringHolder _customStringHolder = ScriptableObject.CreateInstance<CustomStringHolder>();
     private static SerializedObject _serializedStringHolder;
     private static SerializedProperty _serializedStringHolderList;
+    private static CardReferenceHolder _cardReferenceHolder = ScriptableObject.CreateInstance<CardReferenceHolder>();
+    private static SerializedObject _serializedCardHolder;
+    private static SerializedProperty _serializedCardHolderList;
 
     public static void ShowWindow(Keyword[] importedKeywords, CardCreator cardCreationReferance)
     {
         _serializedStringHolder = new UnityEditor.SerializedObject(_customStringHolder);
-        _serializedStringHolderList = _serializedStringHolder.FindProperty("CardNames");
+        _serializedStringHolderList = _serializedStringHolder.FindProperty("cardNames");
+
+        _serializedCardHolder = new UnityEditor.SerializedObject(_cardReferenceHolder);
+        _serializedCardHolderList = _serializedCardHolder.FindProperty("cards");
 
         _popUpStyle.margin = new RectOffset(15,15,5,5);
         _editorStyle.margin = new RectOffset(15,15,5,5);
@@ -72,19 +86,32 @@ public class EffectCreationWindow : EditorWindow
                 if (_hasSpecificCardTriggers)
                 {
                     _responseType = (ResponseTypes)EditorGUILayout.EnumPopup("Specific trigger type", _responseType, _popUpStyle);
-                    if(_responseType == ResponseTypes.CardName)
+
+                    switch (_responseType)
                     {
-                        EditorGUILayout.PropertyField(_serializedStringHolderList, true);
-                        _triggerCardNames = new string[_serializedStringHolderList.arraySize];
-                        for(int i = 0; i < _serializedStringHolderList.arraySize; i++)
-                        {
-                            SerializedProperty property = _serializedStringHolderList.GetArrayElementAtIndex(i);
-                            _triggerCardNames[i] = property.stringValue;
-                        }
-                    }
-                    else if(_responseType == ResponseTypes.CardType)
-                    {
-                        _triggerCardType = (CardType)EditorGUILayout.EnumPopup("Card type to respond to", _triggerCardType, _popUpStyle);
+                        case ResponseTypes.Cards:
+                            EditorGUILayout.PropertyField(_serializedCardHolderList, true);
+                            _triggerCards = new Card[_serializedCardHolderList.arraySize];
+                            for (int i = 0; i < _serializedCardHolderList.arraySize; i++)
+                            {
+                                SerializedProperty property = _serializedCardHolderList.GetArrayElementAtIndex(i);
+                                _triggerCards[i] = (Card)property.objectReferenceValue;  
+                            }
+                            break;
+
+                        case ResponseTypes.CardName:
+                            EditorGUILayout.PropertyField(_serializedStringHolderList, true);
+                            _triggerCardNames = new string[_serializedStringHolderList.arraySize];
+                            for (int i = 0; i < _serializedStringHolderList.arraySize; i++)
+                            {
+                                SerializedProperty property = _serializedStringHolderList.GetArrayElementAtIndex(i);
+                                _triggerCardNames[i] = property.stringValue;
+                            }
+                            break;
+
+                        case ResponseTypes.CardType:
+                            _triggerCardType = (CardType)EditorGUILayout.EnumPopup("Card type to respond to", _triggerCardType, _popUpStyle);
+                            break;
                     }
                 }
 
@@ -96,7 +123,7 @@ public class EffectCreationWindow : EditorWindow
             {
                 _target = (Targets)EditorGUILayout.EnumPopup("Target(s) for effect", _target, _popUpStyle);
             }
-            _value = EditorGUILayout.IntField("Value for keyword", _value, _editorStyle);
+            _value = EditorGUILayout.IntField(_keyWordNames[_index] + " value", _value, _editorStyle);
 
             if(GUILayout.Button("Apply new effect", _buttonStyle))
             {
@@ -104,6 +131,7 @@ public class EffectCreationWindow : EditorWindow
 
                 newEffect.HasTarget = _hasTarget;
                 newEffect.Trigger = _triggerForNewEffect;
+                newEffect.Target = _target;
 
                 if (_hasSpecificCardTriggers)
                 {
@@ -111,6 +139,9 @@ public class EffectCreationWindow : EditorWindow
                     newEffect.ResponseType = _responseType;
                     switch (_responseType)
                     {
+                        case ResponseTypes.Cards:
+                            newEffect.TriggerCards = _triggerCards;
+                            break;
                         case ResponseTypes.CardName:
                             newEffect.TriggerCardNames = _triggerCardNames;
                             break;
@@ -125,6 +156,12 @@ public class EffectCreationWindow : EditorWindow
 
                 Keyword newKeyword = (Keyword)ScriptableObject.CreateInstance(_keywords[_index].GetType());
                 newKeyword.EffectValue = _value;
+                newKeyword.EffectDescription = _keyWordNames[_index].ToLower();
+
+                if(_effectName == "")
+                {
+                    return;
+                }
 
                 AssetDatabase.CreateAsset(newKeyword, "Assets/Prefabs/Keywords/" + _effectName.Replace(" ", "") + "Keyword" + ".asset");
                 newEffect.Responses.Add((Keyword)AssetDatabase.LoadAssetAtPath("Assets/Prefabs/Keywords/" + _effectName.Replace(" ", "") + "Keyword" + ".asset", _keywords[_index].GetType()));

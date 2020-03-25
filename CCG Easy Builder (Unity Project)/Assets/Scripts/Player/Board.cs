@@ -142,6 +142,11 @@ public class Board : MonoBehaviour
 
         _creatureEntersBoard.RaiseCard(card);
 
+        foreach (BaseAbility ability in card.Abilites)
+        {
+            ability.OnEnterEffect(card);
+        }
+
         UpdatePlayerBoardState();
     }
 

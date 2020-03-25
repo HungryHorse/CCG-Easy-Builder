@@ -82,15 +82,9 @@ public class MyCardCreationEditor : Editor
             EffectCreationWindow.ShowWindow(myScript.availableKeywords, myScript);
         }
 
-        myScript.customFilePath = GUILayout.Toggle(myScript.customFilePath, "Use custom file path");
-
-        if (myScript.customFilePath)
-        {
-            myScript.filePath = EditorGUILayout.TextField("File Path:", myScript.filePath);
-        }
-
         if (GUILayout.Button("Save Card", EditorStyles.miniButton))
         {
+            myScript.filePath = EditorUtility.SaveFilePanel("Save new card", "Assets/Prefabs/Cards/", myScript.CardName.Replace(" ", ""), "asset");
             myScript.SaveCard();
         }
 
