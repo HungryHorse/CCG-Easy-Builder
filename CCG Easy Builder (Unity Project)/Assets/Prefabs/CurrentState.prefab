@@ -162,6 +162,49 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!1 &1141212535
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1141212536}
+  - component: {fileID: 1141212537}
+  m_Layer: 0
+  m_Name: Settings
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1141212536
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1141212535}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 5883821137894420444}
+  m_RootOrder: 10
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1141212537
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1141212535}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 45676e27d43d3e94cb1f424faa5befd5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1438432620
 GameObject:
   m_ObjectHideFlags: 0
@@ -341,7 +384,6 @@ MonoBehaviour:
   _cardSize: 0.7
   _lerpSpeed: 0.15
   _seperateCombatPhase: 1
-  playCardEvent: {fileID: 11400000, guid: 3a1b0e3b0d180bb40aae647b6be6e5c6, type: 2}
   target: {fileID: 1438432620}
   targetArrow: {fileID: 2678503950451826770}
   _playerObject: {fileID: 9183169805580497506}
@@ -546,6 +588,7 @@ Transform:
   - {fileID: 1266760944839839856}
   - {fileID: 3728500776108693460}
   - {fileID: 1438432621}
+  - {fileID: 1141212536}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -943,7 +986,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _currentDeck:
-  - {fileID: 11400000, guid: 5c4e897dcf6a9274fa04259108f0d7fb, type: 2}
+  - {fileID: 11400000, guid: 617f4df50adb7624d84cb4bcd4a948cd, type: 2}
   - {fileID: 11400000, guid: 43b4dbf79df41c442b3e5801635a12c7, type: 2}
   - {fileID: 11400000, guid: 29f456d4e469a0d40a22c9d1aa04fdea, type: 2}
   - {fileID: 11400000, guid: dc157156244021642bdb19151eae2312, type: 2}

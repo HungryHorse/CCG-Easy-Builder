@@ -92,3 +92,18 @@ public class MyCardCreationEditor : Editor
     }
 }
 
+[CustomEditor(typeof(Settings))]
+[CanEditMultipleObjects]
+public class MySettingsEditor : Editor
+{
+    public override void OnInspectorGUI()
+    {
+        base.OnInspectorGUI();
+
+        if (GUILayout.Button("Settings Menu", EditorStyles.miniButton))
+        {
+            SettingsWindow.ShowWindow();
+        }
+    }
+}
+
