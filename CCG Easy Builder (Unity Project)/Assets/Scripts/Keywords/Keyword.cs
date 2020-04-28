@@ -14,5 +14,5 @@ public class Keyword : ScriptableObject
 
     public virtual void Effect(Card card) { }
 
-    public virtual void Effect(Card card, Card target) { Debug.Log("Virtual"); }
+    public virtual void Effect(Card card, Target target) { Debug.Log("Virtual"); }
 }

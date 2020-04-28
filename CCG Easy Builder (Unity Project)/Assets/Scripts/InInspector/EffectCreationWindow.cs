@@ -95,7 +95,7 @@ public class EffectCreationWindow : EditorWindow
                             for (int i = 0; i < _serializedCardHolderList.arraySize; i++)
                             {
                                 SerializedProperty property = _serializedCardHolderList.GetArrayElementAtIndex(i);
-                                _triggerCards[i] = (Card)property.objectReferenceValue;  
+                                _triggerCards[i] = (Card)property.objectReferenceValue;
                             }
                             break;
 

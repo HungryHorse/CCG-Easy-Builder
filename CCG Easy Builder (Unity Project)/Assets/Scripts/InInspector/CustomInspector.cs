@@ -5,24 +5,6 @@ using UnityEditor;
 using UnityEngine.UI;
 using TMPro;
 
-[CustomEditor(typeof(Hand))]
-public class MyHandEditor : Editor
-{
-    public override void OnInspectorGUI()
-    {
-        var myScript = target as Hand;
-
-        DrawDefaultInspector();
-
-        myScript.maxHandSizeOn = GUILayout.Toggle(myScript.maxHandSizeOn, "Max Hand Size");
-
-        if (myScript.maxHandSizeOn)
-        {
-            myScript.maxHandSize = EditorGUILayout.IntSlider("Maximum hand size:", myScript.maxHandSize, 1, 30);
-        }
-    }
-}
-
 [CustomEditor(typeof(Deck))]
 public class MyDeckEditor : Editor
 {
@@ -39,23 +21,23 @@ public class MyDeckEditor : Editor
     }
 }
 
-[CustomEditor(typeof(GameManager))]
-public class MyManagerEditor : Editor
-{
-    public override void OnInspectorGUI()
-    {
-        var myScript = target as GameManager;
+//[CustomEditor(typeof(GameManager))]
+//public class MyManagerEditor : Editor
+//{
+//    public override void OnInspectorGUI()
+//    {
+//        var myScript = target as GameManager;
 
-        DrawDefaultInspector();
+//        DrawDefaultInspector();
 
-        myScript.maxPlayerResourceEnabled = GUILayout.Toggle(myScript.maxPlayerResourceEnabled, "Maximum resource");
+//        myScript.maxPlayerResourceEnabled = GUILayout.Toggle(myScript.maxPlayerResourceEnabled, "Maximum resource");
 
-        if (myScript.maxPlayerResourceEnabled)
-        {
-            myScript.maxPlayerResource = EditorGUILayout.IntSlider("Maximum resource:", myScript.maxPlayerResource, 1, 30);
-        }
-    }
-}
+//        if (myScript.maxPlayerResourceEnabled)
+//        {
+//            myScript.maxPlayerResource = EditorGUILayout.IntSlider("Maximum resource:", myScript.maxPlayerResource, 1, 30);
+//        }
+//    }
+//}
 
 [CustomEditor(typeof(CardCreator))]
 [CanEditMultipleObjects]
@@ -98,11 +80,14 @@ public class MySettingsEditor : Editor
 {
     public override void OnInspectorGUI()
     {
+        var myScript = target as Settings;
+
         base.OnInspectorGUI();
 
         if (GUILayout.Button("Settings Menu", EditorStyles.miniButton))
         {
-            SettingsWindow.ShowWindow();
+            myScript.LoadFromFile();
+            SettingsWindow.ShowWindow(myScript);
         }
     }
 }

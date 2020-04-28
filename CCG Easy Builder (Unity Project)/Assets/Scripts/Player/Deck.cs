@@ -53,7 +53,7 @@ public class Deck : MonoBehaviour
             instanceOfCardDrawn.Attack = cardBeingDrawn.Attack;
             instanceOfCardDrawn.MaxHealth = cardBeingDrawn.MaxHealth;
             instanceOfCardDrawn.Health = cardBeingDrawn.MaxHealth;
-            instanceOfCardDrawn.Targets = new List<Card>();
+            instanceOfCardDrawn.Targets = new List<Target>();
             instanceOfCardDrawn.PlayerCard = true;
             instanceOfCardDrawn.Effects = cardBeingDrawn.Effects;
             instanceOfCardDrawn.Abilites = cardBeingDrawn.Abilites;
