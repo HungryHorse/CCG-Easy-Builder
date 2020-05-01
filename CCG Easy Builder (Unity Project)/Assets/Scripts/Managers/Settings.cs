@@ -175,6 +175,11 @@ public class Settings : MonoBehaviour
 
     public void SaveToFile()
     {
+        if (_managerReferance == null)
+        {
+            return;
+        }
+
         SettingSerialization newSettingsSave = new SettingSerialization(_normalCardPrefab.GetInstanceID(), _creatureCardPrefab.GetInstanceID(), _cardSize, _physicalHandSize, _maxHandSizeOn, _maxHandSize, _physicalBoardSize, _boardSpacing,
             _stackEnabled, _stackPosition, _startingHealths, _maximumResourceOn, _maximumResource, _hoverPosition, _seperateCombatPhase, _currentState);
 
@@ -188,6 +193,11 @@ public class Settings : MonoBehaviour
 
     public void LoadFromFile()
     {
+        if(_managerReferance == null)
+        {
+            return;
+        }
+
         string _fileName = "SavedSettings.settings";
 
         File.Open(_fileName, FileMode.OpenOrCreate, FileAccess.Read).Dispose();
@@ -199,8 +209,6 @@ public class Settings : MonoBehaviour
         try
         {
             settingSerialization = JsonUtility.FromJson<SettingSerialization>(jsonSettings);
-            _normalCardPrefab = (GameObject)EditorUtility.InstanceIDToObject(settingSerialization._normalCardPrefab);
-            _creatureCardPrefab = (GameObject)EditorUtility.InstanceIDToObject(settingSerialization._creatureCardPrefab);
             _physicalHandSize = settingSerialization._physicalHandSize;
             _physicalBoardSize = settingSerialization._physicalBoardSize;
             _boardSpacing = settingSerialization._boardSpacing;
@@ -220,6 +228,16 @@ public class Settings : MonoBehaviour
         {
             Debug.LogError("Settings file load failed");
             return;
+        }
+
+        try
+        {
+            _normalCardPrefab = (GameObject)EditorUtility.InstanceIDToObject(settingSerialization._normalCardPrefab);
+            _creatureCardPrefab = (GameObject)EditorUtility.InstanceIDToObject(settingSerialization._creatureCardPrefab);
+        }
+        catch
+        {
+            Debug.LogError("Instance of prefab changed - please reassign in settings");
         }
 
         

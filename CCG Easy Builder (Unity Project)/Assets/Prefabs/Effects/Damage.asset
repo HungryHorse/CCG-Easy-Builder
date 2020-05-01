@@ -12,12 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c7c9617194a63a140af6e1ea12e707e9, type: 3}
   m_Name: Damage
   m_EditorClassIdentifier: 
-  _trigger: 2
-  _responseType: 0
+  _trigger: 7
+  _responseType: 2
   _triggerCardNames: []
   _triggerCardType: 0
-  _hasSpecificCardTriggers: 0
+  _triggerCards: []
+  _hasSpecificCardTriggers: 1
   _responses:
   - {fileID: 11400000, guid: bc54fba79c146db449289495e06af17e, type: 2}
-  _target: 5
+  _target: 3
   hasTarget: 1
