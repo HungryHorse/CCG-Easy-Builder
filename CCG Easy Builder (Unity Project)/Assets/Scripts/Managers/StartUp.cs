@@ -23,7 +23,6 @@ public class StartUp
         }
         catch
         {
-            Debug.LogError("Load from file failed during scene load");
         }
     }
 

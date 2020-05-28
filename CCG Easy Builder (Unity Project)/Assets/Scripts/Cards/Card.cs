@@ -30,6 +30,8 @@ public class Card : Target
     private bool _playerCard;
     [SerializeField]
     private bool _canAttack;
+    [SerializeField]
+    private bool _canAttackMinions;
     private bool _isReadied;
     [SerializeField]
     private List<Effect> _effects = new List<Effect>();
@@ -39,6 +41,8 @@ public class Card : Target
     private int _turnsSpentOnBoard = 0;
     [SerializeField, Header("Card Visuals")]
     private Sprite _cardImage;
+    [SerializeField]
+    private bool _flying;
 
     private GameObject _cardGameObject;
 
@@ -60,10 +64,14 @@ public class Card : Target
     public int TurnsSpentOnBoard { get => _turnsSpentOnBoard; set => _turnsSpentOnBoard = value; }
     public bool IsReadied { get => _isReadied; set => _isReadied = value; }
     public List<Card> BeingBlockedBy { get => _beingBlockedBy; set => _beingBlockedBy = value; }
+    public bool CanAttackMinions { get => _canAttackMinions; set => _canAttackMinions = value; }
+    public bool Flying { get => _flying; set => _flying = value; }
 
     public void OnCreation()
     {
         _health = _maxHealth;
+        Transform cardFront = _cardGameObject.transform.GetChild(0).transform.GetChild(0);
+        cardFront.Find("CardHealth").GetComponent<TextMeshProUGUI>().text = _health.ToString();
     }
 
     public override void TakeDamage(int damage)

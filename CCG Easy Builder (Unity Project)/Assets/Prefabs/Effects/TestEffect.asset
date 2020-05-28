@@ -10,15 +10,16 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c7c9617194a63a140af6e1ea12e707e9, type: 3}
-  m_Name: TestEffect
+  m_Name: Testeffect
   m_EditorClassIdentifier: 
-  _trigger: 1
-  _responseType: 0
-  _triggerCardNames: []
+  _trigger: 4
+  _responseType: 1
+  _triggerCardNames:
+  - Test card
   _triggerCardType: 0
   _triggerCards: []
-  _hasSpecificCardTriggers: 0
+  _hasSpecificCardTriggers: 1
   _responses:
   - {fileID: 11400000, guid: 740dcb03d5dc58544b15d0c5ebfd483c, type: 2}
-  _target: 3
+  _target: 1
   hasTarget: 1

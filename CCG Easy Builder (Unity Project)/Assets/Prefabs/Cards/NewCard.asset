@@ -10,12 +10,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 15011857bfaee984daf442b4a331c1d0, type: 3}
-  m_Name: NewCard
+  m_Name: Newcard
   m_EditorClassIdentifier: 
-  _cardName: New Card
-  _description: New card description
+  _cardName: New card
+  _description: 'When this card enters the board do 2 damage to one creature.
+
+    ___________________
+
+    Flavour
+    text'
   _cost: 1
-  _maxHealth: 3
+  _maxHealth: 2
   _attack: 2
   _cardType: 0
   _canTarget: 0
@@ -23,8 +28,11 @@ MonoBehaviour:
   _beingBlockedBy: []
   _playerCard: 0
   _canAttack: 0
+  _canAttackMinions: 0
   _effects:
-  - {fileID: 11400000, guid: 28248b345d049fa41a72c9e3f6927044, type: 2}
-  _abilites: []
+  - {fileID: 11400000, guid: f4641c1944c731c488920b58249b6c1a, type: 2}
+  _abilites:
+  - {fileID: 11400000, guid: 822144b010c96c14f83edd62e0535ef7, type: 2}
   _turnsSpentOnBoard: 0
   _cardImage: {fileID: 21300000, guid: 0a21c50dd6cf7a34aac2a28d53abb105, type: 3}
+  _flying: 0

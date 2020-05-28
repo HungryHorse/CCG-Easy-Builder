@@ -45,6 +45,8 @@ public class GameManager : MonoBehaviour
     public AttckStates CurrentState { get => _currentState; set => _currentState = value; }
 
     public GameObject creaturePrefab;
+    public Slider manaBar;
+    public TextMeshProUGUI manaText;
 
     [SerializeField]
     private int _turnCounter;
@@ -131,6 +133,18 @@ public class GameManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        if (maxPlayerResourceEnabled)
+        {
+            manaBar.gameObject.SetActive(true);
+            manaBar.maxValue = maxPlayerResource;
+            manaText.gameObject.SetActive(false);
+        }
+        else
+        {
+            manaBar.gameObject.SetActive(false);
+            manaText.gameObject.SetActive(true);
+        }
+
         target.SetActive(false);
         _stackPos = new Vector2(_stackPositionX, _stackPositionY);
         _hoverPos = new Vector2(_hoverPositionX, _hoverPositionY);
@@ -148,6 +162,7 @@ public class GameManager : MonoBehaviour
 
         _currPhase = _phaseList[_currPhaseIndex];
         _turnCounter++;
+        AddResource(_turnCounter);
         StartPhase();
     }
 
@@ -182,6 +197,32 @@ public class GameManager : MonoBehaviour
             _turnCounter++;
             ResetResource();
             AddResource(_turnCounter);
+            foreach(Card card in PlayerBoard)
+            {
+                card.TurnsSpentOnBoard++;
+                if (!card.CanAttack)
+                {
+                    card.CanAttack = true;
+                    card.CanAttackMinions = true;
+                }
+                foreach (BaseAbility ability in card.Abilites)
+                {
+                    ability.Effect(card);
+                }
+            }
+            foreach(Card card in OpponentBoard)
+            {
+                card.TurnsSpentOnBoard++;
+                if (!card.CanAttack)
+                {
+                    card.CanAttack = true;
+                    card.CanAttackMinions = true;
+                }
+                foreach (BaseAbility ability in card.Abilites)
+                {
+                    ability.Effect(card);
+                }
+            }
         }
         else
         {
@@ -193,6 +234,9 @@ public class GameManager : MonoBehaviour
 
     private void StartPhase()
     {
+        manaBar.value = _playerResource;
+        manaText.text = _playerResource.ToString();
+
         switch (_currPhase)
         {
             case Phase.Draw:
@@ -489,16 +533,20 @@ public class GameManager : MonoBehaviour
         {
             _playerResource = Mathf.Clamp(_playerResource, 0, maxPlayerResource);
         }
+
+        manaText.text = _playerResource.ToString();
     }
 
     public void RemoveResource()
     {
         _playerResource -= 1;
+        manaText.text = _playerResource.ToString();
     }
 
     public void RemoveResource(int amountToRemove)
     {
         _playerResource -= amountToRemove;
+        manaText.text = _playerResource.ToString();
     }
 
     public void RaiseEvent(Triggers trigger, Card triggeredCard)

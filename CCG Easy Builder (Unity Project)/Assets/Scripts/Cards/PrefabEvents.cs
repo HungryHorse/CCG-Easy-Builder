@@ -257,47 +257,49 @@ public class PrefabEvents : MonoBehaviour
 
                     if (returnedTarget != null)
                     {
-                        returnedTarget.TakeDamage(_thisCard.Attack);
+
                         _isAttacking = false;
                         GameManager.Instance.target.SetActive(false);
                         linePoints = new Vector3[2] { Vector3.zero, Vector3.zero };
                         GameManager.Instance.TargetLine.SetPositions(linePoints);
+
+                        if (!_thisCard.CanAttack && returnedTarget.GetType() == typeof(HealthObject))
+                        {
+                            return;
+                        }
 
                         try
                         {
                             Card targetCard = (Card)returnedTarget;
                             if (!GameManager.Instance.PlayerBoard.Contains(targetCard))
                             {
+                                if (targetCard.Flying)
+                                {
+                                    if (!_thisCard.Flying)
+                                    {
+                                        return;
+                                    }
+                                }
+                                targetCard.TakeDamage(_thisCard.Attack);
                                 _thisCard.TakeDamage(targetCard.Attack);
-                            }
-                        }
-                        catch{}
-                    }
-                    else
-                    {
-                        try
-                        {
-                            Card targetCard = (Card)returnedTarget;
-                            if (GameManager.Instance.PlayerBoard.Contains(targetCard))
-                            {
-                                _isAttacking = false;
-                                GameManager.Instance.target.SetActive(false);
-                                linePoints = new Vector3[2] { Vector3.zero, Vector3.zero };
-                                GameManager.Instance.TargetLine.SetPositions(linePoints);
                             }
                         }
                         catch
                         {
-                            _isAttacking = false;
-                            GameManager.Instance.target.SetActive(false);
-                            linePoints = new Vector3[2] { Vector3.zero, Vector3.zero };
-                            GameManager.Instance.TargetLine.SetPositions(linePoints);
+                            returnedTarget.TakeDamage(_thisCard.Attack);
                         }
+                    }
+                    else
+                    {
+                        _isAttacking = false;
+                        GameManager.Instance.target.SetActive(false);
+                        linePoints = new Vector3[2] { Vector3.zero, Vector3.zero };
+                        GameManager.Instance.TargetLine.SetPositions(linePoints);
                     }
                 }
             }
 
-            if (_isBeingHovered && Input.GetMouseButton(0) && (GameManager.Instance.CurrPhase == Phase.Combat || GameManager.Instance.CurrPhase == Phase.GenericMain))
+            if (_isBeingHovered && Input.GetMouseButton(0) && (GameManager.Instance.CurrPhase == Phase.Combat || GameManager.Instance.CurrPhase == Phase.GenericMain) && _thisCard.CanAttackMinions)
             {
                 _isAttacking = true;
                 CreatureMouseExit();
@@ -313,7 +315,7 @@ public class PrefabEvents : MonoBehaviour
         }
         else if (GameManager.Instance.CurrentState == AttckStates.DefenderAdvantage)
         {
-            if (_isBeingHovered && Input.GetMouseButton(0) && (GameManager.Instance.CurrPhase == Phase.Combat || GameManager.Instance.CurrPhase == Phase.GenericMain))
+            if (_isBeingHovered && Input.GetMouseButton(0) && (GameManager.Instance.CurrPhase == Phase.Combat || GameManager.Instance.CurrPhase == Phase.GenericMain) && _thisCard.CanAttackMinions)
             {
                 if (_thisCard.IsReadied)
                 {
@@ -343,6 +345,15 @@ public class PrefabEvents : MonoBehaviour
 
                 if (targetCard != null && !GameManager.Instance.PlayerBoard.Contains(targetCard) && targetCard.IsReadied)
                 {
+                    if (targetCard.Flying)
+                    {
+                        if (!_thisCard.Flying)
+                        {
+                            GameManager.Instance.target.SetActive(false);
+                            linePoints = new Vector3[2] { Vector3.zero, Vector3.zero };
+                            GameManager.Instance.TargetLine.SetPositions(linePoints);
+                        }
+                    }
                     targetCard.BeingBlockedBy.Add(_thisCard);
                     GameManager.Instance.target.SetActive(false);
                     linePoints = new Vector3[2] { Vector3.zero, Vector3.zero };
