@@ -34,6 +34,7 @@ public class CardCreator : MonoBehaviour
     public Keyword[] availableKeywords;
     [SerializeField, Header("Card Visuals")]
     private Sprite _cardImage;
+    private string _compoundDescription;
 
     [SerializeField]
     private CardFrames _frames;
@@ -79,7 +80,7 @@ public class CardCreator : MonoBehaviour
 
         cardFront.Find("CardName").GetComponent<TextMeshProUGUI>().text = _cardName;
 
-        string compoundDescription = "";
+        _compoundDescription = "";
 
         if(_effects.Count > 0)
         {
@@ -87,20 +88,20 @@ public class CardCreator : MonoBehaviour
             {
                 if (effect != null)
                 {
-                    compoundDescription += CreateDescriptionText(effect) + "\n";
+                    _compoundDescription += CreateDescriptionText(effect) + "\n";
                 }
             }
             if (_description != "")
             {
-                compoundDescription += "___________________\n" + _description;
+                _compoundDescription += "___________________\n" + _description;
             }
         }
         else
         {
-            compoundDescription = _description;
+            _compoundDescription = _description;
         }
 
-        cardFront.Find("CardDescription").GetComponent<TextMeshProUGUI>().text = compoundDescription;
+        cardFront.Find("CardDescription").GetComponent<TextMeshProUGUI>().text = _compoundDescription;
         cardFront.Find("CardCost").GetComponent<TextMeshProUGUI>().text = _cost.ToString();
     }
 
@@ -108,7 +109,7 @@ public class CardCreator : MonoBehaviour
     {
         Card instanceOfCard = ScriptableObject.CreateInstance<Card>();
         instanceOfCard.CardName = _cardName;
-        instanceOfCard.Description = _description;
+        instanceOfCard.Description = _compoundDescription;
         instanceOfCard.Cost = _cost;
         instanceOfCard.CardImage = _cardImage;
         instanceOfCard.CardType = cardType;

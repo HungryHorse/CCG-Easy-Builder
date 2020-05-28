@@ -16,8 +16,9 @@ MonoBehaviour:
   _responseType: 0
   _triggerCardNames: []
   _triggerCardType: 0
+  _triggerCards: []
   _hasSpecificCardTriggers: 0
   _responses:
   - {fileID: 11400000, guid: bc54fba79c146db449289495e06af17e, type: 2}
-  _target: 5
+  _target: 3
   hasTarget: 1

@@ -366,6 +366,14 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 386574886, guid: 677a9bfb720a0a74cae08c6d2280a8ba, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1258974122, guid: 677a9bfb720a0a74cae08c6d2280a8ba, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5883821137894420444, guid: 677a9bfb720a0a74cae08c6d2280a8ba,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -426,16 +434,5 @@ PrefabInstance:
       propertyPath: m_Name
       value: CurrentState
       objectReference: {fileID: 0}
-    - target: {fileID: 5883821138829157006, guid: 677a9bfb720a0a74cae08c6d2280a8ba,
-        type: 3}
-      propertyPath: _currentDeck.Array.data[0]
-      value: 
-      objectReference: {fileID: 11400000, guid: 617f4df50adb7624d84cb4bcd4a948cd,
-        type: 2}
-    - target: {fileID: 5883821138885803444, guid: 677a9bfb720a0a74cae08c6d2280a8ba,
-        type: 3}
-      propertyPath: m_Camera
-      value: 
-      objectReference: {fileID: 519420031}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 677a9bfb720a0a74cae08c6d2280a8ba, type: 3}

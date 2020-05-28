@@ -4,7 +4,7 @@ using UnityEngine;
 using TMPro;
 
 [CreateAssetMenu]
-public class Card : ScriptableObject
+public class Card : Target
 {
     // Fields should include health, attack, description and name.
     [SerializeField, Header("Card Info")]
@@ -23,11 +23,16 @@ public class Card : ScriptableObject
     [SerializeField]
     private bool _canTarget;
     [SerializeField]
-    private List<Card> _targets;
+    private List<Target> _targets;
+    [SerializeField]
+    private List<Card> _beingBlockedBy;
     [SerializeField]
     private bool _playerCard;
     [SerializeField]
     private bool _canAttack;
+    [SerializeField]
+    private bool _canAttackMinions;
+    private bool _isReadied;
     [SerializeField]
     private List<Effect> _effects = new List<Effect>();
     [SerializeField]
@@ -36,6 +41,8 @@ public class Card : ScriptableObject
     private int _turnsSpentOnBoard = 0;
     [SerializeField, Header("Card Visuals")]
     private Sprite _cardImage;
+    [SerializeField]
+    private bool _flying;
 
     private GameObject _cardGameObject;
 
@@ -47,7 +54,7 @@ public class Card : ScriptableObject
     public Sprite CardImage { get => _cardImage; set => _cardImage = value; }
     public GameObject CardGameObject { get => _cardGameObject; set => _cardGameObject = value; }
     public bool CanTarget { get => _canTarget; set => _canTarget = value; }
-    public List<Card> Targets { get => _targets; set => _targets = value; }
+    public List<Target> Targets { get => _targets; set => _targets = value; }
     public int MaxHealth { get => _maxHealth; set => _maxHealth = value; }
     public int Health { get => _health; set => _health = value; }
     public bool PlayerCard { get => _playerCard; set => _playerCard = value; }
@@ -55,13 +62,19 @@ public class Card : ScriptableObject
     public List<BaseAbility> Abilites { get => _abilites; set => _abilites = value; }
     public bool CanAttack { get => _canAttack; set => _canAttack = value; }
     public int TurnsSpentOnBoard { get => _turnsSpentOnBoard; set => _turnsSpentOnBoard = value; }
+    public bool IsReadied { get => _isReadied; set => _isReadied = value; }
+    public List<Card> BeingBlockedBy { get => _beingBlockedBy; set => _beingBlockedBy = value; }
+    public bool CanAttackMinions { get => _canAttackMinions; set => _canAttackMinions = value; }
+    public bool Flying { get => _flying; set => _flying = value; }
 
     public void OnCreation()
     {
         _health = _maxHealth;
+        Transform cardFront = _cardGameObject.transform.GetChild(0).transform.GetChild(0);
+        cardFront.Find("CardHealth").GetComponent<TextMeshProUGUI>().text = _health.ToString();
     }
 
-    public void TakeDamage(int damage)
+    public override void TakeDamage(int damage)
     {
         _health -= damage;
         if(_health <= 0)
@@ -82,7 +95,7 @@ public class Card : ScriptableObject
         cardFront.Find("CardHealth").GetComponent<TextMeshProUGUI>().text = _health.ToString();
     }
 
-    public void AddHealth(int healing)
+    public override void AddHealth(int healing)
     {
         _health += healing;
 

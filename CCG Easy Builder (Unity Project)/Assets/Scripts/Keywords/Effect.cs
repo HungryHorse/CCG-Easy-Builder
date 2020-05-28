@@ -43,7 +43,7 @@ public class Effect : ScriptableObject
         }
     }
 
-    public void PerformEffect(Card card, Card target)
+    public void PerformEffect(Card card, Target target)
     {
         foreach (Keyword keyword in _responses)
         {

@@ -10,7 +10,7 @@ public class DealDamage : Keyword
         card.TakeDamage(_effectValue);
     }
 
-    public override void Effect(Card card, Card target)
+    public override void Effect(Card card, Target target)
     {
         target.TakeDamage(_effectValue);
     }

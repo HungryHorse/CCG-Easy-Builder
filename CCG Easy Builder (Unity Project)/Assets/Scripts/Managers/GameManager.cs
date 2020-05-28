@@ -6,13 +6,15 @@ using TMPro;
 
 public enum CardType { Creature, QuickSpell, SlowSpell, Static }
 
-public enum Phase { StartOfTurn, Draw, MainOne, Combat, MainTwo, GenericMain, EndOfTurn }
+public enum Phase { StartOfTurn, Draw, MainOne, Combat, MainTwo, GenericMain, EndOfTurn, Block }
 
 public enum Triggers { Null, Drawn, EntersBoard, Played, GenericCreatureEntersBoard, PlayerCreatureEntersBoard, OpponentCreatureEntersBoard, GenericCardPlayed, PlayerCardPlayed, OpponentCardPlayed, PlayerDrawsCard, OpponentDrawsCard }
 
 public enum Targets { All_Creatures, All_Players, Everything, One_Creature, One_Player, One_Target }
 
 public enum ResponseTypes { Cards, CardName, CardType }
+
+public enum AttckStates { AttckerAdvantage, DefenderAdvantage }
 
 public class GameManager : MonoBehaviour
 {
@@ -27,18 +29,27 @@ public class GameManager : MonoBehaviour
     public bool StackEnabled { get => _stackEnabled; set => _stackEnabled = value; }
     public Phase CurrPhase { get => _currPhase; set => _currPhase = value; }
     public GameObject PlayerObject { get => _playerObject; set => _playerObject = value; }
+    public GameObject OpponentObject { get => _opponentObject; set => _opponentObject = value; }
     public LineRenderer TargetLine { get => _targetLine; set => _targetLine = value; }
     public List<Card> PlayerBoard { get => _playerBoard; set => _playerBoard = value; }
     public List<Card> OpponentBoard { get => _opponentBoard; set => _opponentBoard = value; }
     public int PlayerHealth { get => _playerHealth; set => _playerHealth = value; }
     public int OpponentHealth { get => _opponentHealth; set => _opponentHealth = value; }
     public Vector2 HoverPos { get => _hoverPos; set => _hoverPos = value; }
+    public float StackPositionX { get => _stackPositionX; set => _stackPositionX = value; }
+    public float StackPositionY { get => _stackPositionY; set => _stackPositionY = value; }
+    public float HoverPositionX { get => _hoverPositionX; set => _hoverPositionX = value; }
+    public float HoverPositionY { get => _hoverPositionY; set => _hoverPositionY = value; }
+    public bool SeperateCombatPhase { get => _seperateCombatPhase; set => _seperateCombatPhase = value; }
+    public CardGameEvent[] Events { get => _events; set => _events = value; }
+    public AttckStates CurrentState { get => _currentState; set => _currentState = value; }
 
     public GameObject creaturePrefab;
+    public Slider manaBar;
+    public TextMeshProUGUI manaText;
 
     [SerializeField]
     private int _turnCounter;
-    [SerializeField]
     private bool _stackEnabled = true;
     [SerializeField]
     private List<Card> _stack = new List<Card>();
@@ -50,7 +61,6 @@ public class GameManager : MonoBehaviour
     private List<Card> _playerBoard = new List<Card>();
     [SerializeField]
     private List<Card> _opponentBoard = new List<Card>();
-    [SerializeField]
     private int _playerHealth = 20;
     [SerializeField]
     private int _playerResource;
@@ -58,25 +68,18 @@ public class GameManager : MonoBehaviour
     public bool maxPlayerResourceEnabled;
     [HideInInspector]
     public int maxPlayerResource;
-    [SerializeField]
     private int _opponentHealth = 20;
     [SerializeField]
     private int _opponentResource;
-    [SerializeField]
     private float _stackPositionX;
-    [SerializeField]
     private float _stackPositionY;
-    [SerializeField]
     private float _hoverPositionX;
-    [SerializeField]
     private float _hoverPositionY;
     private Vector2 _stackPos;
     private Vector2 _hoverPos;
-    [SerializeField]
     private float _cardSize;
     [SerializeField]
     private float _lerpSpeed;
-    [SerializeField]
     private bool _seperateCombatPhase;
     private bool _targeting = false;
     private Card _waitingForTarget;
@@ -87,6 +90,8 @@ public class GameManager : MonoBehaviour
     [SerializeField]
     private GameObject _playerObject;
     [SerializeField]
+    private GameObject _opponentObject;
+    [SerializeField]
     private LineRenderer _targetLine;
     private Vector3[] _linePoints;
 
@@ -96,8 +101,14 @@ public class GameManager : MonoBehaviour
 
     private GameObject _cardObjectInStack;
 
+    private AttckStates _currentState;
+
     [SerializeField]
     private CardGameEvent[] _events;
+
+    private int _readiedCounter = 0;
+    [SerializeField]
+    private GameObject _attackButton;
 
     void OnDrawGizmos()
     {
@@ -122,6 +133,18 @@ public class GameManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        if (maxPlayerResourceEnabled)
+        {
+            manaBar.gameObject.SetActive(true);
+            manaBar.maxValue = maxPlayerResource;
+            manaText.gameObject.SetActive(false);
+        }
+        else
+        {
+            manaBar.gameObject.SetActive(false);
+            manaText.gameObject.SetActive(true);
+        }
+
         target.SetActive(false);
         _stackPos = new Vector2(_stackPositionX, _stackPositionY);
         _hoverPos = new Vector2(_hoverPositionX, _hoverPositionY);
@@ -139,8 +162,8 @@ public class GameManager : MonoBehaviour
 
         _currPhase = _phaseList[_currPhaseIndex];
         _turnCounter++;
+        AddResource(_turnCounter);
         StartPhase();
-        AddResource(10);
     }
 
     public void ForDebug()
@@ -174,6 +197,32 @@ public class GameManager : MonoBehaviour
             _turnCounter++;
             ResetResource();
             AddResource(_turnCounter);
+            foreach(Card card in PlayerBoard)
+            {
+                card.TurnsSpentOnBoard++;
+                if (!card.CanAttack)
+                {
+                    card.CanAttack = true;
+                    card.CanAttackMinions = true;
+                }
+                foreach (BaseAbility ability in card.Abilites)
+                {
+                    ability.Effect(card);
+                }
+            }
+            foreach(Card card in OpponentBoard)
+            {
+                card.TurnsSpentOnBoard++;
+                if (!card.CanAttack)
+                {
+                    card.CanAttack = true;
+                    card.CanAttackMinions = true;
+                }
+                foreach (BaseAbility ability in card.Abilites)
+                {
+                    ability.Effect(card);
+                }
+            }
         }
         else
         {
@@ -185,6 +234,9 @@ public class GameManager : MonoBehaviour
 
     private void StartPhase()
     {
+        manaBar.value = _playerResource;
+        manaText.text = _playerResource.ToString();
+
         switch (_currPhase)
         {
             case Phase.Draw:
@@ -205,7 +257,7 @@ public class GameManager : MonoBehaviour
         if (_targeting && Input.GetMouseButtonDown(0))
         {
             _targeting = false;
-            Card target = ReturnTargetFromBoard(Camera.main.ScreenToWorldPoint(Input.mousePosition));
+            Target target = ReturnTargetFromBoard(Camera.main.ScreenToWorldPoint(Input.mousePosition));
             if(target != null)
             {
                 _waitingForTarget.Targets.Add(target);
@@ -300,7 +352,6 @@ public class GameManager : MonoBehaviour
                 _linePoints = new Vector3[2] { Vector3.zero, Vector3.zero };
                 _targetLine.SetPositions(_linePoints);
                 target.SetActive(false);
-                Debug.Log(card.Targets[0].CardName);
                 foreach(Effect effect in card.Effects)
                 {
                     if(effect.Trigger == Triggers.Played)
@@ -313,7 +364,6 @@ public class GameManager : MonoBehaviour
                 _linePoints = new Vector3[2] { Vector3.zero, Vector3.zero };
                 _targetLine.SetPositions(_linePoints);
                 target.SetActive(false);
-                Debug.Log(card.Targets[0].CardName);
                 foreach (Effect effect in card.Effects)
                 {
                     if (effect.Trigger == Triggers.Played)
@@ -343,7 +393,6 @@ public class GameManager : MonoBehaviour
                 Board.Instance.CreateCreatureFormatted(card);
                 break;
             case CardType.SlowSpell:
-                Debug.Log(card.Targets[0].CardName);
                 foreach (Effect effect in card.Effects)
                 {
                     if (effect.Trigger == Triggers.Played)
@@ -353,7 +402,6 @@ public class GameManager : MonoBehaviour
                 }
                 break;
             case CardType.QuickSpell:
-                Debug.Log(card.Targets[0].CardName);
                 foreach (Effect effect in card.Effects)
                 {
                     if (effect.Trigger == Triggers.Played)
@@ -369,7 +417,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public Card ReturnTargetFromBoard(Vector3 targetPosition)
+    public Target ReturnTargetFromBoard(Vector3 targetPosition)
     {
         Vector3 zNormalizedTarget = new Vector3(targetPosition.x, targetPosition.y, 0);
         foreach (Card checkCard in _playerBoard)
@@ -385,6 +433,15 @@ public class GameManager : MonoBehaviour
             {
                 return checkCard;
             }
+        }
+
+        if (Vector3.Distance(zNormalizedTarget, PlayerObject.transform.position) < 2)
+        {
+            return PlayerObject.GetComponent<Stats>().HealthObject;
+        }
+        if (Vector3.Distance(zNormalizedTarget, OpponentObject.transform.position) < 2)
+        {
+            return OpponentObject.GetComponent<Stats>().HealthObject;
         }
 
         return null;
@@ -424,10 +481,10 @@ public class GameManager : MonoBehaviour
             Target(targeter, zLockedMousePos);
             if (Input.GetMouseButtonDown(0))
             {
-                Card targetCard = ReturnTargetFromBoard(zLockedMousePos);
-                if (targetCard != null)
+                Target returnedTarget = ReturnTargetFromBoard(zLockedMousePos);
+                if (returnedTarget != null)
                 {
-                    card.Targets.Add(targetCard);
+                    card.Targets.Add(returnedTarget);
                     target.SetActive(false);
                     _linePoints = new Vector3[2] { Vector3.zero, Vector3.zero };
                     _targetLine.SetPositions(_linePoints);
@@ -476,16 +533,20 @@ public class GameManager : MonoBehaviour
         {
             _playerResource = Mathf.Clamp(_playerResource, 0, maxPlayerResource);
         }
+
+        manaText.text = _playerResource.ToString();
     }
 
     public void RemoveResource()
     {
         _playerResource -= 1;
+        manaText.text = _playerResource.ToString();
     }
 
     public void RemoveResource(int amountToRemove)
     {
         _playerResource -= amountToRemove;
+        manaText.text = _playerResource.ToString();
     }
 
     public void RaiseEvent(Triggers trigger, Card triggeredCard)
@@ -501,6 +562,66 @@ public class GameManager : MonoBehaviour
             case Triggers.Played:
                 _events[2].RaiseCard(triggeredCard);
                 break;
+        }
+    }
+
+    public void CardReadied()
+    {
+        if(_readiedCounter == 0)
+        {
+            DisplayHideAttackButton();
+        }
+        _readiedCounter += 1;
+    }
+
+    public void CardUnreadied()
+    {
+        _readiedCounter -= 1;
+        if(_readiedCounter == 0)
+        {
+            DisplayHideAttackButton();
+        }
+    }
+
+    public void DisplayHideAttackButton()
+    {
+        _attackButton.SetActive(!_attackButton.activeInHierarchy);
+    }
+
+    public void AttackWithReadied()
+    {
+        //Used for AI or multiplayer when implimented
+        //IMPROVEMENT: Add the ability to order after deciding what blocks
+    }
+
+    public void ResolveBlocks()
+    {
+        foreach (Card card in _playerBoard)
+        {
+            if (card.IsReadied)
+            {
+                if (card.BeingBlockedBy.Count != 0)
+                {
+                    int totalAttack = card.Attack;
+                    foreach (Card blockingCard in card.BeingBlockedBy)
+                    {
+                        int healthBeforeAttack = blockingCard.Health;
+                        blockingCard.Health -= totalAttack;
+                        totalAttack -= healthBeforeAttack;
+
+                        card.Health -= blockingCard.Attack;
+
+                        if (totalAttack <= 0)
+                        {
+                            break;
+                        }
+                    }
+                }
+                else
+                {
+                    OpponentHealth -= card.Attack;
+                }
+            }
         }
     }
 }

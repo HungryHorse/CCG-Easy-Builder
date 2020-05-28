@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 99f2d102a96833b448a1057be236d6ec, type: 3}
-  m_Name: TestEffectKeyword
+  m_Name: TesteffectKeyword
   m_EditorClassIdentifier: 
-  _effectValue: 5
+  _effectValue: 0
   effectDescription: damage

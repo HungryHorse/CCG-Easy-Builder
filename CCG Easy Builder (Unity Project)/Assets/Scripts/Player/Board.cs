@@ -9,11 +9,8 @@ public class Board : MonoBehaviour
     private static Board _instance;
 
     #region Representation of board in game
-    [SerializeField]
     private float _physicalBoardSizeX;
-    [SerializeField]
     private float _physicalBoardSizeY;
-    [SerializeField]
     private float _spacing;
     #endregion
 
@@ -35,6 +32,9 @@ public class Board : MonoBehaviour
     public static Board Instance { get => _instance; set => _instance = value; }
     public float OpponentBoardMiddle { get => _opponentBoardMiddle; set => _opponentBoardMiddle = value; }
     public float PlayerBoardMiddle { get => _playerBoardMiddle; set => _playerBoardMiddle = value; }
+    public float PhysicalBoardSizeX { get => _physicalBoardSizeX; set => _physicalBoardSizeX = value; }
+    public float PhysicalBoardSizeY { get => _physicalBoardSizeY; set => _physicalBoardSizeY = value; }
+    public float Spacing { get => _spacing; set => _spacing = value; }
 
     private void Awake()
     {

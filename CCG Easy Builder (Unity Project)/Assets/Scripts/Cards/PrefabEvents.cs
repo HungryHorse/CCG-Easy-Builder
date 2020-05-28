@@ -23,6 +23,7 @@ public class PrefabEvents : MonoBehaviour
     private PrefabEvents _viewObjectPrefabEvents;
     private GameObject _fullCard;
     private bool _isAttacking;
+    private bool _isBlocking;
 
     [SerializeField]
     private float _yIncreaseOnHover;
@@ -68,6 +69,15 @@ public class PrefabEvents : MonoBehaviour
     {
         Debug.Log("FinishedAnim");
         this.GetComponent<Animator>().enabled = false;
+
+        //if(RelativeHand.maxHandSizeOn && RelativeHand.CurrentHand.Count == RelativeHand.maxHandSize)
+        //{
+        //    Destroy(gameObject);
+        //}
+        //else
+        //{
+        //    RelativeHand.AddCardToHand();
+        //}
         RelativeHand.AddCardToHand();
     }
 
@@ -187,10 +197,10 @@ public class PrefabEvents : MonoBehaviour
                     {
                         if (_thisCard.CanTarget && !GameManager.Instance.StackEnabled)
                         {
-                            Card targetCard = GameManager.Instance.ReturnTargetFromBoard(transform.position);
-                            if (targetCard != null)
+                            Target returnedTarget = GameManager.Instance.ReturnTargetFromBoard(transform.position);
+                            if (returnedTarget != null)
                             {
-                                _thisCard.Targets.Add(targetCard);
+                                _thisCard.Targets.Add(returnedTarget);
                                 RelativeHand.RemoveCardFromHand(_thisCard);
                                 GameManager.Instance.PlayCard(gameObject);
                                 GameManager.Instance.target.SetActive(false);
@@ -219,61 +229,143 @@ public class PrefabEvents : MonoBehaviour
 
     private void CreatureUpdateLoop()
     {
-        if (_isAttacking)
+        if (GameManager.Instance.CurrentState == AttckStates.AttckerAdvantage)
         {
-            zLockedMousePos = new Vector3(Camera.main.ScreenToWorldPoint(Input.mousePosition).x, Camera.main.ScreenToWorldPoint(Input.mousePosition).y, transform.position.z - 2);
-            if (!GameManager.Instance.target.activeInHierarchy)
+            if (_isAttacking)
             {
-                GameManager.Instance.target.SetActive(true);
+                zLockedMousePos = new Vector3(Camera.main.ScreenToWorldPoint(Input.mousePosition).x, Camera.main.ScreenToWorldPoint(Input.mousePosition).y, transform.position.z - 2);
+                if (!GameManager.Instance.target.activeInHierarchy)
+                {
+                    GameManager.Instance.target.SetActive(true);
+                }
+
+                GameManager.Instance.target.transform.position = zLockedMousePos;
+                Vector3 difference = transform.position - GameManager.Instance.targetArrow.transform.position;
+
+                difference.Normalize();
+
+                float rotZ = Mathf.Atan2(difference.y, difference.x) * Mathf.Rad2Deg;
+                Quaternion newRotation = Quaternion.Euler(new Vector3(0.0f, 0.0f, rotZ - 270f));
+                GameManager.Instance.target.transform.rotation = newRotation;
+                linePoints = new Vector3[2] { transform.position, zLockedMousePos + (difference * 0.6f) };
+                GameManager.Instance.TargetLine.SetPositions(linePoints);
+
+
+                if (Input.GetMouseButtonUp(0))
+                {
+                    Target returnedTarget = GameManager.Instance.ReturnTargetFromBoard(Camera.main.ScreenToWorldPoint(Input.mousePosition));
+
+                    if (returnedTarget != null)
+                    {
+
+                        _isAttacking = false;
+                        GameManager.Instance.target.SetActive(false);
+                        linePoints = new Vector3[2] { Vector3.zero, Vector3.zero };
+                        GameManager.Instance.TargetLine.SetPositions(linePoints);
+
+                        if (!_thisCard.CanAttack && returnedTarget.GetType() == typeof(HealthObject))
+                        {
+                            return;
+                        }
+
+                        try
+                        {
+                            Card targetCard = (Card)returnedTarget;
+                            if (!GameManager.Instance.PlayerBoard.Contains(targetCard))
+                            {
+                                if (targetCard.Flying)
+                                {
+                                    if (!_thisCard.Flying)
+                                    {
+                                        return;
+                                    }
+                                }
+                                targetCard.TakeDamage(_thisCard.Attack);
+                                _thisCard.TakeDamage(targetCard.Attack);
+                            }
+                        }
+                        catch
+                        {
+                            returnedTarget.TakeDamage(_thisCard.Attack);
+                        }
+                    }
+                    else
+                    {
+                        _isAttacking = false;
+                        GameManager.Instance.target.SetActive(false);
+                        linePoints = new Vector3[2] { Vector3.zero, Vector3.zero };
+                        GameManager.Instance.TargetLine.SetPositions(linePoints);
+                    }
+                }
             }
 
-            GameManager.Instance.target.transform.position = zLockedMousePos;
-            Vector3 difference = transform.position - GameManager.Instance.targetArrow.transform.position;
-
-            difference.Normalize();
-
-            float rotZ = Mathf.Atan2(difference.y, difference.x) * Mathf.Rad2Deg;
-            Quaternion newRotation = Quaternion.Euler(new Vector3(0.0f, 0.0f, rotZ - 270f));
-            GameManager.Instance.target.transform.rotation = newRotation;
-            linePoints = new Vector3[2] { transform.position, zLockedMousePos + (difference * 0.6f) };
-            GameManager.Instance.TargetLine.SetPositions(linePoints);
-
-
-            if (Input.GetMouseButtonUp(0))
+            if (_isBeingHovered && Input.GetMouseButton(0) && (GameManager.Instance.CurrPhase == Phase.Combat || GameManager.Instance.CurrPhase == Phase.GenericMain) && _thisCard.CanAttackMinions)
             {
-                Card targetCard = GameManager.Instance.ReturnTargetFromBoard(Camera.main.ScreenToWorldPoint(Input.mousePosition));
+                _isAttacking = true;
+                CreatureMouseExit();
+            }
 
-                if (targetCard != null && !GameManager.Instance.PlayerBoard.Contains(targetCard))
+            if (_isAttacking && Input.GetMouseButtonDown(1))
+            {
+                _isAttacking = false;
+                GameManager.Instance.target.SetActive(false);
+                linePoints = new Vector3[2] { Vector3.zero, Vector3.zero };
+                GameManager.Instance.TargetLine.SetPositions(linePoints);
+            }
+        }
+        else if (GameManager.Instance.CurrentState == AttckStates.DefenderAdvantage)
+        {
+            if (_isBeingHovered && Input.GetMouseButton(0) && (GameManager.Instance.CurrPhase == Phase.Combat || GameManager.Instance.CurrPhase == Phase.GenericMain) && _thisCard.CanAttackMinions)
+            {
+                if (_thisCard.IsReadied)
                 {
-                    targetCard.TakeDamage(_thisCard.Attack);
-                    _thisCard.TakeDamage(targetCard.Attack);
-                    _isAttacking = false;
+                    GameManager.Instance.CardReadied();
+                }
+                else
+                {
+                    GameManager.Instance.CardUnreadied();
+                }
+                _thisCard.IsReadied = !_thisCard.IsReadied;
+                CreatureMouseExit();
+            }
+            if (_isBeingHovered && Input.GetMouseButton(0) && (GameManager.Instance.CurrPhase == Phase.Block))
+            {
+                Card targetCard = null;
+                try
+                {
+                    targetCard = (Card)GameManager.Instance.ReturnTargetFromBoard(Camera.main.ScreenToWorldPoint(Input.mousePosition));
+                }
+                catch
+                {
+                    GameManager.Instance.target.SetActive(false);
+                    linePoints = new Vector3[2] { Vector3.zero, Vector3.zero };
+                    GameManager.Instance.TargetLine.SetPositions(linePoints);
+                    return;
+                }
+
+                if (targetCard != null && !GameManager.Instance.PlayerBoard.Contains(targetCard) && targetCard.IsReadied)
+                {
+                    if (targetCard.Flying)
+                    {
+                        if (!_thisCard.Flying)
+                        {
+                            GameManager.Instance.target.SetActive(false);
+                            linePoints = new Vector3[2] { Vector3.zero, Vector3.zero };
+                            GameManager.Instance.TargetLine.SetPositions(linePoints);
+                        }
+                    }
+                    targetCard.BeingBlockedBy.Add(_thisCard);
                     GameManager.Instance.target.SetActive(false);
                     linePoints = new Vector3[2] { Vector3.zero, Vector3.zero };
                     GameManager.Instance.TargetLine.SetPositions(linePoints);
                 }
                 else if (targetCard == null || GameManager.Instance.PlayerBoard.Contains(targetCard))
                 {
-                    _isAttacking = false;
                     GameManager.Instance.target.SetActive(false);
                     linePoints = new Vector3[2] { Vector3.zero, Vector3.zero };
                     GameManager.Instance.TargetLine.SetPositions(linePoints);
                 }
             }
-        }
-
-        if (_isBeingHovered && Input.GetMouseButton(0) && (GameManager.Instance.CurrPhase == Phase.Combat || GameManager.Instance.CurrPhase == Phase.GenericMain))
-        {
-            _isAttacking = true;
-            CreatureMouseExit();
-        }
-
-        if(_isAttacking && Input.GetMouseButtonDown(1))
-        {
-            _isAttacking = false;
-            GameManager.Instance.target.SetActive(false);
-            linePoints = new Vector3[2] { Vector3.zero, Vector3.zero };
-            GameManager.Instance.TargetLine.SetPositions(linePoints);
         }
     }
 

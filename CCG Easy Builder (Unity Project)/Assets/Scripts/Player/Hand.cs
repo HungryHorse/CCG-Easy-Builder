@@ -2,65 +2,59 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEditor;
 using TMPro;
 
 [System.Serializable]
 public struct CardFrames
 {
+    [SerializeField]
     public Sprite creatureFrame;
+    [SerializeField]
     public Sprite spellFrame;
+    [SerializeField]
     public Sprite staticFrame;
     //public Sprite <- Add more card frames here 
 }
 
 public class Hand : MonoBehaviour
 {
-    public GameObject cardPrefab;
-    public GameObject handObject;
-
-    public AnimationClip moveCard;
+    private GameObject _cardPrefab;
+    private GameObject _handObject;
+    
+    private AnimationClip _moveCard;
 
     private Card _currCard;
 
     private Vector3 _drawLocation;
 
-    [SerializeField]
     private bool _canDrawCard = true;
     private int _bufferedCardDraw = 0;
     private List<Card> cardDrawQueue = new List<Card>();
-
-    [SerializeField]
+    
     private CardGameEvent _drawEvent;
 
     #region Hand Formatting
     private float _targetPositionX = 0;
-    [SerializeField]
-    private float _maxPositionY = 0.2f;
+    private float _maxPositionY = 0.25f;
     private float _targetScale = 1;
     private float _targetRot;
-    [SerializeField]
-    private float _maximumRot = 10;
+    private float _maximumRot = 6;
     private float _cardSize;
     private float _lerpSpeed;
     #endregion
-
     #region Representation of hand in game
-    [SerializeField]
     private float _physicalHandSizeX;
-    [SerializeField]
     private float _physicalHandSizeY;
     #endregion
-
-    [SerializeField]
+    
     private CardFrames _frames;
 
     private int _orderInSortingLayer = 0;
-
-    [SerializeField]
+    
     private List<Card> _currentHand;
 
     #region Max Hand Size
-    // Used for nice inspector UI
     [HideInInspector]
     public bool maxHandSizeOn;
     [HideInInspector]
@@ -70,6 +64,9 @@ public class Hand : MonoBehaviour
     public List<Card> CurrentHand { get => _currentHand; set => _currentHand = value; }
     public float PhysicalHandSizeX { get => _physicalHandSizeX; set => _physicalHandSizeX = value; }
     public float PhysicalHandSizeY { get => _physicalHandSizeY; set => _physicalHandSizeY = value; }
+    public GameObject CardPrefab { get => _cardPrefab; set => _cardPrefab = value; }
+    public CardFrames Frames { get => _frames; set => _frames = value; }
+    public float CardSize { get => _cardSize; set => _cardSize = value; }
 
     private int _counter = 0;
 
@@ -86,6 +83,9 @@ public class Hand : MonoBehaviour
 
     private void Start()
     {
+        _moveCard = (AnimationClip)Resources.Load("Animations/CardDraw");
+        _drawEvent = (CardGameEvent)Resources.Load("Events/DrawCard");
+        _handObject = gameObject;
         _currentHand = GameManager.Instance.CurrentHand;
         _cardSize = GameManager.Instance.CardSize;
         _lerpSpeed = GameManager.Instance.LerpSpeed;
@@ -145,10 +145,10 @@ public class Hand : MonoBehaviour
 
             SetUpCustomAnim();
 
-            GameObject cardDrawnPrefab = Instantiate(cardPrefab, _drawLocation, Quaternion.identity, handObject.transform);
+            GameObject cardDrawnPrefab = Instantiate(_cardPrefab, _drawLocation, Quaternion.identity, _handObject.transform);
 
-            cardDrawnPrefab.GetComponent<Animation>().AddClip(moveCard, moveCard.name);
-            cardDrawnPrefab.GetComponent<Animation>().Play(moveCard.name);
+            cardDrawnPrefab.GetComponent<Animation>().AddClip(_moveCard, _moveCard.name);
+            cardDrawnPrefab.GetComponent<Animation>().Play(_moveCard.name);
 
             cardDrawnPrefab.GetComponent<PrefabEvents>().ThisCard = cardDrawn;
 
@@ -207,10 +207,10 @@ public class Hand : MonoBehaviour
 
         SetUpCustomAnim();
 
-        GameObject cardDrawnPrefab = Instantiate(cardPrefab, _drawLocation, Quaternion.identity, handObject.transform);
+        GameObject cardDrawnPrefab = Instantiate(_cardPrefab, _drawLocation, Quaternion.identity, _handObject.transform);
 
-        cardDrawnPrefab.GetComponent<Animation>().AddClip(moveCard, moveCard.name);
-        cardDrawnPrefab.GetComponent<Animation>().Play(moveCard.name);
+        cardDrawnPrefab.GetComponent<Animation>().AddClip(_moveCard, _moveCard.name);
+        cardDrawnPrefab.GetComponent<Animation>().Play(_moveCard.name);
 
         cardDrawnPrefab.GetComponent<PrefabEvents>().ThisCard = cardDrawn;
 
@@ -533,7 +533,7 @@ public class Hand : MonoBehaviour
     {
         AnimationCurve curve;
 
-        moveCard.legacy = true;
+        _moveCard.legacy = true;
 
         float startXPos = _drawLocation.x - transform.position.x;
         float startYPos = _drawLocation.y - transform.position.y;
@@ -547,18 +547,18 @@ public class Hand : MonoBehaviour
         keys[0] = new Keyframe(0.0f, startXPos);
         keys[1] = new Keyframe(0.75f, 0.0f);
         curve = new AnimationCurve(keys);
-        moveCard.SetCurve("", typeof(Transform), "localPosition.x", curve);
+        _moveCard.SetCurve("", typeof(Transform), "localPosition.x", curve);
 
         keys = new Keyframe[2];
         keys[0] = new Keyframe(0.0f, startYPos);
         keys[1] = new Keyframe(0.75f, endYPos);
         curve = new AnimationCurve(keys);
-        moveCard.SetCurve("", typeof(Transform), "localPosition.y", curve);
+        _moveCard.SetCurve("", typeof(Transform), "localPosition.y", curve);
 
         keys = new Keyframe[2];
         keys[0] = new Keyframe(0.0f, startZPos);
         keys[1] = new Keyframe(0.75f, endZPos);
         curve = new AnimationCurve(keys);
-        moveCard.SetCurve("", typeof(Transform), "localPosition.z", curve);
+        _moveCard.SetCurve("", typeof(Transform), "localPosition.z", curve);
     }
 }
